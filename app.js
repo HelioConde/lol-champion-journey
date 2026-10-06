@@ -413,13 +413,21 @@
     select.innerHTML=others.map(x=>'<option value="'+esc(x.name)+'">'+esc(x.name)+'</option>').join("");
     if(others.some(x=>x.name===prior))select.value=prior;
     const other=others.find(x=>x.name===select.value)||others[0];
+    const cf=championMatchFacts(c),of=championMatchFacts(other);
     const rows=[
-      [t("games"),fmt(c.games),fmt(other.games)],
-      ["KDA",Number(c.avgKda||0).toFixed(1),Number(other.avgKda||0).toFixed(1)],
-      [t("mastery"),c.masteryPoints?fmt(c.masteryPoints):"—",other.masteryPoints?fmt(other.masteryPoints):"—"],
-      [t("metricConnection"),connectionScore(c),connectionScore(other)]
+      [t("games"),fmt(c.games),fmt(other.games),Number(c.games||0),Number(other.games||0),true],
+      ["KDA",Number(c.avgKda||0).toFixed(1),Number(other.avgKda||0).toFixed(1),Number(c.avgKda||0),Number(other.avgKda||0),true],
+      [t("metricWinRate"),cf.winRate==null?"—":Math.round(cf.winRate)+"%",of.winRate==null?"—":Math.round(of.winRate)+"%",cf.winRate,of.winRate,cf.winRate!=null&&of.winRate!=null],
+      [t("metricDamage"),cf.damage==null?"—":fmt(Math.round(cf.damage)),of.damage==null?"—":fmt(Math.round(of.damage)),cf.damage,of.damage,cf.damage!=null&&of.damage!=null],
+      [t("mastery"),c.masteryPoints?fmt(c.masteryPoints):"—",other.masteryPoints?fmt(other.masteryPoints):"—",Number(c.masteryPoints||0),Number(other.masteryPoints||0),Boolean(c.masteryPoints&&other.masteryPoints)],
+      [t("metricConnection"),connectionScore(c),connectionScore(other),connectionScore(c),connectionScore(other),true]
     ];
-    $("#champion-comparison").innerHTML='<div class="compare-head"><b>'+esc(c.name)+'</b><span>VS</span><b>'+esc(other.name)+'</b></div>'+rows.map(r=>'<div class="compare-row"><strong>'+esc(r[1])+'</strong><span>'+esc(r[0])+'</span><strong>'+esc(r[2])+'</strong></div>').join("");
+    const sideClass=(a,b,enabled)=>{
+      if(!enabled||!Number.isFinite(Number(a))||!Number.isFinite(Number(b)))return "";
+      if(Number(a)===Number(b))return " is-tie";
+      return Number(a)>Number(b)?" is-winner":" is-loser";
+    };
+    $("#champion-comparison").innerHTML='<div class="compare-head"><b>'+esc(c.name)+'</b><span>VS</span><b>'+esc(other.name)+'</b></div>'+rows.map(r=>'<div class="compare-row"><strong class="'+sideClass(r[3],r[4],r[5]).trim()+'">'+esc(r[1])+'</strong><span>'+esc(r[0])+'</span><strong class="'+sideClass(r[4],r[3],r[5]).trim()+'">'+esc(r[2])+'</strong></div>').join("");
     select.onchange=()=>renderComparison(c);
   }
   function updateMeta(c){
