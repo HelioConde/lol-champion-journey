@@ -1,7 +1,7 @@
 (() => {
   const $ = s => document.querySelector(s);
   const qsa = s => [...document.querySelectorAll(s)];
-  const state = { lang: localStorage.getItem("cj:lang") || "pt-BR", profile:null, champions:[], selected:0, demo:false, demoReason:null, snapshots:[] };
+  const state = { lang: localStorage.getItem("cj:lang") || "pt-BR", profile:null, champions:[], selected:0, demo:false, demoReason:null, partial:false, snapshots:[] };
   const regions = {br1:"americas",na1:"americas",la1:"americas",la2:"americas",oc1:"sea",euw1:"europe",eun1:"europe",tr1:"europe",ru:"europe",kr:"asia",jp1:"asia",sg2:"sea",ph2:"sea",tw2:"sea",th2:"sea",vn2:"sea"};
   const demo = {
     player:{gameName:"JourneyPlayer",tagLine:"BR1",level:214,platform:"BR1"},
@@ -130,12 +130,13 @@
       const data=await fetchProfile(gameName,tagLine,server);
       if(!data?.championSummaries?.length) throw Object.assign(new Error("empty"),{status:204});
       state.profile=data; state.demo=false; state.demoReason=null;
+      state.partial=Boolean(data?.cache?.rateLimited||Number(data?.cache?.pending||0)>0);
       $("#search-status").textContent="";
       window.CJ_OBS?.event("riot_lookup_success",{server,matches:Number(data?.summary?.matches||0),champions:Number(data?.championSummaries?.length||0)});
     }catch(e){
       const notFound=e?.status===404||e?.data?.riotStatus===404;
       if(notFound){
-        state.profile=null; state.demo=false; state.demoReason=null;
+        state.profile=null; state.demo=false; state.demoReason=null; state.partial=false;
         $("#search-status").textContent=t("notFound");
         window.CJ_OBS?.event("riot_lookup_not_found",{server});
         return;
@@ -143,6 +144,7 @@
       state.profile={...demo,player:{...demo.player,gameName,tagLine,platform:server.toUpperCase()}};
       state.demo=true;
       state.demoReason=e?.status===429?"rateLimit":"backend";
+      state.partial=false;
       $("#search-status").textContent=state.demoReason==="rateLimit"?t("rateLimit"):e?.status>=500||e?.status===0?t("backendError"):t("fallback");
       window.CJ_OBS?.event("riot_lookup_fallback",{server,status:Number(e?.status||0),reason:String(e?.message||"unknown").slice(0,100)});
     }finally{setLoading(false,refresh)}
@@ -196,7 +198,7 @@
     }catch{return false}
   }
   function buildSnapshot(){
-    if(!state.profile||state.demo||!state.champions.length)return null;
+    if(!state.profile||state.demo||state.partial||!state.champions.length)return null;
     return {
       capturedAt:Date.now(),
       sampleMatches:Number(state.profile.summary?.matches||0),
@@ -290,7 +292,14 @@
   function renderSnapshotComparison(c){
     state.snapshots=readSnapshots();
     $("#snapshot-count").textContent=state.snapshots.length+" snapshot"+(state.snapshots.length===1?"":"s");
-    const empty=$("#snapshot-empty"), grid=$("#snapshot-comparison");
+    const partial=$("#snapshot-partial"), empty=$("#snapshot-empty"), grid=$("#snapshot-comparison");
+    if(state.partial){
+      partial.hidden=false; empty.hidden=true; grid.hidden=true;
+      $("#snapshot-history").hidden=true;
+      $("#journey-signals").hidden=true;
+      return;
+    }
+    partial.hidden=true;
     if(state.snapshots.length<2){
       empty.hidden=false; grid.hidden=true; renderJourneySignals(); renderSnapshotHistory(c); return;
     }
@@ -438,12 +447,16 @@
     const components=scoreComponents(c);
     $("#champion-hero").style.backgroundImage='url("'+splash(c.name)+'")';
     $("#profile-riot-id").textContent=(p.player?.gameName||"Player")+"#"+(p.player?.tagLine||"—");
-    $("#data-badge").textContent=state.demo?t("demo"):t("live");
+    $("#data-badge").textContent=state.demo?t("demo"):state.partial?t("partialLive"):t("live");
     $("#data-badge").classList.toggle("demo",state.demo);
+    $("#data-badge").classList.toggle("partial",state.partial&&!state.demo);
     $("#data-badge").parentElement?.classList.toggle("demo-source",state.demo);
+    $("#data-badge").parentElement?.classList.toggle("partial-source",state.partial&&!state.demo);
     $("#sample-note").textContent=state.demo
       ? t(state.demoReason==="rateLimit"?"sourceDemoRateLimit":"sourceDemoBackend")
-      : t("sourceLive",{n:total});
+      : state.partial
+        ? t("sourcePartial",{loaded:Number(p.cache?.matchesLoaded||total),requested:Number(p.cache?.requested||total),pending:Number(p.cache?.pending||0)})
+        : t("sourceLive",{n:total});
     $("#retry-demo").hidden=!state.demo;
     $("#champion-name").textContent=c.name;
     $("#champion-story").textContent=t("chapterText",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
