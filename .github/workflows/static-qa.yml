@@ -3,6 +3,8 @@ name: Static QA
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "version.json"
   pull_request:
 
 jobs:
