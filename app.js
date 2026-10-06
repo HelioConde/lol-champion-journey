@@ -312,21 +312,40 @@
     updateMeta(c);
   }
   function renderTimeline(c){
-    const matches=state.profile?.matches||[];
-    const dates=matches.map(m=>Number(m.playedAt||m.gameCreation||0)).filter(Boolean).sort((a,b)=>a-b);
+    const all=state.profile?.matches||[];
+    const championMatches=all.filter(m=>String(m.champion||"").toLowerCase()===String(c.name||"").toLowerCase()).slice(0,5);
+    const df=new Intl.DateTimeFormat(state.lang,{day:"2-digit",month:"short"});
+    if(championMatches.length){
+      $("#journey-timeline").innerHTML=championMatches.map(m=>{
+        const when=Number(m.playedAt||m.gameCreation||0);
+        const result=m.context==="ARENA"&&m.placement?("#"+m.placement):(m.win?"WIN":"LOSS");
+        const kda=Number.isFinite(Number(m.kda))?Number(m.kda).toFixed(1):"—";
+        const detail=[m.context,m.position,result,"KDA "+kda].filter(Boolean).join(" · ");
+        return '<div class="timeline-item"><span>'+esc(when?df.format(new Date(when)):"—")+'</span><i></i><div><b>'+esc(c.name)+'</b><p>'+esc(detail)+'</p></div></div>';
+      }).join("");
+      return;
+    }
+    const dates=all.map(m=>Number(m.playedAt||m.gameCreation||0)).filter(Boolean).sort((a,b)=>a-b);
     const first=dates.length?new Intl.DateTimeFormat(state.lang,{day:"2-digit",month:"short",year:"numeric"}).format(new Date(dates[0])):"—";
-    const now=new Intl.DateTimeFormat(state.lang,{day:"2-digit",month:"short"}).format(new Date());
+    const now=df.format(new Date());
     const items=[[first,t("timeline1"),t("timeline1Text")],["★",t("timeline2"),t("timeline2Text",{name:c.name})],[now,t("timeline3"),t("timeline3Text")]];
-    $("#journey-timeline").innerHTML=items.map((x,i)=>'<div class="timeline-item"><span>'+esc(x[0])+'</span><i></i><div><b>'+esc(x[1])+'</b><p>'+esc(x[2])+'</p></div></div>').join("");
+    $("#journey-timeline").innerHTML=items.map(x=>'<div class="timeline-item"><span>'+esc(x[0])+'</span><i></i><div><b>'+esc(x[1])+'</b><p>'+esc(x[2])+'</p></div></div>').join("");
   }
 
-  function downloadCard(){
+  async function downloadCard(){
     if(!state.profile||!state.champions.length)return;
     const c=state.champions[state.selected]||state.champions[0], score=connectionScore(c), p=state.profile;
     const canvas=document.createElement("canvas"); canvas.width=1200; canvas.height=630;
     const ctx=canvas.getContext("2d");
     const grd=ctx.createLinearGradient(0,0,1200,630); grd.addColorStop(0,"#090b14"); grd.addColorStop(1,"#171326");
     ctx.fillStyle=grd; ctx.fillRect(0,0,1200,630);
+    try{
+      const blob=await fetch(splash(c.name),{mode:"cors"}).then(r=>r.ok?r.blob():Promise.reject());
+      const img=await createImageBitmap(blob);
+      const scale=Math.max(1200/img.width,630/img.height),w=img.width*scale,h=img.height*scale;
+      ctx.globalAlpha=.48;ctx.drawImage(img,(1200-w)/2,(630-h)/2,w,h);ctx.globalAlpha=1;
+      const shade=ctx.createLinearGradient(0,0,780,0);shade.addColorStop(0,"rgba(5,7,14,.96)");shade.addColorStop(1,"rgba(5,7,14,.2)");ctx.fillStyle=shade;ctx.fillRect(0,0,1200,630);
+    }catch{}
     ctx.fillStyle="#d9aa55"; ctx.fillRect(70,72,76,6);
     ctx.fillStyle="#f0cf89"; ctx.font="700 24px system-ui"; ctx.fillText("CHAMPION JOURNEY",70,125);
     ctx.fillStyle="#ffffff"; ctx.font="500 92px Georgia"; ctx.fillText(c.name,70,250);
@@ -336,7 +355,10 @@
     ctx.strokeStyle="rgba(217,170,85,.75)";ctx.lineWidth=3;ctx.beginPath();ctx.arc(1010,300,105,0,Math.PI*2);ctx.stroke();
     ctx.fillStyle="#f0cf89";ctx.font="700 72px system-ui";ctx.textAlign="center";ctx.fillText(String(score),1010,325);
     ctx.fillStyle="#8994a8";ctx.font="600 15px system-ui";ctx.fillText(t("connection").toUpperCase(),1010,365);ctx.textAlign="left";
-    ctx.fillStyle="#5f697c";ctx.font="400 16px system-ui";ctx.fillText("lol-champion-journey",70,565);
+    const dates=(p.matches||[]).map(m=>Number(m.playedAt||0)).filter(Boolean).sort((a,b)=>a-b);
+    const period=dates.length?new Intl.DateTimeFormat(state.lang,{day:"2-digit",month:"short",year:"numeric"}).format(new Date(dates[0]))+" → "+new Intl.DateTimeFormat(state.lang,{day:"2-digit",month:"short",year:"numeric"}).format(new Date(dates[dates.length-1])):"recent sample";
+    ctx.fillStyle="#aab4c7";ctx.font="500 17px system-ui";ctx.fillText(period,70,530);
+    ctx.fillStyle="#5f697c";ctx.font="400 16px system-ui";ctx.fillText("helioconde.github.io/lol-champion-journey",70,565);
     const a=document.createElement("a"); a.download="champion-journey-"+slug(c.name).toLowerCase()+".png"; a.href=canvas.toDataURL("image/png"); a.click();
   }
   async function copyLink(){
