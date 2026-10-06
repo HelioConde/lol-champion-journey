@@ -443,7 +443,7 @@
   function updateMeta(c){
     const player=state.profile?.player?.gameName||"Player";
     const title=c.name+" · "+player+" · LoL Champion Journey";
-    const desc=t("scoreSummary",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
+    const desc=t("scoreSummary",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)});
     document.title=title;
     const set=(sel,attr,value)=>{const el=$(sel);if(el)el.setAttribute(attr,value)};
     set('meta[name="description"]',"content",desc);
@@ -483,14 +483,14 @@
     $("#retry-demo").hidden=!state.demo;
     $("#complete-sample").hidden=state.demo||!state.partial;
     $("#champion-name").textContent=c.name;
-    $("#champion-story").textContent=t("chapterText",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
+    $("#champion-story").textContent=t("chapterText",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)});
     $("#metric-games").textContent=fmt(c.games);
     $("#metric-kda").textContent=Number(c.avgKda||0).toFixed(1);
     $("#metric-mastery").textContent=c.masteryPoints?fmt(c.masteryPoints):"—";
     $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+'" data-i="'+i+'" aria-pressed="'+(i===state.selected?'true':'false')+'"><img class="chip-bg" src="'+esc(splash(x.name))+'" alt="" loading="lazy" decoding="async"><span><b>'+esc(x.name)+'</b><small>'+fmt(x.games)+' '+t("games")+'</small></span><strong>'+connectionScore(x)+'</strong></button>').join("");
     qsa(".champion-chip").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.i);window.CJ_OBS?.event("champion_selected",{champion:state.champions[state.selected]?.name||null});renderProfile();document.querySelector(".journey-grid").scrollIntoView({behavior:"smooth",block:"start"})});
     $("#chapter-title").textContent=state.selected===0?t("chapterMain"):t("chapterOther");
-    $("#chapter-text").textContent=t("chapterText",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
+    $("#chapter-text").textContent=t("chapterText",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)});
     [["presence",presence],["performance",components.performance],["mastery",mastery],["consistency",components.consistency]].forEach(([id,v])=>{$("#"+id+"-label").textContent=v+"%";$("#"+id+"-bar").style.width=v+"%"});
     $("#identity-cards").innerHTML=[
       [t("frequent"),t("frequentText")],[t("performanceTag"),t("performanceText",{kda:Number(c.avgKda||0).toFixed(1)})],[t("masteryTag"),t("masteryText",{points:c.masteryPoints?fmt(c.masteryPoints):"—"})]
@@ -502,7 +502,7 @@
     renderTimeline(c);
     $("#share-card").style.setProperty("--share-bg",'url("'+splash(c.name)+'")');
     $("#share-title").textContent=c.name+" · "+(p.player?.gameName||"Player");
-    $("#share-summary").textContent=t("scoreSummary",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
+    $("#share-summary").textContent=t("scoreSummary",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)});
     $("#share-score").textContent=score;
     updateMeta(c);
   }
@@ -562,7 +562,7 @@
   }
   async function shareNative(){
     const c=state.champions[state.selected]||state.champions[0];
-    const data={title:document.title,text:c?t("scoreSummary",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)}):"LoL Champion Journey",url:location.href};
+    const data={title:document.title,text:c?t("scoreSummary",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)}):"LoL Champion Journey",url:location.href};
     try{
       if(navigator.share){await navigator.share(data);window.CJ_OBS?.event("native_share",{champion:c?.name||null})}
       else await copyLink();
