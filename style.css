@@ -250,3 +250,7 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .share-actions .primary{grid-column:1/-1;width:100%!important}
   .share-actions .secondary{width:100%!important}
 }
+
+@media(max-width:560px){
+  .profile-nav::after{content:"›";position:absolute;right:0;top:0;bottom:0;width:24px;display:grid;place-items:center;background:linear-gradient(90deg,rgba(7,10,17,0),rgba(7,10,17,.96) 60%);color:#d9aa55;font-size:18px;font-weight:900;pointer-events:none}
+}
