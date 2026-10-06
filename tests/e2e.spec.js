@@ -4,8 +4,8 @@ const riotPayload = {
   player:{gameName:"RealPlayer",tagLine:"BR1",level:321,platform:"BR1"},
   summary:{matches:12,wins:7,losses:5,winRate:58,primaryPosition:"MID"},
   mastery:[
-    {championName:"Lux",championId:99,level:7,points:999999},
-    {championName:"Ahri",championId:103,level:7,points:420000}
+    {championId:99,level:7,points:999999},
+    {championId:103,level:7,points:420000}
   ],
   championSummaries:[
     {name:"Lux",games:6,avgKda:4.1},
@@ -19,6 +19,12 @@ const riotPayload = {
 };
 
 test.beforeEach(async ({page}) => {
+  await page.route("**/realms/br.json", route => route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({n:{champion:"16.20.1"},v:"16.20.1"})}));
+  await page.route("**/cdn/16.20.1/data/pt_BR/champion.json", route => route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({data:{
+    Lux:{id:"Lux",key:"99",name:"Lux"},
+    Ahri:{id:"Ahri",key:"103",name:"Ahri"},
+    Syndra:{id:"Syndra",key:"134",name:"Syndra"}
+  }})}));
   await page.route("**/public-lol-profile", route => route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(riotPayload)}));
   await page.goto("/");
   await page.evaluate(()=>localStorage.clear());
@@ -109,8 +115,8 @@ test("salva snapshot real e mostra comparação na segunda consulta", async ({pa
       {name:"Syndra",games:2,avgKda:2.7}
     ],
     mastery:[
-      {championName:"Lux",championId:99,level:7,points:1001200},
-      {championName:"Ahri",championId:103,level:7,points:430500}
+      {championId:99,level:7,points:1001200},
+      {championId:103,level:7,points:430500}
     ]
   };
   await page.unroute("**/public-lol-profile");
