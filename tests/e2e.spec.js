@@ -181,7 +181,8 @@ test("Riot ID inexistente recebe mensagem específica", async ({page}) => {
   await page.locator("#tag-line").fill("BR1");
   await page.getByRole("button",{name:/Ver minha jornada/i}).click();
   await expect(page.locator("#search-status")).toContainText("Riot ID não encontrado");
-  await expect(page.locator("#data-badge")).toHaveText("DEMONSTRAÇÃO");
+  await expect(page.locator("#landing-view")).toBeVisible();
+  await expect(page.locator("#profile-view")).toBeHidden();
 });
 
 test("cards de campeão usam imagens lazy", async ({page}) => {
