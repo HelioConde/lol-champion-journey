@@ -434,7 +434,7 @@
       if(Number(a)===Number(b))return " is-tie";
       return Number(a)>Number(b)?" is-winner":" is-loser";
     };
-    $("#champion-comparison").innerHTML='<div class="compare-head"><b>'+esc(c.name)+'</b><span>VS</span><b>'+esc(other.name)+'</b></div>'+rows.map(r=>'<div class="compare-row"><strong class="'+sideClass(r[3],r[4],r[5]).trim()+'">'+esc(r[1])+'</strong><span>'+esc(r[0])+'</span><strong class="'+sideClass(r[4],r[3],r[5]).trim()+'">'+esc(r[2])+'</strong></div>').join("");
+    $("#champion-comparison").innerHTML='<div class="compare-head"><div class="compare-champion"><img src="'+esc(splash(c.name))+'" alt="" loading="lazy" decoding="async"><b>'+esc(c.name)+'</b></div><span>VS</span><div class="compare-champion is-right"><img src="'+esc(splash(other.name))+'" alt="" loading="lazy" decoding="async"><b>'+esc(other.name)+'</b></div></div>'+rows.map(r=>'<div class="compare-row"><strong class="'+sideClass(r[3],r[4],r[5]).trim()+'">'+esc(r[1])+'</strong><span>'+esc(r[0])+'</span><strong class="'+sideClass(r[4],r[3],r[5]).trim()+'">'+esc(r[2])+'</strong></div>').join("");
     const cWins=rows.filter(r=>r[5]&&Number(r[3])>Number(r[4])).map(r=>r[0]);
     const oWins=rows.filter(r=>r[5]&&Number(r[4])>Number(r[3])).map(r=>r[0]);
     const list=items=>new Intl.ListFormat(state.lang,{style:"long",type:"conjunction"}).format(items);

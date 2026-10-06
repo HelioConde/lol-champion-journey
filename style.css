@@ -227,3 +227,14 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .roster-explainer{font-size:10px;line-height:1.45}
   .champion-chip .signature-tag{top:7px;left:7px}
 }
+
+.compare-head{position:relative;overflow:hidden}
+.compare-champion{display:flex;align-items:center;justify-content:center;gap:10px;min-width:0}
+.compare-champion img{width:38px;height:38px;object-fit:cover;object-position:center 24%;border-radius:50%;border:1px solid rgba(217,170,85,.3);box-shadow:0 4px 16px rgba(0,0,0,.28)}
+.compare-champion b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.compare-champion.is-right{flex-direction:row-reverse}
+@media(max-width:560px){
+  .compare-champion{gap:7px}
+  .compare-champion img{width:30px;height:30px}
+  .compare-head b{font-size:16px}
+}
