@@ -6,7 +6,7 @@
   window.CHAMPION_JOURNEY_BACKEND = Object.freeze({
     functionsBase,
     lolProfile: existing.lolProfile || functionsBase + "/public-lol-profile",
-    snapshotSync: existing.snapshotSync || null,
+    snapshotHistory: existing.snapshotHistory || null,
     source: "zerotwo-gamer-supabase"
   });
 })();
