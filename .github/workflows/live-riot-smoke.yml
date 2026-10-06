@@ -22,7 +22,7 @@ on:
       limit:
         description: Match sample size (1-100)
         required: true
-        default: "12"
+        default: "100"
   push:
     paths:
       - ".github/workflows/live-riot-smoke.yml"
@@ -39,7 +39,7 @@ jobs:
       TAG_LINE: ${{ inputs.tag_line || 'BR1' }}
       PLATFORM: ${{ inputs.platform || 'br1' }}
       REGION: ${{ inputs.region || 'americas' }}
-      LIMIT: ${{ inputs.limit || '12' }}
+      LIMIT: ${{ inputs.limit || '100' }}
     steps:
       - name: Query Riot profile
         shell: bash
