@@ -515,6 +515,11 @@
     $("#complete-sample").hidden=state.demo||!state.partial;
     $("#champion-name").textContent=c.name;
     $("#champion-story").textContent=t("chapterText",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)});
+    const heroFacts=championMatchFacts(c);
+    const contextNames={ARENA:t("contextArena"),RANKED:t("contextRanked"),NORMAL:t("contextNormal")};
+    const heroContexts=(heroFacts.contexts||[]).map(x=>contextNames[String(x).toUpperCase()]||String(x).toUpperCase()).filter(Boolean);
+    $("#hero-context").hidden=!heroContexts.length;
+    $("#hero-context").textContent=heroContexts.length?t("contextLabel")+": "+heroContexts.join(" · "):"";
     $("#metric-games").textContent=fmt(c.games);
     $("#metric-games").nextElementSibling.textContent=t(Number(c.games||0)===1?"recentGameSingular":"recentGamePlural");
     $("#metric-kda").textContent=Number(c.avgKda||0).toFixed(1);
