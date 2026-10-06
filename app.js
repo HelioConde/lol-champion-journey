@@ -45,6 +45,13 @@
     if(state.profile) renderProfile();
   }
   const fmt = n => Number(n||0).toLocaleString(state.lang==="pt-BR"?"pt-BR":"en-US");
+  const gameText=(n,recent=false)=>{
+    const count=Number(n||0);
+    const key=recent
+      ? (count===1?"recentGameSingular":"recentGamePlural")
+      : (count===1?"gameSingular":"gamePlural");
+    return fmt(count)+" "+t(key);
+  };
   const esc = v => String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const slug = name => name.replace(/[^A-Za-z0-9]/g,"");
   let ddragonCatalog=null;
