@@ -175,7 +175,7 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
 /* Desktop space-use pass from automated capture review */
 @media(min-width:901px){
   .fact-grid{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
-  .timeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  .timeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
   .timeline-item{display:block;min-height:150px;padding:18px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#0e1421,#0a0f19)}
   .timeline-item>span{display:inline-flex;text-align:left;padding:0 0 12px;color:var(--gold2);font-weight:800}
   .timeline-item>i{display:none}
