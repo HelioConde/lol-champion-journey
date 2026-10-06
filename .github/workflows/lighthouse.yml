@@ -44,6 +44,8 @@ jobs:
 
       - name: Run Lighthouse
         run: |
+          export CHROME_PATH="$(node -e "const {chromium}=require('@playwright/test'); process.stdout.write(chromium.executablePath())")"
+          echo "Using Chromium at $CHROME_PATH"
           npx --yes lighthouse http://127.0.0.1:4173/             --quiet             --chrome-flags="--headless --no-sandbox"             --output=json             --output-path=./lighthouse.json
 
       - name: Enforce quality budgets
