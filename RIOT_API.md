@@ -1,108 +1,79 @@
-# Estratégia de integração Riot
+# Integração Riot — LoL Champion Journey
 
-Revisado em 06/10/2026 com base no Riot Developer Portal.
+Revisado em 06/10/2026.
 
-## Infraestrutura gamer já disponível
+## Infraestrutura
 
-O Riot Legacy reutiliza o Supabase gamer do ZeroTwo.gg:
+O produto reutiliza o backend gamer compartilhado do ZeroTwo.gg.
 
-- ref `bieihhaobdztjyoweewa`;
-- `RIOT_API_KEY` já configurada como secret de Edge Function;
-- `public-lol-profile` já implementa Riot ID → PUUID → Summoner/Ranked/Mastery/Match-V5;
-- `riot_player_cache` e `lol_match_cache` já reduzem chamadas repetidas;
-- o frontend usa apenas credenciais públicas do Supabase.
+- Supabase gamer: `bieihhaobdztjyoweewa`;
+- Edge Function pública consumida: `public-lol-profile`;
+- Riot API key fica exclusivamente no backend;
+- cache de jogador e partidas reduz chamadas repetidas;
+- o frontend não contém chave Riot ou service role.
 
-**Não criar banco gamer paralelo e não usar o `pizzaria-db`.**
+**Não usar `pizzaria-db` para este produto.**
+
+## Contrato atual
+
+Entrada principal:
+
+```json
+{
+  "gameName": "AlchemyFlames",
+  "tagLine": "BR1",
+  "platform": "br1",
+  "region": "americas",
+  "limit": 100,
+  "matchLimit": 100,
+  "historyDepth": 100
+}
+```
+
+Saída utilizada pelo Champion Journey:
+
+- `player`;
+- `summary`;
+- `championSummaries`;
+- `mastery`;
+- `matches`;
+- `ranked`;
+- `modeSummaries`.
+
+A maestria real usa `championId`. O frontend resolve ID/nome/assets pelo catálogo oficial do Data Dragon.
 
 ## Identidade
 
-A interface deve pedir **Riot ID**:
+A busca usa Riot ID:
+
 - Game Name;
-- Tag Line.
+- Tag Line;
+- plataforma/servidor.
 
-Não construir busca principal baseada em Summoner Name legado.
+O backend resolve Riot ID → PUUID via ACCOUNT-V1.
 
-O primeiro passo do backend será ACCOUNT-V1 para resolver Riot ID em PUUID.
+## Endpoints Riot relevantes
 
-## PUUID
+- ACCOUNT-V1;
+- SUMMONER-V4;
+- CHAMPION-MASTERY-V4;
+- LEAGUE-V4;
+- MATCH-V5.
 
-Quando os endpoints suportarem PUUID, preferir PUUID como identificador técnico.
+## Limites de interpretação
 
-## Endpoints candidatos
-
-### Conta
-- ACCOUNT-V1
-
-### League of Legends
-- SUMMONER-V4
-- CHAMPION-MASTERY-V4
-- LEAGUE-V4
-- MATCH-V5
-- LOL-CHALLENGES-V1
-
-### TFT
-- TFT-MATCH-V1
-- TFT-LEAGUE-V1
-- demais endpoints suportados e necessários quando a integração for implementada.
+A resposta da Riot representa uma janela recente consultável, não o histórico completo da conta. O produto só chama algo de evolução histórica quando há snapshots próprios capturados em consultas diferentes.
 
 ## Segurança
 
-- API key nunca no navegador.
-- Backend/Edge Function faz chamadas à Riot.
-- HTTPS obrigatório.
-- Production key própria para Riot Legacy.
-- Rate limiting + cache.
-- Não registrar a API key em logs.
+- nenhuma chave Riot no navegador;
+- nenhum service role no frontend;
+- HTTPS;
+- cache e tratamento de rate limit;
+- dados demo nunca são persistidos como histórico real.
 
-## Produto
+## Compliance
 
-Riot Legacy não criará:
-- MMR/ELO alternativo;
-- vantagem em tempo real;
-- recomendações que removam decisões do jogo;
-- de-anonimização de jogadores.
+LoL Champion Journey não é endossado pela Riot Games e não reflete as opiniões ou visões da Riot Games ou de qualquer pessoa oficialmente envolvida na produção ou gerenciamento das propriedades da Riot Games. Riot Games e todas as propriedades associadas são marcas comerciais ou marcas registradas da Riot Games, Inc.
 
-O foco é histórico, identidade, retrospectiva e compartilhamento pós-jogo.
-
-## Registro
-
-Antes do uso público de dados reais, registrar o produto no Riot Developer Portal e manter descrição/features atualizadas conforme as políticas vigentes.
-
-
-## Consumo atual no Riot Legacy
-
-O frontend já consome:
-
-- `public-lol-profile`;
-- `public-tft-profile`.
-
-A seleção passou a ser por servidor/plataforma (`br1`, `na1`, `euw1`, etc.) e o frontend deriva o routing regional necessário ao LoL.
-
-Dados utilizados no MVP atual:
-
-### LoL
-- perfil básico;
-- ranked;
-- maior maestria retornada;
-- campeões mais frequentes na amostra;
-- funções;
-- win rate recente;
-- partidas recentes.
-
-### TFT
-- colocação média;
-- Top 4 rate;
-- distribuição de colocações;
-- units da partida mais recente;
-- traits ativos da partida mais recente.
-
-A interface não chama esses recortes de “histórico completo”. Eles são apresentados como amostra recente até existirem snapshots históricos suficientes.
-
-
-## Resiliência do frontend
-
-As duas consultas públicas rodam em paralelo e possuem timeout de 14 segundos. A interface descarta respostas atrasadas de uma busca anterior.
-
-Quando apenas LoL ou TFT responde, a outra seção permanece em fallback demonstrativo identificado.
-
-O usuário pode repetir a consulta com **Atualizar dados** sem recarregar a página, o que também cobre rate limit temporário e falhas transitórias.
+O produto é pós-jogo/histórico e não oferece vantagem competitiva em tempo real.
