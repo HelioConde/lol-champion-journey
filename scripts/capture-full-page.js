@@ -72,7 +72,12 @@ const path = require("path");
     fullPage,
     capturedAt: new Date().toISOString(),
     dataMode: document.querySelector("#data-badge")?.textContent?.trim() || null,
-    riotId: document.querySelector("#profile-riot-id")?.textContent?.trim() || null
+    riotId: document.querySelector("#profile-riot-id")?.textContent?.trim() || null,
+    assets: {
+      stylesheet: document.querySelector('link[rel="stylesheet"]')?.href || null,
+      app: [...document.scripts].find(s=>s.src.includes("/app.js"))?.src || null,
+      i18n: [...document.scripts].find(s=>s.src.includes("/i18n.js"))?.src || null
+    }
   }),{scrollSelector,fullPage});
 
   fs.writeFileSync(
