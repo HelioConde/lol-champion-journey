@@ -99,3 +99,10 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .profile-nav a{font-size:10px;padding:8px 10px}
   .profile-anchor{scroll-margin-top:58px}
 }
+
+.profile-nav a.is-active{color:#111827;background:linear-gradient(135deg,var(--gold2),#c58d36);box-shadow:0 4px 18px rgba(217,170,85,.18)}
+.source-retry{margin-left:auto;flex:0 0 auto;border:1px solid rgba(217,170,85,.45);background:rgba(217,170,85,.12);color:#f1d08d;border-radius:9px;padding:7px 10px;font-size:10px;font-weight:800;cursor:pointer}
+.source-retry:hover,.source-retry:focus-visible{background:rgba(217,170,85,.2);outline:none}
+@media(max-width:560px){
+  .source-row.demo-source .source-retry{margin-left:0;width:100%;min-height:36px}
+}
