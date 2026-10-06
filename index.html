@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#090b14">
+  <title>LoL Champion Journey — sua história com cada campeão</title>
+  <meta name="description" content="Veja sua jornada pessoal com os campeões de League of Legends: frequência, desempenho, maestria e evolução recente.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="LoL Champion Journey">
+      <span class="brand-mark">CJ</span><span><b>Champion Journey</b><small>League of Legends</small></span>
+    </a>
+    <div class="top-actions">
+      <button class="lang is-active" data-language="pt-BR">PT</button>
+      <button class="lang" data-language="en">EN</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="landing-view" class="hero shell">
+      <div class="hero-copy">
+        <span class="eyebrow" data-i18n="eyebrow">SEU CAMPEÃO. SUA HISTÓRIA.</span>
+        <h1 data-i18n="heroTitle">Descubra como sua relação com cada campeão mudou.</h1>
+        <p data-i18n="heroText">Transforme seu histórico recente de LoL em uma jornada visual de frequência, desempenho, maestria e identidade.</p>
+        <form id="search-form" class="search-card">
+          <div class="field grow"><label data-i18n="gameName">Nome Riot</label><input id="game-name" autocomplete="off" maxlength="16" placeholder="HelioConde" required></div>
+          <div class="field tag"><label data-i18n="tag">Tag</label><input id="tag-line" autocomplete="off" maxlength="5" placeholder="BR1" required></div>
+          <div class="field region"><label data-i18n="server">Servidor</label>
+            <select id="region"><option value="br1">BR</option><option value="na1">NA</option><option value="euw1">EUW</option><option value="eun1">EUNE</option><option value="kr">KR</option><option value="jp1">JP</option><option value="la1">LAN</option><option value="la2">LAS</option><option value="oc1">OCE</option><option value="tr1">TR</option><option value="ru">RU</option><option value="sg2">SG</option><option value="ph2">PH</option><option value="tw2">TW</option><option value="th2">TH</option><option value="vn2">VN</option></select>
+          </div>
+          <button class="primary" type="submit" data-i18n="cta">Ver minha jornada</button>
+        </form>
+        <p id="search-status" class="status" aria-live="polite"></p>
+        <div id="recent-searches" class="recent" hidden>
+          <div class="recent-head"><b data-i18n="recent">Buscas recentes</b><button id="clear-recent" class="text-btn" type="button" data-i18n="clear">Limpar</button></div>
+          <div id="recent-searches-list"></div>
+        </div>
+      </div>
+      <aside class="hero-preview">
+        <div class="preview-card">
+          <span class="preview-kicker" data-i18n="previewKicker">CAMPEÃO ASSINATURA</span>
+          <h2>Ahri</h2><strong>82 partidas</strong>
+          <div class="preview-bars"><i style="--w:92%"></i><i style="--w:72%"></i><i style="--w:54%"></i></div>
+          <p data-i18n="previewText">Uma leitura visual da sua conexão com o campeão — não só números soltos.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section id="profile-view" class="profile" hidden>
+      <div id="champion-hero" class="champion-hero">
+        <div class="hero-shade"></div>
+        <div class="shell champion-hero-inner">
+          <div>
+            <button id="new-profile" class="back-btn" data-i18n="newProfile">← Novo perfil</button>
+            <div class="source-row"><span id="data-badge" class="data-badge">DADOS RIOT</span><span id="sample-note"></span></div>
+            <p id="profile-riot-id" class="riot-id"></p>
+            <span class="eyebrow" data-i18n="signature">CAMPEÃO ASSINATURA</span>
+            <h1 id="champion-name">—</h1>
+            <p id="champion-story" class="champion-story"></p>
+            <div class="hero-metrics">
+              <div><strong id="metric-games">—</strong><span data-i18n="games">partidas recentes</span></div>
+              <div><strong id="metric-kda">—</strong><span>KDA</span></div>
+              <div><strong id="metric-mastery">—</strong><span data-i18n="mastery">maestria</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="shell profile-body">
+        <section class="section">
+          <div class="section-head"><div><span class="eyebrow" data-i18n="yourCast">SEU ELENCO</span><h2 data-i18n="chooseChampion">Escolha um campeão da sua jornada</h2></div><button id="refresh-data" class="secondary" data-i18n="refresh">Atualizar dados</button></div>
+          <div id="champion-list" class="champion-list"></div>
+        </section>
+
+        <div class="ad-slot" aria-label="Espaço reservado para anúncio"><span>AD</span><small data-i18n="adReserved">espaço reservado</small></div>
+
+        <section class="journey-grid">
+          <article class="panel">
+            <span class="eyebrow" data-i18n="currentChapter">CAPÍTULO ATUAL</span>
+            <h2 id="chapter-title">—</h2>
+            <p id="chapter-text"></p>
+            <div class="progress-stack">
+              <div><span data-i18n="presence">Presença na amostra</span><b id="presence-label">0%</b><i><em id="presence-bar"></em></i></div>
+              <div><span data-i18n="performance">Força de desempenho</span><b id="performance-label">0%</b><i><em id="performance-bar"></em></i></div>
+              <div><span data-i18n="masteryProgress">Peso de maestria</span><b id="mastery-label">0%</b><i><em id="mastery-bar"></em></i></div>
+            </div>
+          </article>
+
+          <article class="panel">
+            <span class="eyebrow" data-i18n="identity">IDENTIDADE</span>
+            <h2 data-i18n="whatSays">O que este campeão diz sobre seu momento?</h2>
+            <div id="identity-cards" class="identity-cards"></div>
+          </article>
+        </section>
+
+        <section class="section timeline-section">
+          <span class="eyebrow" data-i18n="journey">JORNADA VISUAL</span>
+          <h2 data-i18n="recentEvolution">Sua evolução dentro da janela disponível</h2>
+          <p class="section-copy" data-i18n="recentDisclaimer">A API pública não entrega toda a história da conta. Por isso, mostramos apenas o que os dados recentes realmente permitem afirmar.</p>
+          <div id="journey-timeline" class="timeline"></div>
+        </section>
+
+        <section class="share-card" id="share-card">
+          <div><span class="eyebrow">CHAMPION JOURNEY</span><h2 id="share-title">—</h2><p id="share-summary">—</p></div>
+          <div class="share-actions">
+            <div class="share-score"><strong id="share-score">0</strong><span data-i18n="connection">índice de conexão</span></div>
+            <button id="download-card" class="primary compact" type="button" data-i18n="downloadCard">Baixar card PNG</button>
+            <button id="copy-link" class="secondary compact" type="button" data-i18n="copyLink">Copiar link</button>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer><span>LoL Champion Journey</span><span data-i18n="footer">Dados derivados da Riot API quando disponíveis. League of Legends é marca da Riot Games.</span></footer>
+  <script src="./backend-config.js"></script>
+  <script src="./i18n.js"></script>
+  <script src="./app.js"></script>
+  <script src="./live-update.js"></script>
+</body>
+</html>
