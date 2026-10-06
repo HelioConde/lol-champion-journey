@@ -17,3 +17,7 @@ button:disabled{opacity:.55;cursor:wait}.is-loading #profile-view,.is-loading #l
 .formula-grid{grid-template-columns:repeat(4,1fr)}
 @media(max-width:900px){.formula-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.formula-grid{grid-template-columns:1fr}}
+
+.compact-ad{height:72px;margin-top:36px;margin-bottom:36px}
+.footer-copy{max-width:820px;display:grid;gap:8px;text-align:right}.legal summary{cursor:pointer;color:#8f98aa}.legal p{max-width:820px;margin:8px 0 0;line-height:1.55;color:#687184}
+@media(max-width:560px){.footer-copy{text-align:left}.legal p{font-size:10px}}
