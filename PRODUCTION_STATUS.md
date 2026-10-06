@@ -32,15 +32,24 @@
 - [x] live update;
 - [x] GitHub Pages.
 
-## Preparado no GitHub, aguardando infraestrutura externa
+## Backend compartilhado implementado no GitHub
 
-- [ ] aplicar `supabase/schema/champion-journey-snapshots.sql` no Supabase gamer;
-- [ ] ligar o helper server-authoritative ao `public-lol-profile`;
-- [ ] deploy da Edge Function `champion-journey-history`;
-- [ ] definir `snapshotHistory` no backend-config após o deploy;
+- [x] fonte do schema de snapshots presente no Champion Journey;
+- [x] fonte do schema também presente em `HelioConde/zerotwo.gg`;
+- [x] `public-lol-profile` preparado para persistir snapshots server-side por feature flag;
+- [x] partidas passam a expor `championId` e maestria pode expor `championName` quando resolvível;
+- [x] Edge Function `champion-journey-history` adicionada ao repositório ZeroTwo;
+- [x] CI do ZeroTwo valida a Edge Function com Deno;
+- [x] frontend aponta automaticamente para `/champion-journey-history` e falha silenciosamente enquanto ainda não estiver publicada.
+
+## Aguardando infraestrutura externa
+
+- [ ] aplicar o schema no Supabase gamer ZeroTwo;
+- [ ] publicar a Edge Function `champion-journey-history` no projeto gamer;
+- [ ] ativar `CHAMPION_JOURNEY_SNAPSHOTS_ENABLED=true` somente depois do schema existir;
 - [ ] definir endpoint remoto de observabilidade, se desejado;
 - [ ] configurar publisher/slots reais e consentimento para anúncios;
-- [ ] adicionar PNGs 192/512 caso a plataforma de instalação exija.
+- [ ] adicionar PNGs 192/512 caso uma plataforma específica exija (SVGs já estão ativos).
 
 ## Validação real ainda desejada
 
@@ -49,7 +58,8 @@
 - [ ] testar Riot IDs reais em KR/JP;
 - [ ] testar conta com poucas partidas;
 - [ ] testar conta focada em ARAM/Arena;
-- [ ] revisar Lighthouse em produção após estabilizar o bundle.
+- [x] Lighthouse automatizado no CI com budgets de performance, acessibilidade, boas práticas, SEO, LCP e CLS;
+- [ ] revisar os resultados de Lighthouse periodicamente em produção.
 
 ## Regra de conclusão
 
