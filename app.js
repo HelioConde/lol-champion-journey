@@ -520,7 +520,18 @@
     $("#metric-kda").textContent=Number(c.avgKda||0).toFixed(1);
     $("#metric-mastery").textContent=c.masteryPoints?fmt(c.masteryPoints):"—";
     $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+(i===0?" signature-chip":"")+'" data-i="'+i+'" aria-pressed="'+(i===state.selected?'true':'false')+'"><img class="chip-bg" src="'+esc(splash(x.name))+'" alt="" loading="lazy" decoding="async">'+(i===0?'<em class="signature-tag">'+esc(t("signatureShort"))+'</em>':'')+'<span><b>'+esc(x.name)+'</b><small>'+esc(gameText(x.games,true))+'</small></span><strong><span>'+connectionScore(x)+'</span><small>'+esc(t("metricConnection"))+'</small></strong></button>').join("");
-    setTimeout(()=>{const list=$("#champion-list"),cue=$("#roster-swipe-cue");if(list&&cue)cue.hidden=!(list.scrollWidth>list.clientWidth+8&&list.scrollLeft+list.clientWidth<list.scrollWidth-8)},0);
+    setTimeout(()=>{
+      const list=$("#champion-list"),cue=$("#roster-swipe-cue");
+      if(list&&cue){
+        const update=()=>cue.hidden=!(list.scrollWidth>list.clientWidth+8&&list.scrollLeft+list.clientWidth<list.scrollWidth-8);
+        list.onscroll=update; update();
+      }
+      const identities=$("#identity-cards"),identityCue=$("#identity-swipe-cue");
+      if(identities&&identityCue){
+        const updateIdentity=()=>identityCue.hidden=!(identities.scrollWidth>identities.clientWidth+8&&identities.scrollLeft+identities.clientWidth<identities.scrollWidth-8);
+        identities.onscroll=updateIdentity; updateIdentity();
+      }
+    },0);
     qsa(".champion-chip").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.i);const u=new URL(location.href);u.searchParams.set("champion",state.champions[state.selected]?.name||"");history.replaceState(null,"",u.pathname+"?"+u.searchParams.toString());window.CJ_OBS?.event("champion_selected",{champion:state.champions[state.selected]?.name||null});renderProfile();document.querySelector(".journey-grid").scrollIntoView({behavior:"smooth",block:"start"})});
     $("#chapter-title").textContent=state.selected===0?t("chapterMain"):t("chapterOther");
     $("#chapter-text").textContent=t("chapterText",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)});
