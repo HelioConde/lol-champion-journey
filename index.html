@@ -93,7 +93,7 @@
           <div id="champion-list" class="champion-list"></div>
         </section>
 
-        <div class="ad-slot" aria-label="Espaço reservado para anúncio"><span>AD</span><small data-i18n="adReserved">espaço reservado</small></div>
+        <div class="ad-slot" data-ad-slot="journey-profile-mid" aria-label="Espaço reservado para anúncio"><span>AD</span><small data-i18n="adReserved">espaço reservado</small></div>
 
         <section class="journey-grid">
           <article class="panel">
@@ -175,6 +175,8 @@
           </div>
         </section>
 
+        <div class="ad-slot compact-ad" data-ad-slot="journey-evolution-mid" aria-label="Espaço reservado para anúncio"><span>AD</span><small data-i18n="adReserved">espaço reservado</small></div>
+
         <section class="section timeline-section">
           <span class="eyebrow" data-i18n="journey">JORNADA VISUAL</span>
           <h2 data-i18n="recentEvolution">Sua evolução dentro da janela disponível</h2>
@@ -191,11 +193,19 @@
             <button id="copy-link" class="secondary compact" type="button" data-i18n="copyLink">Copiar link</button>
           </div>
         </section>
+
+        <div class="ad-slot compact-ad" data-ad-slot="journey-share-end" aria-label="Espaço reservado para anúncio"><span>AD</span><small data-i18n="adReserved">espaço reservado</small></div>
       </div>
     </section>
   </main>
 
-  <footer><span>LoL Champion Journey</span><span data-i18n="footer">LoL Champion Journey não é endossado pela Riot Games. League of Legends e propriedades associadas pertencem à Riot Games, Inc.</span></footer>
+  <footer>
+    <span>LoL Champion Journey</span>
+    <div class="footer-copy">
+      <span data-i18n="footer">LoL Champion Journey não é endossado pela Riot Games. League of Legends e propriedades associadas pertencem à Riot Games, Inc.</span>
+      <details class="legal"><summary data-i18n="legalMore">Aviso legal Riot</summary><p data-i18n="legalFull">LoL Champion Journey não é endossado pela Riot Games e não reflete as opiniões ou visões da Riot Games ou de qualquer pessoa oficialmente envolvida na produção ou gerenciamento das propriedades da Riot Games. Riot Games e todas as propriedades associadas são marcas comerciais ou marcas registradas da Riot Games, Inc.</p></details>
+    </div>
+  </footer>
   <script src="./backend-config.js"></script>
   <script src="./i18n.js"></script>
   <script src="./observability.js"></script>
