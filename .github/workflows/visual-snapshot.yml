@@ -79,6 +79,18 @@ jobs:
         run: |
           node scripts/capture-full-page.js "$PROFILE_URL" visual-output/mobile-profile.png
 
+      - name: Capture mobile comparison viewport
+        env:
+          SCREENSHOT_WIDTH: 390
+          SCREENSHOT_HEIGHT: 844
+          WAIT_SELECTOR: "#profile-view"
+          SCROLL_SELECTOR: "#comparison"
+          SCREENSHOT_FULL_PAGE: "false"
+          SCREENSHOT_DELAY: 900
+          PROFILE_URL: "https://helioconde.github.io/lol-champion-journey/?riotId=AlchemyFlames%23BR1&server=br1&lang=pt-BR"
+        run: |
+          node scripts/capture-full-page.js "$PROFILE_URL" visual-output/mobile-comparison-viewport.png
+
       - name: Upload visual artifact
         uses: actions/upload-artifact@v4
         with:
@@ -121,6 +133,8 @@ jobs:
           cp /tmp/visual-output/desktop-profile.json latest/desktop-profile.json
           cp /tmp/visual-output/mobile-profile.png latest/mobile-profile.png
           cp /tmp/visual-output/mobile-profile.json latest/mobile-profile.json
+          cp /tmp/visual-output/mobile-comparison-viewport.png latest/mobile-comparison-viewport.png
+          cp /tmp/visual-output/mobile-comparison-viewport.json latest/mobile-comparison-viewport.json
 
           STAMP="$(date -u +'%Y-%m-%dT%H-%M-%SZ')"
           mkdir -p "history/$STAMP"

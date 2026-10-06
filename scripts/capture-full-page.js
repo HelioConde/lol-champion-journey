@@ -8,6 +8,8 @@ const path = require("path");
   const width = Number(process.env.SCREENSHOT_WIDTH || 1440);
   const height = Number(process.env.SCREENSHOT_HEIGHT || 1100);
   const waitSelector = process.env.WAIT_SELECTOR || "";
+  const scrollSelector = process.env.SCROLL_SELECTOR || "";
+  const fullPage = String(process.env.SCREENSHOT_FULL_PAGE || "true").toLowerCase() !== "false";
   const extraDelay = Number(process.env.SCREENSHOT_DELAY || 1500);
 
   fs.mkdirSync(path.dirname(out), { recursive: true });
@@ -35,11 +37,17 @@ const path = require("path");
   if(waitSelector){
     await page.waitForSelector(waitSelector,{state:"visible",timeout:30000});
   }
+  if(scrollSelector){
+    await page.waitForSelector(scrollSelector,{state:"visible",timeout:30000});
+    await page.locator(scrollSelector).scrollIntoViewIfNeeded();
+    await page.evaluate(selector=>document.querySelector(selector)?.scrollIntoView({block:"start"}),scrollSelector);
+    await page.waitForTimeout(450);
+  }
   await page.waitForTimeout(extraDelay);
 
   await page.screenshot({
     path: out,
-    fullPage: true,
+    fullPage,
     animations: "disabled"
   });
 
@@ -48,6 +56,10 @@ const path = require("path");
     url: location.href,
     width: document.documentElement.scrollWidth,
     height: document.documentElement.scrollHeight,
+    viewportHeight: innerHeight,
+    scrollY,
+    scrollSelector: scrollSelector || null,
+    fullPage,
     capturedAt: new Date().toISOString(),
     dataMode: document.querySelector("#data-badge")?.textContent?.trim() || null,
     riotId: document.querySelector("#profile-riot-id")?.textContent?.trim() || null
