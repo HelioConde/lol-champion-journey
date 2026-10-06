@@ -19,6 +19,8 @@ jobs:
           node --check app.js
           node --check i18n.js
           node --check backend-config.js
+          node --check observability.js
+          node --check service-worker.js
 
       - name: Required Champion Journey markers
         run: |
@@ -31,6 +33,11 @@ jobs:
           test -f ADS_SETUP.md
           test -f RIOT_API.md
           test -f SNAPSHOT_CONTRACT.md
+          test -f observability.js
+          test -f service-worker.js
+          test -f icon.svg
+          test -f icon-maskable.svg
+          test -f supabase/schema/champion-journey-snapshots.sql
           test -f live-update.js
           test -f version.json
           test -f tests/e2e.spec.js
@@ -41,6 +48,10 @@ jobs:
           grep -qi 'id="champion-hero"' index.html
           grep -qi 'id="champion-list"' index.html
           grep -qi 'id="snapshot-comparison"' index.html
+          grep -qi 'id="champion-comparison"' index.html
+          grep -qi 'id="share-native"' index.html
+          grep -qi 'rel="canonical"' index.html
+          grep -qi 'not endorsed\|não é endossado' index.html
           grep -qi 'id="download-card"' index.html
           grep -qi 'id="copy-link"' index.html
           grep -qi 'id="refresh-data"' index.html
@@ -52,6 +63,9 @@ jobs:
           grep -qi 'loadDDragonCatalog' app.js
           grep -qi 'championId' app.js
           grep -qi 'saveSnapshot' app.js
+          grep -qi 'championConsistency' app.js
+          grep -qi 'navigator.share' app.js
+          grep -qi 'serviceWorker' app.js
           grep -qi 'renderSnapshotComparison' app.js
           grep -qi 'URLSearchParams' app.js
           grep -qi 'canvas.toDataURL' app.js
