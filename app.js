@@ -511,6 +511,12 @@
     const components=scoreComponents(c);
     $("#champion-hero").style.backgroundImage='url("'+splash(c.name)+'")';
     $("#profile-riot-id").textContent=(p.player?.gameName||"Player")+"#"+(p.player?.tagLine||"—");
+    const profileIconId=Number(p.player?.profileIconId||0);
+    const profileIcon=$("#profile-icon");
+    const ddragonVersion=ddragonCatalog?.version;
+    profileIcon.hidden=!(profileIconId&&ddragonVersion);
+    if(!profileIcon.hidden)profileIcon.src="https://ddragon.leagueoflegends.com/cdn/"+ddragonVersion+"/img/profileicon/"+profileIconId+".png";
+    $("#profile-level").textContent=p.player?.level?t("levelLabel",{level:fmt(p.player.level)}):"";
     $("#data-badge").textContent=state.demo?t("demo"):state.partial?t("partialLive"):t("live");
     $("#data-badge").classList.toggle("demo",state.demo);
     $("#data-badge").classList.toggle("partial",state.partial&&!state.demo);
