@@ -289,3 +289,7 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
 @media(max-width:560px){
   .hero-context{margin-top:7px;padding:5px 8px;font-size:8px}
 }
+
+@media(max-width:560px){
+  .identity-cards>div{flex-basis:90%}
+}
