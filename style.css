@@ -200,3 +200,7 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
 @media(max-width:560px){
   .comparison-summary{font-size:11px;margin-top:10px}
 }
+
+.champion-chip>strong{display:grid;justify-items:end;line-height:1}
+.champion-chip>strong>span{font-size:27px}
+.champion-chip>strong>small{margin-top:5px;font-size:7px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#b5bfd0}
