@@ -128,3 +128,11 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .timeline-item{min-height:82px}
   .share-card{margin-top:42px}
 }
+
+.share-card{position:relative;overflow:hidden;isolation:isolate;background:#101521}
+.share-card::before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(7,10,18,.97) 0%,rgba(7,10,18,.88) 52%,rgba(7,10,18,.52) 100%),var(--share-bg) center 28%/cover no-repeat;transform:scale(1.02)}
+.share-card::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 88% 35%,rgba(217,170,85,.12),transparent 34%)}
+.share-card h2,.share-card p,.share-actions{position:relative;z-index:1}
+@media(max-width:560px){
+  .share-card::before{background:linear-gradient(180deg,rgba(7,10,18,.88),rgba(7,10,18,.97) 62%),var(--share-bg) center 22%/cover no-repeat}
+}
