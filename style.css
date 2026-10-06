@@ -333,3 +333,13 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .comparison-table .compare-row span{font-size:9px;line-height:1.25}
   .comparison-table .compare-row strong{font-size:15px}
 }
+
+.profile-identity{display:flex;align-items:center;gap:11px;margin-top:10px}
+.profile-icon{width:42px;height:42px;border-radius:12px;border:1px solid rgba(217,170,85,.45);box-shadow:0 8px 24px rgba(0,0,0,.24)}
+.profile-identity .riot-id{margin:0}
+.profile-level{display:block;margin-top:3px;color:#98a4b8;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+@media(max-width:560px){
+  .profile-identity{gap:8px;margin-top:8px}
+  .profile-icon{width:34px;height:34px;border-radius:10px}
+  .profile-level{font-size:8px}
+}
