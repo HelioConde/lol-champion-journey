@@ -7,6 +7,8 @@ const path = require("path");
   const out = process.argv[3] || "screenshots/full-page.png";
   const width = Number(process.env.SCREENSHOT_WIDTH || 1440);
   const height = Number(process.env.SCREENSHOT_HEIGHT || 1100);
+  const waitSelector = process.env.WAIT_SELECTOR || "";
+  const extraDelay = Number(process.env.SCREENSHOT_DELAY || 1500);
 
   fs.mkdirSync(path.dirname(out), { recursive: true });
 
@@ -30,7 +32,10 @@ const path = require("path");
     if (document.fonts?.ready) await document.fonts.ready;
   });
 
-  await page.waitForTimeout(1500);
+  if(waitSelector){
+    await page.waitForSelector(waitSelector,{state:"visible",timeout:30000});
+  }
+  await page.waitForTimeout(extraDelay);
 
   await page.screenshot({
     path: out,
