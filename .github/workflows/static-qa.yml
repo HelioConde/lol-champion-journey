@@ -3,8 +3,23 @@ name: Static QA
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - "version.json"
+    paths:
+      - "index.html"
+      - "style.css"
+      - "app.js"
+      - "i18n.js"
+      - "backend-config.js"
+      - "observability.js"
+      - "service-worker.js"
+      - "manifest.webmanifest"
+      - "privacy.html"
+      - "live-update.js"
+      - "tests/**"
+      - "playwright.config.js"
+      - "package.json"
+      - "package-lock.json"
+      - "supabase/**"
+      - ".github/workflows/static-qa.yml"
   pull_request:
 
 jobs:
