@@ -1,7 +1,8 @@
 const { test, expect } = require("@playwright/test");
 
 const riotPayload = {
-  player:{gameName:"RealPlayer",tagLine:"BR1",level:321,platform:"BR1"},
+  player:{gameName:"RealPlayer",tagLine:"BR1",level:321,profileIconId:1234,platform:"BR1"},
+  ranked:[{queue:"SOLO/DUO",tier:"GOLD",rank:"II",lp:47,wins:32,losses:28,winRate:53}],
   summary:{matches:12,wins:7,losses:5,winRate:58,primaryPosition:"MID"},
   mastery:[
     {championId:99,level:7,points:999999},
@@ -472,4 +473,14 @@ test("hero identifica recorte de Arena", async ({page}) => {
   await expect(page.locator("#champion-facts")).toContainText("Taxa de Top 4");
   await expect(page.locator("#champion-facts")).not.toContainText("CS/min");
   await expect(page.locator("#champion-facts")).not.toContainText("L3");
+});
+
+test("mostra identidade Riot com nível e elo", async ({page}) => {
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator("#profile-level")).toHaveText("Nível 321");
+  await expect(page.locator("#profile-rank")).toContainText("Ouro II");
+  await expect(page.locator("#profile-rank")).toContainText("47 LP");
+  await expect(page.locator("#profile-icon")).toBeVisible();
 });
