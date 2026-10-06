@@ -98,7 +98,7 @@
       window.CJ_OBS?.event("riot_lookup_success",{server,matches:Number(data?.summary?.matches||0),champions:Number(data?.championSummaries?.length||0)});
     }catch(e){
       state.profile={...demo,player:{...demo.player,gameName,tagLine,platform:server.toUpperCase()}}; state.demo=true;
-      $("#search-status").textContent=e?.status===429?t("rateLimit"):e?.status===404?t("notFound"):e?.status>=500||e?.status===0?t("backendError"):t("fallback");
+      $("#search-status").textContent=e?.status===429?t("rateLimit"):e?.status===404||e?.data?.riotStatus===404?t("notFound"):e?.status>=500||e?.status===0?t("backendError"):t("fallback");
       window.CJ_OBS?.event("riot_lookup_fallback",{server,status:Number(e?.status||0),reason:String(e?.message||"unknown").slice(0,100)});
     }finally{setLoading(false,refresh)}
     state.selected=0;
