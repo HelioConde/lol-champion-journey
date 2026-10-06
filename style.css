@@ -299,3 +299,10 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .roster-swipe-hint{display:block;margin:5px 30px 0 2px;color:#7f8ba0;font-size:9px;letter-spacing:.04em}
   .roster-swipe-hint[hidden]{display:none!important}
 }
+
+.timeline-item{position:relative;overflow:hidden;isolation:isolate}
+.timeline-item::before{content:"";position:absolute;inset:0;z-index:-2;background:var(--timeline-bg) center 28%/cover no-repeat;opacity:.16;transform:scale(1.03)}
+.timeline-item::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(10,15,25,.93),rgba(10,15,25,.76))}
+@media(max-width:900px){
+  .timeline-item::before{opacity:.10}
+}
