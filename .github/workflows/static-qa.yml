@@ -68,6 +68,8 @@ jobs:
           grep -Fq 'qsa(".champion-chip").forEach' app.js
           grep -Fq 'qsa("[data-language]").forEach' app.js
           ! grep -Fq '$("[data-language]").forEach' app.js
+          grep -qi 'gameText' app.js
+          grep -qi 'recentGameSingular' i18n.js
           grep -qi 'championConsistency' app.js
           grep -qi 'navigator.share' app.js
           grep -qi 'serviceWorker' app.js
