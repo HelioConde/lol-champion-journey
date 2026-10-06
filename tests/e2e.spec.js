@@ -113,7 +113,7 @@ test("salva snapshot real e mostra comparação na segunda consulta", async ({pa
   await page.locator("#game-name").fill("RealPlayer");
   await page.locator("#tag-line").fill("BR1");
   await page.getByRole("button",{name:/Ver minha jornada/i}).click();
-  await expect(page.locator("#snapshot-count")).toContainText("1 snapshot");
+  await expect(page.locator("#snapshot-count")).toContainText("1 registro");
   await expect(page.locator("#snapshot-empty")).toBeVisible();
   await expect(page.locator("#snapshot-refresh")).toBeVisible();
 
@@ -132,7 +132,7 @@ test("salva snapshot real e mostra comparação na segunda consulta", async ({pa
   await page.route("**/public-lol-profile", route => route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(secondPayload)}));
   await page.getByRole("button",{name:"Atualizar dados"}).click();
 
-  await expect(page.locator("#snapshot-count")).toContainText("2 snapshots");
+  await expect(page.locator("#snapshot-count")).toContainText("2 registros");
   await expect(page.locator("#snapshot-comparison")).toBeVisible();
   await expect(page.locator("#delta-signature")).toHaveText("Ahri");
   await expect(page.locator("#delta-signature-note")).toContainText("Lux");
@@ -144,7 +144,7 @@ test("não duplica snapshot quando os dados não mudam", async ({page}) => {
   await page.locator("#tag-line").fill("BR1");
   await page.getByRole("button",{name:/Ver minha jornada/i}).click();
   await page.getByRole("button",{name:"Atualizar dados"}).click();
-  await expect(page.locator("#snapshot-count")).toContainText("1 snapshot");
+  await expect(page.locator("#snapshot-count")).toContainText("1 registro");
 });
 
 

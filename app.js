@@ -308,7 +308,7 @@
   }
   function renderSnapshotComparison(c){
     state.snapshots=readSnapshots();
-    $("#snapshot-count").textContent=state.snapshots.length+" snapshot"+(state.snapshots.length===1?"":"s");
+    $("#snapshot-count").textContent=t(state.snapshots.length===1?"snapshotCountOne":"snapshotCountMany",{n:state.snapshots.length});
     const partial=$("#snapshot-partial"), empty=$("#snapshot-empty"), grid=$("#snapshot-comparison");
     if(state.partial){
       partial.hidden=false; empty.hidden=true; grid.hidden=true;
