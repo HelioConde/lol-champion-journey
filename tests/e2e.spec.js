@@ -136,6 +136,9 @@ test("salva snapshot real e mostra comparação na segunda consulta", async ({pa
   await expect(page.locator("#snapshot-comparison")).toBeVisible();
   await expect(page.locator("#delta-signature")).toHaveText("Ahri");
   await expect(page.locator("#delta-signature-note")).toContainText("Lux");
+  await expect(page.locator("#champion-name")).toHaveText("Lux");
+  await expect(page.locator("#delta-games")).toHaveText("0");
+  await page.locator(".champion-chip").filter({hasText:"Ahri"}).click();
   await expect(page.locator("#delta-games")).toHaveText("+3");
 });
 
@@ -273,7 +276,7 @@ test("navegação do perfil destaca a primeira seção", async ({page}) => {
   await page.locator("#game-name").fill("RealPlayer");
   await page.locator("#tag-line").fill("BR1");
   await page.getByRole("button",{name:/Ver minha jornada/i}).click();
-  await expect(page.locator('.profile-nav a[href="#roster"]')).toHaveClass(/is-active/);
+  await expect(page.locator('.profile-nav a[href="#champion-hero"]')).toHaveClass(/is-active/);
 });
 
 test("amostra parcial não vira snapshot histórico", async ({page}) => {
@@ -299,7 +302,7 @@ test("amostra parcial não vira snapshot histórico", async ({page}) => {
   await expect(page.locator("#data-badge")).toContainText("AMOSTRA PARCIAL");
   await expect(page.locator("#sample-note")).toContainText("3 de 30");
   await expect(page.locator("#snapshot-partial")).toBeVisible();
-  await expect(page.locator("#snapshot-count")).toContainText("0 snapshot");
+  await expect(page.locator("#snapshot-count")).toContainText("0 registros");
 });
 
 test("amostra parcial mostra confiança e ação de completar", async ({page}) => {
