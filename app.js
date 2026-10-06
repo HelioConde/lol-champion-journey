@@ -444,6 +444,7 @@
     $("#sample-note").textContent=state.demo
       ? t(state.demoReason==="rateLimit"?"sourceDemoRateLimit":"sourceDemoBackend")
       : t("sourceLive",{n:total});
+    $("#retry-demo").hidden=!state.demo;
     $("#champion-name").textContent=c.name;
     $("#champion-story").textContent=t("chapterText",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
     $("#metric-games").textContent=fmt(c.games);
@@ -533,10 +534,29 @@
   $("#copy-link").onclick=copyLink;
   $("#share-native").onclick=shareNative;
 
+  function refreshCurrentProfile(){
+    const [g,tag]=($("#profile-riot-id").textContent||"Player#BR1").split("#");
+    const server=new URLSearchParams(location.search).get("server")||"br1";
+    if(g&&tag)loadProfile(g,tag,server,true);
+  }
+  function initProfileNav(){
+    const links=qsa(".profile-nav a[href^='#']");
+    const sections=links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
+    if(!links.length||!sections.length||!("IntersectionObserver" in window))return;
+    const setActive=id=>links.forEach(a=>a.classList.toggle("is-active",a.getAttribute("href")==="#"+id));
+    const observer=new IntersectionObserver(entries=>{
+      const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
+      if(visible?.target?.id)setActive(visible.target.id);
+    },{rootMargin:"-15% 0px -65% 0px",threshold:[0,.15,.35,.6]});
+    sections.forEach(s=>observer.observe(s));
+    setActive(sections[0].id);
+  }
   $("#search-form").addEventListener("submit",e=>{e.preventDefault();const g=$("#game-name").value.trim(),tag=$("#tag-line").value.trim().replace(/^#/,""),server=$("#region").value;if(g&&tag)loadProfile(g,tag,server)});
   $("#new-profile").onclick=()=>{state.profile=null;$("#profile-view").hidden=true;$("#landing-view").hidden=false;history.replaceState(null,"","./");document.title="LoL Champion Journey — sua história com cada campeão";renderRecent();};
-  $("#refresh-data").onclick=()=>{const [g,tag]=($("#profile-riot-id").textContent||"Player#BR1").split("#");const server=new URLSearchParams(location.search).get("server")||"br1";loadProfile(g,tag,server,true)};
+  $("#refresh-data").onclick=refreshCurrentProfile;
+  $("#retry-demo").onclick=refreshCurrentProfile;
   $("#clear-recent").onclick=()=>{localStorage.removeItem("cj:recent");renderRecent()};
+  initProfileNav();
   qsa("[data-language]").forEach(b=>b.onclick=()=>{
     setLang(b.dataset.language);
     const u=new URL(location.href);u.searchParams.set("lang",state.lang);history.replaceState(null,"",u.pathname+"?"+u.searchParams.toString());
