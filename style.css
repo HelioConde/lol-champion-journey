@@ -106,3 +106,9 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
 @media(max-width:560px){
   .source-row.demo-source .source-retry{margin-left:0;width:100%;min-height:36px}
 }
+
+@media(max-width:560px){
+  .champion-list{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:2px 2px 8px;margin-left:-2px;margin-right:-2px}
+  .champion-list::-webkit-scrollbar{display:none}
+  .champion-chip{flex:0 0 min(78vw,260px);scroll-snap-align:start;min-height:108px}
+}
