@@ -526,9 +526,13 @@
         const update=()=>cue.hidden=!(list.scrollWidth>list.clientWidth+8&&list.scrollLeft+list.clientWidth<list.scrollWidth-8);
         list.onscroll=update; update();
       }
-      const identities=$("#identity-cards"),identityCue=$("#identity-swipe-cue");
+      const identities=$("#identity-cards"),identityCue=$("#identity-swipe-cue"),identityHint=$("#identity-swipe-hint");
       if(identities&&identityCue){
-        const updateIdentity=()=>identityCue.hidden=!(identities.scrollWidth>identities.clientWidth+8&&identities.scrollLeft+identities.clientWidth<identities.scrollWidth-8);
+        const updateIdentity=()=>{
+          const hasMore=identities.scrollWidth>identities.clientWidth+8&&identities.scrollLeft+identities.clientWidth<identities.scrollWidth-8;
+          identityCue.hidden=!hasMore;
+          if(identityHint)identityHint.hidden=!hasMore;
+        };
         identities.onscroll=updateIdentity; updateIdentity();
       }
     },0);
