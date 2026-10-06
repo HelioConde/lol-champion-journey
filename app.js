@@ -405,7 +405,13 @@
     }
     const contexts=Array.isArray(c.contexts)?c.contexts:[...new Set(matches.map(m=>m.context).filter(Boolean))];
     const placements=matches.map(m=>Number(m.placement)).filter(x=>Number.isFinite(x)&&x>0);
-    const avgPlacement=placements.length?placements.reduce((sum,value)=>sum+value,0)/placements.length:null;
+    const derivedAvgPlacement=placements.length?placements.reduce((sum,value)=>sum+value,0)/placements.length:null;
+    const avgPlacement=Number.isFinite(Number(c.avgPlacement))?Number(c.avgPlacement):derivedAvgPlacement;
+    const top4Rate=Number.isFinite(Number(c.top4Rate))
+      ? Number(c.top4Rate)
+      : placements.length
+        ? Math.round(placements.filter(value=>value<=4).length/placements.length*100)
+        : null;
     return {
       winRate:Number.isFinite(Number(c.winRate))?Number(c.winRate):null,
       damage:Number.isFinite(Number(c.avgDamagePerMin))?Number(c.avgDamagePerMin):avg(matches,"damagePerMin"),
@@ -414,6 +420,7 @@
       arenaOnly:contexts.length>0&&contexts.every(x=>String(x).toUpperCase()==="ARENA"),
       bestPlacement:placements.length?Math.min(...placements):null,
       avgPlacement:Number.isFinite(avgPlacement)?avgPlacement:null,
+      top4Rate:Number.isFinite(top4Rate)?top4Rate:null,
       bestKda:Number.isFinite(bestKda)?bestKda:null,
       streak
     };
@@ -423,7 +430,7 @@
     const items=[
       [f.arenaOnly?t("metricBestPlacement"):t("metricWinRate"),f.arenaOnly?(f.bestPlacement==null?"—":"#"+f.bestPlacement):(f.winRate==null?"—":Math.round(f.winRate)+"%")],
       [t("metricDamage"),f.damage==null?"—":fmt(Math.round(f.damage))],
-      [t("metricCs"),f.cs==null?"—":f.cs.toFixed(1)],
+      [f.arenaOnly?t("metricTop4Rate"):t("metricCs"),f.arenaOnly?(f.top4Rate==null?"—":Math.round(f.top4Rate)+"%"):(f.cs==null?"—":f.cs.toFixed(1))],
       [t("metricBestKda"),f.bestKda==null?"—":f.bestKda.toFixed(1)],
       [f.arenaOnly?t("metricAvgPlacement"):t("metricStreak"),f.arenaOnly?(f.avgPlacement==null?"—":f.avgPlacement.toFixed(1)):f.streak],
       [t("metricContexts"),f.contexts?.length?f.contexts.join(" · "):"—"]
