@@ -2,7 +2,19 @@ name: Live version
 on:
   push:
     branches: [main]
-    paths-ignore: [version.json]
+    paths:
+      - "index.html"
+      - "style.css"
+      - "app.js"
+      - "i18n.js"
+      - "backend-config.js"
+      - "observability.js"
+      - "service-worker.js"
+      - "manifest.webmanifest"
+      - "icon.svg"
+      - "icon-maskable.svg"
+      - "privacy.html"
+      - "live-update.js"
 permissions: { contents: write }
 jobs:
   version:
