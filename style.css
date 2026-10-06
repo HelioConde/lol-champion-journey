@@ -293,3 +293,9 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
 @media(max-width:560px){
   .identity-cards>div{flex-basis:90%}
 }
+
+.roster-swipe-hint{display:none}
+@media(max-width:560px){
+  .roster-swipe-hint{display:block;margin:5px 30px 0 2px;color:#7f8ba0;font-size:9px;letter-spacing:.04em}
+  .roster-swipe-hint[hidden]{display:none!important}
+}
