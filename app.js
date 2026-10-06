@@ -476,6 +476,7 @@
     $("#formula-explanation").textContent=t("formulaText",{name:c.name,presence:components.presence,performance:components.performance,mastery:components.mastery,consistency:components.consistency,score});
     renderSnapshotComparison(c);
     renderTimeline(c);
+    $("#share-card").style.setProperty("--share-bg",'url("'+splash(c.name)+'")');
     $("#share-title").textContent=c.name+" · "+(p.player?.gameName||"Player");
     $("#share-summary").textContent=t("scoreSummary",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
     $("#share-score").textContent=score;
