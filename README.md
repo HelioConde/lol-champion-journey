@@ -1,63 +1,120 @@
 # LoL Champion Journey
 
-Experiência visual que transforma o histórico recente de League of Legends em uma jornada pessoal por campeão.
+Experiência visual que transforma a amostra recente de League of Legends em uma jornada pessoal por campeão, com comparação, evolução entre consultas e compartilhamento.
 
-## Objetivo do MVP
+## Produto
 
-Responder rapidamente:
-- qual campeão define o momento atual do jogador;
-- quais campeões formam sua rotação recente;
-- como frequência, KDA e maestria se combinam;
-- o que é dado real e o que é apenas demonstração;
-- como essa relação muda quando novas partidas entram na janela disponível.
+O Champion Journey responde:
 
-O produto evita a aparência de tracker genérico. A hierarquia é cinematográfica, centrada em splash arts, narrativa curta, progressão e comparação visual.
+- qual campeão define o momento atual;
+- como o pool recente está distribuído;
+- como presença, desempenho, maestria e consistência formam o Connection Index;
+- quais campeões estão subindo ou saindo da amostra;
+- como a relação com um campeão muda entre snapshots;
+- quais dados são Riot reais e quais são demonstração.
+
+A interface é LoL-first e cinematográfica, evitando aparência de tracker genérico.
 
 ## Estado atual
 
-- repositório standalone ativo em `HelioConde/lol-champion-journey`;
-- frontend standalone;
+- repositório standalone ativo;
+- GitHub Pages ativo;
 - PT-BR principal + EN;
-- busca por Riot ID e servidor;
-- integração com `public-lol-profile` do backend gamer ZeroTwo.gg;
-- fallback demonstrativo explicitamente rotulado;
-- deep link por Riot ID;
-- buscas recentes persistidas localmente;
-- campeão assinatura;
-- seletor visual de campeões;
-- índice de conexão derivado de frequência + KDA + maestria;
-- timeline limitada à janela realmente disponível;
-- snapshots históricos locais por Riot ID, com retenção dos 24 estados mais recentes;
-- comparação real entre consultas: campeão assinatura, partidas, KDA e maestria;
-- slot estrutural para anúncios sem bloquear o fluxo;
-- atualização automática via `version.json` / `live-update.js`;
-- layout desktop e mobile.
+- busca por Riot ID + servidor;
+- `public-lol-profile` do backend gamer ZeroTwo;
+- consulta de até 100 partidas;
+- Data Dragon para nomes/IDs/assets;
+- maestria real casada por `championId`;
+- fallback demo claramente identificado;
+- erros específicos para rate limit e Riot ID inexistente;
+- deep links e idioma via URL;
+- buscas recentes locais;
+- splash arts com lazy loading;
+- campeão assinatura e pool recente;
+- Connection Index explicável: presença + desempenho (KDA/win rate) + maestria + consistência;
+- comparação entre campeões;
+- métricas de win rate, dano/min, CS/min, melhor KDA, streak e contextos quando disponíveis;
+- timeline de partidas reais do campeão;
+- snapshots locais (24);
+- comparação entre snapshots;
+- sinais de main recente mudando, campeão em ascensão e saída da amostra;
+- gráfico histórico alternável entre conexão, KDA, maestria e partidas;
+- card PNG 1200×630 com splash, Riot ID, período e score;
+- compartilhamento nativo + copiar link;
+- PWA com service worker, manifest e ícones;
+- atualização automática por `version.json`;
+- SEO: canonical, hreflang, Open Graph, Twitter metadata, sitemap e robots;
+- política de privacidade bilíngue;
+- três slots estruturais de anúncio com espaço reservado;
+- observabilidade local e endpoint opcional;
+- QA estática;
+- Playwright em Chromium, Firefox, WebKit, Pixel e iPhone;
+- smoke test real com `AlchemyFlames#BR1`.
 
-## Regra de dados
+## Dados e interpretação
 
-O frontend não afirma possuir o histórico completo da conta. A Riot API usada no backend disponibiliza uma janela de dados; textos e indicadores são descritos como **amostra recente** quando esse é o limite da fonte.
+A Riot API entrega uma janela consultável, não a história completa da conta. O produto usa termos como **amostra recente** quando esse é o limite da fonte.
+
+Evolução histórica só é apresentada como tal quando existem snapshots capturados em momentos diferentes.
+
+## Connection Index
+
+Pesos atuais:
+
+- 40% presença relativa;
+- 25% desempenho (KDA + win rate quando disponível);
+- 20% maestria relativa;
+- 15% consistência de KDA nas partidas do campeão.
+
+A fórmula é exibida na interface para evitar uma nota opaca.
 
 ## Backend
 
-Reutiliza a infraestrutura gamer compartilhada:
+Perfil Riot:
 
 `https://bieihhaobdztjyoweewa.supabase.co/functions/v1/public-lol-profile`
 
-Nenhuma chave Riot fica no frontend.
+Nenhuma chave Riot ou service role fica no frontend.
 
-## Próxima etapa
+### Snapshots server-side
 
-1. validar com Riot IDs reais;
-2. ajustar correspondência de maestria por nome/ID no contrato do backend;
-3. sincronizar os snapshots locais com o Supabase para preservar a evolução entre dispositivos;
-4. validar e enriquecer o card compartilhável PNG específico do campeão;
-5. ativar GitHub Pages com GitHub Actions e validar o deploy público.
+O repositório já contém:
+
+- `supabase/schema/champion-journey-snapshots.sql`;
+- `supabase/functions/_shared/champion-journey-snapshots.ts`;
+- `supabase/functions/champion-journey-history/index.ts`.
+
+A escrita foi projetada para ser server-authoritative. O navegador não pode gravar snapshots oficiais.
+
+A ativação deve ocorrer exclusivamente no Supabase gamer do ZeroTwo. O Supabase atualmente conectado nesta sessão expõe apenas `pizzaria-db`, portanto o deploy no banco gamer não foi feito daqui.
+
+## Publicação
+
+GitHub Pages:
+
+`https://helioconde.github.io/lol-champion-journey/`
+
+Cada push na `main` publica automaticamente.
 
 ## Monetização
 
-Preparado para anúncios, respeitando a regra global do portfólio: anúncios nunca bloqueiam busca, leitura ou análise principal.
+Preparado para anúncios sem bloquear busca, análise, atualização ou compartilhamento. Anúncios reais continuam desativados até configuração de publisher/consentimento.
+
+## Compliance
+
+O site contém aviso legal Riot completo e política de privacidade.
+
+## Próximas dependências reais
+
+1. aplicar o schema de snapshots no Supabase gamer;
+2. integrar a persistência server-side ao `public-lol-profile`;
+3. ativar `champion-journey-history` e configurar `snapshotHistory`;
+4. testar mais Riot IDs reais/regiões além de `AlchemyFlames#BR1`;
+5. adicionar ícones PNG 192/512 se uma plataforma específica exigir;
+6. conectar observabilidade remota quando houver endpoint definido;
+7. configurar anúncios reais somente após aprovação/políticas.
 
 ## Idiomas
 
 - PT-BR: principal/padrão;
-- English: secundário obrigatório.
+- English: secundário.
