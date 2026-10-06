@@ -59,6 +59,11 @@
     return key?t(key):raw;
   };
   const esc = v => String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  function tierText(tier){
+    const raw=String(tier||"").toUpperCase();
+    if(state.lang!=="pt-BR")return raw.charAt(0)+raw.slice(1).toLowerCase();
+    return ({IRON:"Ferro",BRONZE:"Bronze",SILVER:"Prata",GOLD:"Ouro",PLATINUM:"Platina",EMERALD:"Esmeralda",DIAMOND:"Diamante",MASTER:"Mestre",GRANDMASTER:"Grão-Mestre",CHALLENGER:"Desafiante"})[raw]||raw;
+  }
   const slug = name => name.replace(/[^A-Za-z0-9]/g,"");
   let ddragonCatalog=null;
   async function loadDDragonCatalog(){
@@ -517,6 +522,10 @@
     profileIcon.hidden=!(profileIconId&&ddragonVersion);
     if(!profileIcon.hidden)profileIcon.src="https://ddragon.leagueoflegends.com/cdn/"+ddragonVersion+"/img/profileicon/"+profileIconId+".png";
     $("#profile-level").textContent=p.player?.level?t("levelLabel",{level:fmt(p.player.level)}):"";
+    const solo=(p.ranked||[]).find(x=>x.queue==="SOLO/DUO")||(p.ranked||[])[0];
+    const rankEl=$("#profile-rank");
+    rankEl.hidden=!solo;
+    rankEl.textContent=solo?t("rankLabel",{queue:solo.queue||"SOLO/DUO",tier:tierText(solo.tier),rank:solo.rank||"",lp:fmt(solo.lp||0)}):"";
     $("#data-badge").textContent=state.demo?t("demo"):state.partial?t("partialLive"):t("live");
     $("#data-badge").classList.toggle("demo",state.demo);
     $("#data-badge").classList.toggle("partial",state.partial&&!state.demo);
