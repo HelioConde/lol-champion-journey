@@ -55,6 +55,7 @@ test("carrega dados Riot e identifica campeão assinatura", async ({page}) => {
   await expect(page.locator("#metric-games")).toHaveText("6");
   await expect(page.locator("#metric-kda")).toHaveText("4.1");
   await expect(page.locator("#metric-mastery")).toContainText("999");
+  await expect(page.locator("#metric-connection")).not.toHaveText("—");
   await expect(page.locator("#champion-list")).toContainText("Ahri");
   await expect(page).toHaveURL(/riotId=RealPlayer%23BR1/);
   expect(pageErrors).toEqual([]);
