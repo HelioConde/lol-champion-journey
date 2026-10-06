@@ -51,7 +51,7 @@ const path = require("path");
     animations: "disabled"
   });
 
-  const metrics = await page.evaluate(() => ({
+  const metrics = await page.evaluate(({scrollSelector,fullPage}) => ({
     title: document.title,
     url: location.href,
     width: document.documentElement.scrollWidth,
@@ -63,7 +63,7 @@ const path = require("path");
     capturedAt: new Date().toISOString(),
     dataMode: document.querySelector("#data-badge")?.textContent?.trim() || null,
     riotId: document.querySelector("#profile-riot-id")?.textContent?.trim() || null
-  }));
+  }),{scrollSelector,fullPage});
 
   fs.writeFileSync(
     out.replace(/\.png$/i, ".json"),
