@@ -132,13 +132,20 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          rm -rf /tmp/visual-state
+          mkdir -p /tmp/visual-state
+
           if git ls-remote --exit-code --heads origin visual-snapshots >/dev/null 2>&1; then
             git fetch origin visual-snapshots
             git switch visual-snapshots
-          else
-            git switch --orphan visual-snapshots
-            git rm -rf . || true
+            test -d latest && cp -r latest /tmp/visual-state/latest || true
+            test -d history && cp -r history /tmp/visual-state/history || true
           fi
+
+          git switch --orphan visual-snapshots-next
+          git rm -rf . || true
+          cp -r /tmp/visual-state/latest ./latest 2>/dev/null || true
+          cp -r /tmp/visual-state/history ./history 2>/dev/null || true
 
           mkdir -p latest history
 
@@ -167,6 +174,13 @@ jobs:
           STAMP="$(date -u +'%Y-%m-%dT%H-%M-%SZ')"
           mkdir -p "history/$STAMP"
           cp /tmp/visual-output/* "history/$STAMP/"
+
+          mapfile -t HISTORY_DIRS < <(find history -mindepth 1 -maxdepth 1 -type d | sort -r)
+          if [ "${#HISTORY_DIRS[@]}" -gt 10 ]; then
+            for dir in "${HISTORY_DIRS[@]:10}"; do
+              rm -rf "$dir"
+            done
+          fi
 
           CUR_DESKTOP_HEIGHT="$(node -e "console.log(JSON.parse(require('fs').readFileSync('latest/desktop-full.json','utf8')).height||0)")"
           CUR_MOBILE_HEIGHT="$(node -e "console.log(JSON.parse(require('fs').readFileSync('latest/mobile-full.json','utf8')).height||0)")"
@@ -199,5 +213,5 @@ jobs:
           EOF
 
           git add latest history
-          git commit -m "chore: visual snapshot $STAMP" || exit 0
-          git push origin visual-snapshots
+          git commit -m "chore: visual snapshot $STAMP"
+          git push --force origin HEAD:visual-snapshots
