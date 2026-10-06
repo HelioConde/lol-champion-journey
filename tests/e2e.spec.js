@@ -8,13 +8,15 @@ const riotPayload = {
     {championId:103,level:7,points:420000}
   ],
   championSummaries:[
-    {name:"Lux",games:6,avgKda:4.1},
-    {name:"Ahri",games:4,avgKda:3.3},
-    {name:"Syndra",games:2,avgKda:2.7}
+    {name:"Lux",games:6,avgKda:4.1,winRate:67,avgDamagePerMin:720,contexts:["RANKED","NORMAL"]},
+    {name:"Ahri",games:4,avgKda:3.3,winRate:50,avgDamagePerMin:650,contexts:["RANKED"]},
+    {name:"Syndra",games:2,avgKda:2.7,winRate:50,avgDamagePerMin:610,contexts:["NORMAL"]}
   ],
   matches:[
-    {playedAt:Date.UTC(2026,8,1)},{playedAt:Date.UTC(2026,8,7)},
-    {playedAt:Date.UTC(2026,8,12)},{playedAt:Date.UTC(2026,8,18)}
+    {playedAt:Date.UTC(2026,8,1),champion:"Lux",context:"RANKED",position:"MID",win:true,kda:4.2,damagePerMin:710,csPerMin:7.2},
+    {playedAt:Date.UTC(2026,8,7),champion:"Lux",context:"RANKED",position:"MID",win:false,kda:3.8,damagePerMin:700,csPerMin:7.0},
+    {playedAt:Date.UTC(2026,8,12),champion:"Lux",context:"NORMAL",position:"MID",win:true,kda:4.5,damagePerMin:750,csPerMin:7.4},
+    {playedAt:Date.UTC(2026,8,18),champion:"Ahri",context:"RANKED",position:"MID",win:true,kda:3.3,damagePerMin:650,csPerMin:6.9}
   ]
 };
 
@@ -110,9 +112,9 @@ test("salva snapshot real e mostra comparação na segunda consulta", async ({pa
 
   const secondPayload={...riotPayload,
     championSummaries:[
-      {name:"Ahri",games:7,avgKda:4.8},
-      {name:"Lux",games:6,avgKda:4.3},
-      {name:"Syndra",games:2,avgKda:2.7}
+      {name:"Ahri",games:7,avgKda:4.8,winRate:71,avgDamagePerMin:760,contexts:["RANKED"]},
+      {name:"Lux",games:6,avgKda:4.3,winRate:67,avgDamagePerMin:730,contexts:["RANKED","NORMAL"]},
+      {name:"Syndra",games:2,avgKda:2.7,winRate:50,avgDamagePerMin:610,contexts:["NORMAL"]}
     ],
     mastery:[
       {championId:99,level:7,points:1001200},
@@ -136,4 +138,55 @@ test("não duplica snapshot quando os dados não mudam", async ({page}) => {
   await page.getByRole("button",{name:/Ver minha jornada/i}).click();
   await page.getByRole("button",{name:"Atualizar dados"}).click();
   await expect(page.locator("#snapshot-count")).toContainText("1 snapshot");
+});
+
+
+test("mostra análise e comparação explicáveis", async ({page}) => {
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator("#champion-facts")).toContainText("67%");
+  await expect(page.locator("#formula-explanation")).toContainText("Lux");
+  await expect(page.locator("#champion-comparison")).toContainText("Ahri");
+  await expect(page.locator("#consistency-label")).not.toHaveText("0%");
+});
+
+test("timeline usa partidas reais do campeão quando disponíveis", async ({page}) => {
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator("#journey-timeline")).toContainText("RANKED");
+  await expect(page.locator("#journey-timeline")).toContainText("KDA");
+});
+
+test("SEO e PWA essenciais estão configurados", async ({page}) => {
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href","https://helioconde.github.io/lol-champion-journey/");
+  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute("href","./manifest.webmanifest");
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content",/LoL Champion Journey/);
+  const manifest=await page.request.get("/manifest.webmanifest");
+  expect(manifest.ok()).toBeTruthy();
+  const body=await manifest.json();
+  expect(body.display).toBe("standalone");
+  expect(body.icons.length).toBeGreaterThanOrEqual(2);
+});
+
+test("Riot ID inexistente recebe mensagem específica", async ({page}) => {
+  await page.unroute("**/public-lol-profile");
+  await page.route("**/public-lol-profile", route => route.fulfill({
+    status:502,
+    contentType:"application/json",
+    body:JSON.stringify({error:"player",message:"Riot ID não encontrado. Confira Nome#TAG.",riotStatus:404})
+  }));
+  await page.locator("#game-name").fill("DoesNotExist");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator("#search-status")).toContainText("Riot ID não encontrado");
+  await expect(page.locator("#data-badge")).toHaveText("DEMONSTRAÇÃO");
+});
+
+test("cards de campeão usam imagens lazy", async ({page}) => {
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator(".champion-chip img").first()).toHaveAttribute("loading","lazy");
 });
