@@ -306,3 +306,15 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
 @media(max-width:900px){
   .timeline-item::before{opacity:.10}
 }
+
+/* Mobile comparison density pass from visual snapshot review */
+@media(max-width:560px){
+  .comparison-table{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:8px;background:rgba(10,15,25,.86);border:1px solid var(--line)}
+  .comparison-table .compare-head{grid-column:1/-1;margin:-8px -8px 0;border-bottom:1px solid var(--line);border-radius:14px 14px 0 0}
+  .comparison-table .compare-row{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;padding:12px 10px;border:1px solid rgba(255,255,255,.06);border-radius:12px;background:rgba(255,255,255,.02)}
+  .comparison-table .compare-row span{grid-column:1/-1;grid-row:1;text-align:center;font-size:8px;letter-spacing:.08em}
+  .comparison-table .compare-row strong:first-child{grid-column:1;grid-row:2}
+  .comparison-table .compare-row strong:last-child{grid-column:2;grid-row:2}
+  .comparison-table .compare-row strong{font-size:14px;text-align:center}
+  .comparison-summary{margin-top:9px}
+}
