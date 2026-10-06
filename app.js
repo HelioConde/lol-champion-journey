@@ -95,9 +95,11 @@
       if(!data?.championSummaries?.length) throw Object.assign(new Error("empty"),{status:204});
       state.profile=data; state.demo=false;
       $("#search-status").textContent="";
+      window.CJ_OBS?.event("riot_lookup_success",{server,matches:Number(data?.summary?.matches||0),champions:Number(data?.championSummaries?.length||0)});
     }catch(e){
       state.profile={...demo,player:{...demo.player,gameName,tagLine,platform:server.toUpperCase()}}; state.demo=true;
       $("#search-status").textContent=e?.status===429?t("rateLimit"):e?.status===404?t("notFound"):e?.status>=500||e?.status===0?t("backendError"):t("fallback");
+      window.CJ_OBS?.event("riot_lookup_fallback",{server,status:Number(e?.status||0),reason:String(e?.message||"unknown").slice(0,100)});
     }finally{setLoading(false,refresh)}
     state.selected=0;
     await loadDDragonCatalog();
@@ -315,8 +317,8 @@
     $("#metric-games").textContent=fmt(c.games);
     $("#metric-kda").textContent=Number(c.avgKda||0).toFixed(1);
     $("#metric-mastery").textContent=c.masteryPoints?fmt(c.masteryPoints):"—";
-    $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+'" data-i="'+i+'" style="--bg:url(\''+splash(x.name)+'\')"><span><b>'+esc(x.name)+'</b><small>'+fmt(x.games)+' '+t("games")+'</small></span><strong>'+connectionScore(x)+'</strong></button>').join("");
-    $$(".champion-chip").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.i);renderProfile();document.querySelector(".journey-grid").scrollIntoView({behavior:"smooth",block:"start"})});
+    $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+'" data-i="'+i+'"><img class="chip-bg" src="'+esc(splash(x.name))+'" alt="" loading="lazy" decoding="async"><span><b>'+esc(x.name)+'</b><small>'+fmt(x.games)+' '+t("games")+'</small></span><strong>'+connectionScore(x)+'</strong></button>').join("");
+    $(".champion-chip").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.i);window.CJ_OBS?.event("champion_selected",{champion:state.champions[state.selected]?.name||null});renderProfile();document.querySelector(".journey-grid").scrollIntoView({behavior:"smooth",block:"start"})});
     $("#chapter-title").textContent=state.selected===0?t("chapterMain"):t("chapterOther");
     $("#chapter-text").textContent=t("chapterText",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
     [["presence",presence],["performance",performance],["mastery",mastery]].forEach(([id,v])=>{$("#"+id+"-label").textContent=v+"%";$("#"+id+"-bar").style.width=v+"%"});
@@ -383,6 +385,7 @@
     ctx.fillStyle="#aab4c7";ctx.font="500 17px system-ui";ctx.fillText(period,70,530);
     ctx.fillStyle="#5f697c";ctx.font="400 16px system-ui";ctx.fillText("helioconde.github.io/lol-champion-journey",70,565);
     const a=document.createElement("a"); a.download="champion-journey-"+slug(c.name).toLowerCase()+".png"; a.href=canvas.toDataURL("image/png"); a.click();
+    window.CJ_OBS?.event("share_card_downloaded",{champion:c.name,score});
   }
   async function copyLink(){
     try{await navigator.clipboard.writeText(location.href);const b=$("#copy-link"),old=b.textContent;b.textContent=t("copied");setTimeout(()=>b.textContent=old,1400)}catch{}
@@ -391,7 +394,7 @@
     const c=state.champions[state.selected]||state.champions[0];
     const data={title:document.title,text:c?t("scoreSummary",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)}):"LoL Champion Journey",url:location.href};
     try{
-      if(navigator.share)await navigator.share(data);
+      if(navigator.share){await navigator.share(data);window.CJ_OBS?.event("native_share",{champion:c?.name||null})}
       else await copyLink();
     }catch{}
   }
