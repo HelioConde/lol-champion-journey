@@ -107,6 +107,12 @@ jobs:
           fi
 
           mkdir -p latest history
+
+          PREV_DESKTOP_HEIGHT="$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('latest/desktop-full.json','utf8')).height||0)}catch(e){console.log(0)}")"
+          PREV_MOBILE_HEIGHT="$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('latest/mobile-full.json','utf8')).height||0)}catch(e){console.log(0)}")"
+          PREV_PROFILE_DESKTOP_HEIGHT="$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('latest/desktop-profile.json','utf8')).height||0)}catch(e){console.log(0)}")"
+          PREV_PROFILE_MOBILE_HEIGHT="$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('latest/mobile-profile.json','utf8')).height||0)}catch(e){console.log(0)}")"
+
           cp /tmp/visual-output/desktop-full.png latest/desktop-full.png
           cp /tmp/visual-output/desktop-full.json latest/desktop-full.json
           cp /tmp/visual-output/mobile-full.png latest/mobile-full.png
@@ -119,6 +125,24 @@ jobs:
           STAMP="$(date -u +'%Y-%m-%dT%H-%M-%SZ')"
           mkdir -p "history/$STAMP"
           cp /tmp/visual-output/* "history/$STAMP/"
+
+          CUR_DESKTOP_HEIGHT="$(node -e "console.log(JSON.parse(require('fs').readFileSync('latest/desktop-full.json','utf8')).height||0)")"
+          CUR_MOBILE_HEIGHT="$(node -e "console.log(JSON.parse(require('fs').readFileSync('latest/mobile-full.json','utf8')).height||0)")"
+          CUR_PROFILE_DESKTOP_HEIGHT="$(node -e "console.log(JSON.parse(require('fs').readFileSync('latest/desktop-profile.json','utf8')).height||0)")"
+          CUR_PROFILE_MOBILE_HEIGHT="$(node -e "console.log(JSON.parse(require('fs').readFileSync('latest/mobile-profile.json','utf8')).height||0)")"
+
+          delta() { echo $(( $1 - $2 )); }
+
+          cat > latest/change-summary.md <<EOF
+          # Visual snapshot delta
+
+          | View | Current height | Previous height | Delta |
+          | --- | ---: | ---: | ---: |
+          | Landing desktop | ${CUR_DESKTOP_HEIGHT}px | ${PREV_DESKTOP_HEIGHT}px | $(delta "$CUR_DESKTOP_HEIGHT" "$PREV_DESKTOP_HEIGHT")px |
+          | Landing mobile | ${CUR_MOBILE_HEIGHT}px | ${PREV_MOBILE_HEIGHT}px | $(delta "$CUR_MOBILE_HEIGHT" "$PREV_MOBILE_HEIGHT")px |
+          | Profile desktop | ${CUR_PROFILE_DESKTOP_HEIGHT}px | ${PREV_PROFILE_DESKTOP_HEIGHT}px | $(delta "$CUR_PROFILE_DESKTOP_HEIGHT" "$PREV_PROFILE_DESKTOP_HEIGHT")px |
+          | Profile mobile | ${CUR_PROFILE_MOBILE_HEIGHT}px | ${PREV_PROFILE_MOBILE_HEIGHT}px | $(delta "$CUR_PROFILE_MOBILE_HEIGHT" "$PREV_PROFILE_MOBILE_HEIGHT")px |
+          EOF
 
           cat > latest/source.json <<EOF
           {
