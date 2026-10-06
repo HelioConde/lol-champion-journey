@@ -189,3 +189,8 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .source-row .source-retry{grid-column:1/-1;grid-row:3}
   .source-row #data-badge,.source-row #confidence-badge{justify-self:start}
 }
+
+.compare-row strong{transition:color .18s ease,opacity .18s ease}
+.compare-row strong.is-winner{color:#f0cf89;text-shadow:0 0 18px rgba(217,170,85,.12)}
+.compare-row strong.is-loser{color:#8792a6}
+.compare-row strong.is-tie{color:#b9c4d6}
