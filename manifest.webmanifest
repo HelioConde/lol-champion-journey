@@ -1,1 +1,29 @@
-{"name":"LoL Champion Journey","short_name":"Champion Journey","start_url":"./","display":"standalone","background_color":"#080a12","theme_color":"#090b14","lang":"pt-BR"}
+{
+  "name": "LoL Champion Journey",
+  "short_name": "Champion Journey",
+  "description": "Sua jornada visual por campeão no League of Legends.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080a12",
+  "theme_color": "#090b14",
+  "lang": "pt-BR",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
