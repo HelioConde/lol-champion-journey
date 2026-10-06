@@ -557,7 +557,16 @@
     const links=qsa(".profile-nav a[href^='#']");
     const sections=links.map(a=>document.querySelector(a.getAttribute("href"))).filter(Boolean);
     if(!links.length||!sections.length||!("IntersectionObserver" in window))return;
-    const setActive=id=>links.forEach(a=>a.classList.toggle("is-active",a.getAttribute("href")==="#"+id));
+    const setActive=id=>{
+      let active=null;
+      links.forEach(a=>{
+        const isActive=a.getAttribute("href")==="#"+id;
+        a.classList.toggle("is-active",isActive);
+        if(isActive){a.setAttribute("aria-current","true");active=a}
+        else a.removeAttribute("aria-current");
+      });
+      active?.scrollIntoView({behavior:"smooth",block:"nearest",inline:"center"});
+    };
     const observer=new IntersectionObserver(entries=>{
       const visible=entries.filter(x=>x.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio)[0];
       if(visible?.target?.id)setActive(visible.target.id);
