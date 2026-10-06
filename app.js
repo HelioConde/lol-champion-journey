@@ -457,7 +457,13 @@
       : state.partial
         ? t("sourcePartial",{loaded:Number(p.cache?.matchesLoaded||total),requested:Number(p.cache?.requested||total),pending:Number(p.cache?.pending||0)})
         : t("sourceLive",{n:total});
+    const confidence=state.demo?"":String(p.summary?.confidence||"").toUpperCase();
+    const confidenceKey=confidence==="BOA"?"confidenceGood":confidence==="EM FORMAÇÃO"?"confidenceBuilding":confidence==="INICIAL"?"confidenceInitial":"";
+    $("#confidence-badge").hidden=!confidenceKey;
+    $("#confidence-badge").textContent=confidenceKey?t(confidenceKey):"";
+    $("#confidence-badge").dataset.level=confidenceKey||"";
     $("#retry-demo").hidden=!state.demo;
+    $("#complete-sample").hidden=state.demo||!state.partial;
     $("#champion-name").textContent=c.name;
     $("#champion-story").textContent=t("chapterText",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
     $("#metric-games").textContent=fmt(c.games);
@@ -578,6 +584,7 @@
   $("#new-profile").onclick=()=>{state.profile=null;$("#profile-view").hidden=true;$("#landing-view").hidden=false;history.replaceState(null,"","./");document.title="LoL Champion Journey — sua história com cada campeão";renderRecent();};
   $("#refresh-data").onclick=refreshCurrentProfile;
   $("#retry-demo").onclick=refreshCurrentProfile;
+  $("#complete-sample").onclick=refreshCurrentProfile;
   $("#clear-recent").onclick=()=>{localStorage.removeItem("cj:recent");renderRecent()};
   initProfileNav();
   qsa("[data-language]").forEach(b=>b.onclick=()=>{
