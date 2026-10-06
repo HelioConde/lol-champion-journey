@@ -1,33 +1,31 @@
-# Ads — Riot Legacy
+# Ads — LoL Champion Journey
 
 ## Regra
 
-Riot Legacy seguirá a regra do portfólio: produto gratuito com monetização principal por anúncios.
+LoL Champion Journey é gratuito e preparado para monetização por anúncios, seguindo a regra global do portfólio.
 
 ## Estado atual
 
 **Anúncios reais desativados.**
 
-O layout possui espaços reservados apenas para validar composição e evitar layout shift futuro.
+O layout reserva espaço para anúncios sem bloquear busca, leitura, comparação, atualização de dados ou compartilhamento.
 
-## Pré-requisitos antes de ativar
+## Princípios
 
-1. Riot Legacy registrado no Riot Developer Portal.
-2. Status do produto compatível com monetização pelas políticas vigentes.
-3. Publisher ID e slots reais da rede de anúncios.
-4. Política de privacidade/consentimento quando aplicável.
-5. Teste mobile/desktop sem sobrepor controles.
-6. Não posicionar anúncios dentro de propriedades Riot (jogo/cliente/loading screens).
-7. Não incentivar clique acidental.
+- anúncios nunca interrompem a análise principal;
+- reservar altura antes do carregamento para reduzir CLS;
+- separar visualmente conteúdo editorial de publicidade;
+- não usar assets da Riot como parte criativa do anúncio;
+- não incentivar clique acidental;
+- respeitar consentimento e política de privacidade quando aplicável;
+- validar mobile e desktop antes de ativar produção.
 
 ## Slots planejados
 
-- `legacy-top`: depois da primeira leitura de valor, nunca antes do formulário principal;
-- `legacy-profile-mid`: entre blocos de história no perfil;
-- `legacy-share-end`: após a área de compartilhamento.
+- `journey-profile-mid`: depois da seleção de campeões;
+- `journey-evolution-mid`: depois da evolução histórica;
+- `journey-share-end`: depois do card compartilhável.
 
-Os slots usam espaço reservado com altura mínima para prevenir CLS.
+## Ativação futura
 
-## Implementação futura
-
-Configurar por arquivo separado/variáveis públicas de Publisher e slot IDs. Não commitar chaves privadas nem inventar IDs de produção.
+Configurar Publisher ID e slot IDs por configuração pública separada. Nunca commitar credenciais privadas, service role, chaves Riot ou IDs inventados.
