@@ -518,9 +518,15 @@
     $("#profile-riot-id").textContent=(p.player?.gameName||"Player")+"#"+(p.player?.tagLine||"—");
     const profileIconId=Number(p.player?.profileIconId||0);
     const profileIcon=$("#profile-icon");
+    const profileFallback=$("#profile-avatar-fallback");
     const ddragonVersion=ddragonCatalog?.version;
-    profileIcon.hidden=!(profileIconId&&ddragonVersion);
-    if(!profileIcon.hidden)profileIcon.src="https://ddragon.leagueoflegends.com/cdn/"+ddragonVersion+"/img/profileicon/"+profileIconId+".png";
+    const playerInitial=String(p.player?.gameName||"P").trim().charAt(0).toUpperCase()||"P";
+    profileFallback.textContent=playerInitial;
+    const canUseProfileIcon=Boolean(profileIconId&&ddragonVersion);
+    profileIcon.hidden=!canUseProfileIcon;
+    profileFallback.hidden=canUseProfileIcon;
+    profileIcon.onerror=()=>{profileIcon.hidden=true;profileFallback.hidden=false};
+    if(canUseProfileIcon)profileIcon.src="https://ddragon.leagueoflegends.com/cdn/"+ddragonVersion+"/img/profileicon/"+profileIconId+".png";
     $("#profile-level").textContent=p.player?.level?t("levelLabel",{level:fmt(p.player.level)}):"";
     const solo=(p.ranked||[]).find(x=>x.queue==="SOLO/DUO")||(p.ranked||[])[0];
     const rankEl=$("#profile-rank");
