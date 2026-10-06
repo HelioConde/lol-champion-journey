@@ -3,6 +3,8 @@ name: Browser E2E
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "version.json"
   pull_request:
 
 concurrency:
