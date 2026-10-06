@@ -7,14 +7,30 @@
     player:{gameName:"JourneyPlayer",tagLine:"BR1",level:214,platform:"BR1"},
     summary:{matches:20,wins:12,losses:8,winRate:60,primaryPosition:"MID"},
     championSummaries:[
-      {name:"Ahri",games:8,avgKda:4.1},{name:"Lux",games:5,avgKda:3.4},{name:"Jinx",games:4,avgKda:2.8},{name:"Thresh",games:3,avgKda:3.1}
+      {name:"Ahri",games:8,avgKda:4.1,winRate:63,avgDamagePerMin:710,contexts:["RANKED","NORMAL"]},
+      {name:"Lux",games:5,avgKda:3.4,winRate:60,avgDamagePerMin:665,contexts:["RANKED"]},
+      {name:"Jinx",games:4,avgKda:2.8,winRate:50,avgDamagePerMin:735,contexts:["NORMAL"]},
+      {name:"Thresh",games:3,avgKda:3.1,winRate:67,avgDamagePerMin:390,contexts:["RANKED"]}
     ],
     mastery:[
       {championName:"Ahri",championId:103,level:7,points:684220},
       {championName:"Lux",championId:99,level:7,points:291445},
       {championName:"Jinx",championId:222,level:6,points:173904}
     ],
-    matches:Array.from({length:20},(_,i)=>({playedAt:Date.now()-(19-i)*86400000,position:i<13?"MID":"ADC"}))
+    matches:Array.from({length:20},(_,i)=>{
+      const champs=["Ahri","Lux","Jinx","Thresh"],champion=champs[i%champs.length];
+      const deaths=2+(i%5),kills=4+(i%7),assists=5+(i%9);
+      return {
+        playedAt:Date.now()-(19-i)*86400000,
+        champion,
+        position:champion==="Jinx"?"ADC":champion==="Thresh"?"SUPPORT":"MID",
+        context:i%3===0?"NORMAL":"RANKED",
+        win:i%5!==0,
+        kda:+((kills+assists)/deaths).toFixed(1),
+        damagePerMin:champion==="Thresh"?380:620+(i%6)*24,
+        csPerMin:champion==="Thresh"?1.4:6.1+(i%5)*.25
+      };
+    })
   };
 
   function t(key, vars={}) {
