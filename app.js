@@ -24,7 +24,7 @@
   }
   function setLang(lang){
     state.lang=lang; localStorage.setItem("cj:lang",lang);
-    document.documentElement.lang=lang; $$("[data-language]").forEach(b=>b.classList.toggle("is-active",b.dataset.language===lang));
+    document.documentElement.lang=lang; $$$("[data-language]").forEach(b=>b.classList.toggle("is-active",b.dataset.language===lang));
     $$("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));
     if(state.profile) renderProfile();
   }
