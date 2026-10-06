@@ -70,4 +70,5 @@ jobs:
             --include='*.json' \
             --include='*.yml' \
             --include='*.yaml' \
-            --exclude='package*.json'
+            --exclude='package*.json' \
+            --exclude='static-qa.yml'
