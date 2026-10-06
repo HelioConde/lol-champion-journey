@@ -22,12 +22,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Build static deploy with cache-busted assets
+        env:
+          DEPLOY_SHA: ${{ github.sha }}
+        run: |
+          mkdir -p _site
+          rsync -a --exclude '.git' --exclude '_site' ./ _site/
+          node <<'NODE'
+          const fs=require("fs");
+          const path="_site/index.html";
+          const sha=process.env.DEPLOY_SHA;
+          let html=fs.readFileSync(path,"utf8");
+          const assets=[
+            "style.css",
+            "backend-config.js",
+            "i18n.js",
+            "observability.js",
+            "app.js",
+            "live-update.js"
+          ];
+          for(const asset of assets){
+            html=html.replaceAll("./"+asset, "./"+asset+"?v="+sha);
+          }
+          fs.writeFileSync(path,html);
+          console.log("cache-busted deploy assets with",sha);
+          NODE
+
       - uses: actions/configure-pages@v5
         with:
           enablement: true
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
+
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
