@@ -238,3 +238,15 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .compare-champion img{width:30px;height:30px}
   .compare-head b{font-size:16px}
 }
+
+.roster-scroll-wrap{position:relative}
+.roster-swipe-cue{display:none}
+@media(max-width:560px){
+  .roster-swipe-cue{display:grid;position:absolute;right:4px;top:50%;transform:translateY(-50%);width:26px;height:42px;place-items:center;border-radius:999px;background:linear-gradient(90deg,rgba(8,12,20,.2),rgba(8,12,20,.92));color:#f0cf89;font-size:24px;font-weight:700;pointer-events:none;box-shadow:-10px 0 24px rgba(8,12,20,.45)}
+  .roster-swipe-cue[hidden]{display:none!important}
+
+  .share-actions{grid-template-columns:1fr 1fr;gap:8px}
+  .share-actions .share-score{grid-column:1/-1;justify-self:center}
+  .share-actions .primary{grid-column:1/-1;width:100%!important}
+  .share-actions .secondary{width:100%!important}
+}

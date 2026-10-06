@@ -105,7 +105,10 @@
       <div class="shell profile-body">
         <section id="roster" class="section profile-anchor">
           <div class="section-head"><div><span class="eyebrow" data-i18n="yourCast">SEU ELENCO</span><h2 data-i18n="chooseChampion">Escolha um campeão da sua jornada</h2><p class="section-copy roster-explainer" data-i18n="signatureExplainer">Assinatura é o campeão mais presente na amostra. Conexão é uma nota separada que combina presença, desempenho, maestria e consistência.</p></div><button id="refresh-data" class="secondary" data-i18n="refresh">Atualizar dados</button></div>
-          <div id="champion-list" class="champion-list"></div>
+          <div class="roster-scroll-wrap">
+            <div id="champion-list" class="champion-list"></div>
+            <span id="roster-swipe-cue" class="roster-swipe-cue" aria-hidden="true">›</span>
+          </div>
         </section>
 
         <div class="ad-slot" data-ad-slot="journey-profile-mid" aria-label="Espaço reservado para anúncio"><span>AD</span><small data-i18n="adReserved">espaço reservado</small></div>
