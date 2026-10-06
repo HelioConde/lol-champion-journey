@@ -24,9 +24,9 @@ Entrada principal:
   "tagLine": "BR1",
   "platform": "br1",
   "region": "americas",
-  "limit": 100,
-  "matchLimit": 100,
-  "historyDepth": 100
+  "limit": 30,
+  "matchLimit": 30,
+  "historyDepth": 30
 }
 ```
 
@@ -59,6 +59,10 @@ O backend resolve Riot ID → PUUID via ACCOUNT-V1.
 - CHAMPION-MASTERY-V4;
 - LEAGUE-V4;
 - MATCH-V5.
+
+## Estratégia de amostra
+
+O frontend tenta 30 partidas primeiro. Em falha temporária do backend/Riot, reduz automaticamente para 20 e depois 12 antes de recorrer à demonstração. Isso evita transformar uma consulta pesada em uma experiência quebrada e aproveita o cache do backend nas consultas seguintes.
 
 ## Limites de interpretação
 
