@@ -1,7 +1,7 @@
 (() => {
   const $ = s => document.querySelector(s);
   const qsa = s => [...document.querySelectorAll(s)];
-  const state = { lang: localStorage.getItem("cj:lang") || "pt-BR", profile:null, champions:[], selected:0, demo:false, snapshots:[] };
+  const state = { lang: localStorage.getItem("cj:lang") || "pt-BR", profile:null, champions:[], selected:0, demo:false, demoReason:null, snapshots:[] };
   const regions = {br1:"americas",na1:"americas",la1:"americas",la2:"americas",oc1:"sea",euw1:"europe",eun1:"europe",tr1:"europe",ru:"europe",kr:"asia",jp1:"asia",sg2:"sea",ph2:"sea",tw2:"sea",th2:"sea",vn2:"sea"};
   const demo = {
     player:{gameName:"JourneyPlayer",tagLine:"BR1",level:214,platform:"BR1"},
@@ -129,12 +129,21 @@
     try{
       const data=await fetchProfile(gameName,tagLine,server);
       if(!data?.championSummaries?.length) throw Object.assign(new Error("empty"),{status:204});
-      state.profile=data; state.demo=false;
+      state.profile=data; state.demo=false; state.demoReason=null;
       $("#search-status").textContent="";
       window.CJ_OBS?.event("riot_lookup_success",{server,matches:Number(data?.summary?.matches||0),champions:Number(data?.championSummaries?.length||0)});
     }catch(e){
-      state.profile={...demo,player:{...demo.player,gameName,tagLine,platform:server.toUpperCase()}}; state.demo=true;
-      $("#search-status").textContent=e?.status===429?t("rateLimit"):e?.status===404||e?.data?.riotStatus===404?t("notFound"):e?.status>=500||e?.status===0?t("backendError"):t("fallback");
+      const notFound=e?.status===404||e?.data?.riotStatus===404;
+      if(notFound){
+        state.profile=null; state.demo=false; state.demoReason=null;
+        $("#search-status").textContent=t("notFound");
+        window.CJ_OBS?.event("riot_lookup_not_found",{server});
+        return;
+      }
+      state.profile={...demo,player:{...demo.player,gameName,tagLine,platform:server.toUpperCase()}};
+      state.demo=true;
+      state.demoReason=e?.status===429?"rateLimit":"backend";
+      $("#search-status").textContent=state.demoReason==="rateLimit"?t("rateLimit"):e?.status>=500||e?.status===0?t("backendError"):t("fallback");
       window.CJ_OBS?.event("riot_lookup_fallback",{server,status:Number(e?.status||0),reason:String(e?.message||"unknown").slice(0,100)});
     }finally{setLoading(false,refresh)}
     state.selected=0;
@@ -431,7 +440,9 @@
     $("#profile-riot-id").textContent=(p.player?.gameName||"Player")+"#"+(p.player?.tagLine||"—");
     $("#data-badge").textContent=state.demo?t("demo"):t("live");
     $("#data-badge").classList.toggle("demo",state.demo);
-    $("#sample-note").textContent=state.demo?t("sourceDemo"):t("sourceLive",{n:total});
+    $("#sample-note").textContent=state.demo
+      ? t(state.demoReason==="rateLimit"?"sourceDemoRateLimit":"sourceDemoBackend")
+      : t("sourceLive",{n:total});
     $("#champion-name").textContent=c.name;
     $("#champion-story").textContent=t("chapterText",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
     $("#metric-games").textContent=fmt(c.games);
