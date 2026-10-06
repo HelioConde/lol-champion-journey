@@ -494,8 +494,6 @@
     const u=new URL(location.href);u.searchParams.set("lang",state.lang);history.replaceState(null,"",u.pathname+"?"+u.searchParams.toString());
   });
 
-  addEventListener("beforeinstallprompt",()=>{$("#install-app").hidden=true});
-  addEventListener("appinstalled",()=>{$("#install-app").hidden=true});
   if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
 
   const q=new URLSearchParams(location.search);
