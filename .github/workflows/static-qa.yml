@@ -2,7 +2,7 @@ name: Static QA
 
 on:
   push:
-    branches: [main, "split/riot-legacy"]
+    branches: [main]
   pull_request:
 
 jobs:
@@ -13,12 +13,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+
       - name: Syntax
         run: |
           node --check app.js
           node --check i18n.js
           node --check backend-config.js
-      - name: Required product markers
+
+      - name: Required Champion Journey markers
         run: |
           test -f index.html
           test -f style.css
@@ -26,41 +28,46 @@ jobs:
           test -f i18n.js
           test -f backend-config.js
           test -f README.md
-          test -f FULLSTACK.md
-          test -f MELHORIAS.md
           test -f ADS_SETUP.md
           test -f RIOT_API.md
+          test -f SNAPSHOT_CONTRACT.md
+          test -f live-update.js
+          test -f version.json
+          test -f tests/e2e.spec.js
+
           grep -qi 'lang="pt-BR"' index.html
           grep -qi 'data-language="en"' index.html
-          grep -qi 'id="riot-form"' index.html
-          grep -qi 'id="demo-badge"' index.html
-          grep -qi 'data-ad-slot="legacy-top"' index.html
-          grep -qi 'dados demonstrativos' index.html
-          grep -qi 'Riot Legacy' index.html
-          grep -qi 'não é endossado' index.html
-          grep -qi 'not endorsed' i18n.js
-          grep -qi 'riot-legacy-language' i18n.js
-          grep -qi 'URLSearchParams' app.js
-          grep -qi 'navigator.share' app.js
+          grep -qi 'id="search-form"' index.html
+          grep -qi 'id="champion-hero"' index.html
+          grep -qi 'id="champion-list"' index.html
+          grep -qi 'id="snapshot-comparison"' index.html
+          grep -qi 'id="download-card"' index.html
+          grep -qi 'id="copy-link"' index.html
+          grep -qi 'id="refresh-data"' index.html
+          grep -qi 'id="recent-searches"' index.html
+          grep -qi 'ad-slot' index.html
+
           grep -qi 'public-lol-profile' backend-config.js
-          grep -qi 'public-tft-profile' backend-config.js
-          grep -qi 'postPublicFunction' app.js
-          grep -qi 'DADOS RIOT' app.js
-          grep -qi 'server' app.js
-          grep -qi 'download-card' index.html
-          grep -qi 'drawShareCard' app.js
-          grep -qi 'canvas.toBlob' app.js
-          grep -qi 'image/png' app.js
-          grep -qi 'refresh-data' index.html
-          grep -qi "refreshButton?.addEventListener('click'" app.js
-          grep -qi 'liveFailureMessage' app.js
-          grep -qi 'rate_limited' app.js
-          grep -qi 'recent-searches' index.html
-          grep -qi 'RECENT_SEARCHES_KEY' app.js
-          grep -qi 'renderRecentSearches' app.js
-          grep -qi 'data-recent-index' app.js
-          grep -qi 'live-profile-facts' index.html
-          grep -qi 'renderLiveProfileFacts' app.js
+          grep -qi 'CHAMPION_JOURNEY_BACKEND' backend-config.js
+          grep -qi 'loadDDragonCatalog' app.js
+          grep -qi 'championId' app.js
+          grep -qi 'saveSnapshot' app.js
+          grep -qi 'renderSnapshotComparison' app.js
+          grep -qi 'URLSearchParams' app.js
+          grep -qi 'canvas.toDataURL' app.js
+          grep -qi 'navigator.clipboard' app.js
+          grep -qi 'cj:recent' app.js
+          grep -qi 'cj:snapshots:' app.js
+          grep -qi 'DADOS RIOT' i18n.js
+          grep -qi 'DEMONSTRAÇÃO' i18n.js
+
       - name: No secrets
         run: |
-          ! grep -RniE 'RGAPI-[A-Za-z0-9_-]{20,}|SUPABASE_SERVICE_ROLE_KEY|service_role.*eyJ' . --exclude-dir=.git --include='*.js' --include='*.html' --include='*.json' --exclude='package*.json'
+          ! grep -RniE 'RGAPI-[A-Za-z0-9_-]{20,}|SUPABASE_SERVICE_ROLE_KEY|service_role.*eyJ' . \
+            --exclude-dir=.git \
+            --include='*.js' \
+            --include='*.html' \
+            --include='*.json' \
+            --include='*.yml' \
+            --include='*.yaml' \
+            --exclude='package*.json'
