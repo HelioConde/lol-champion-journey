@@ -42,6 +42,7 @@
     state.lang=lang; localStorage.setItem("cj:lang",lang);
     document.documentElement.lang=lang; qsa("[data-language]").forEach(b=>b.classList.toggle("is-active",b.dataset.language===lang));
     qsa("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));
+    qsa("[data-i18n-placeholder]").forEach(el=>el.placeholder=t(el.dataset.i18nPlaceholder));
     if(state.profile) renderProfile();
   }
   const fmt = n => Number(n||0).toLocaleString(state.lang==="pt-BR"?"pt-BR":"en-US");
