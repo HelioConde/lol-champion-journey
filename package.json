@@ -1,0 +1,8 @@
+{
+  "name":"lol-champion-journey",
+  "version":"0.1.0",
+  "private":true,
+  "description":"Jornada visual pessoal por campeão de League of Legends.",
+  "scripts":{"dev":"http-server . -p 4173 -c-1","check":"node --check app.js && node --check i18n.js","test:e2e":"playwright test"},
+  "devDependencies":{"@playwright/test":"^1.55.0","http-server":"^14.1.1"}
+}
