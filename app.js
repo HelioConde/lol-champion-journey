@@ -559,6 +559,7 @@
     $("#metric-games").nextElementSibling.textContent=t(Number(c.games||0)===1?"recentGameSingular":"recentGamePlural");
     $("#metric-kda").textContent=Number(c.avgKda||0).toFixed(1);
     $("#metric-mastery").textContent=c.masteryPoints?fmt(c.masteryPoints):"—";
+    $("#metric-connection").textContent=score;
     $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+(i===0?" signature-chip":"")+'" data-i="'+i+'" aria-pressed="'+(i===state.selected?'true':'false')+'"><img class="chip-bg" src="'+esc(splash(x.name))+'" alt="" loading="lazy" decoding="async">'+(i===0?'<em class="signature-tag">'+esc(t("signatureShort"))+'</em>':'')+'<span><b>'+esc(x.name)+'</b><small>'+esc(gameText(x.games,true))+'</small></span><strong><span>'+connectionScore(x)+'</span><small>'+esc(t("metricConnection"))+'</small></strong></button>').join("");
     setTimeout(()=>{
       const list=$("#champion-list"),cue=$("#roster-swipe-cue"),rosterHint=$("#roster-swipe-hint");
