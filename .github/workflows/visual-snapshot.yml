@@ -1,6 +1,11 @@
 name: Visual Snapshot
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/visual-snapshot.yml"
+      - "scripts/capture-full-page.js"
   workflow_dispatch:
     inputs:
       url:
