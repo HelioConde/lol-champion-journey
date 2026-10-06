@@ -494,10 +494,8 @@
     const u=new URL(location.href);u.searchParams.set("lang",state.lang);history.replaceState(null,"",u.pathname+"?"+u.searchParams.toString());
   });
 
-  let installPrompt=null;
-  addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;$("#install-app").hidden=false});
-  $("#install-app").onclick=async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$("#install-app").hidden=true};
-  addEventListener("appinstalled",()=>{$("#install-app").hidden=true;installPrompt=null});
+  addEventListener("beforeinstallprompt",()=>{$("#install-app").hidden=true});
+  addEventListener("appinstalled",()=>{$("#install-app").hidden=true});
   if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
 
   const q=new URLSearchParams(location.search);
