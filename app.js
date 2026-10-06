@@ -587,7 +587,7 @@
         const result=m.context==="ARENA"&&m.placement?("#"+m.placement):(m.win?"WIN":"LOSS");
         const kda=Number.isFinite(Number(m.kda))?Number(m.kda).toFixed(1):"—";
         const detail=[m.context,m.position,result,"KDA "+kda].filter(Boolean).join(" · ");
-        return '<div class="timeline-item"><span>'+esc(when?df.format(new Date(when)):"—")+'</span><i></i><div><b>'+esc(c.name)+'</b><p>'+esc(detail)+'</p></div></div>';
+        return '<div class="timeline-item" style="--timeline-bg:url('+esc(splash(c.name))+')"><span>'+esc(when?df.format(new Date(when)):"—")+'</span><i></i><div><b>'+esc(c.name)+'</b><p>'+esc(detail)+'</p></div></div>';
       }).join("");
       return;
     }
@@ -595,7 +595,7 @@
     const first=dates.length?new Intl.DateTimeFormat(state.lang,{day:"2-digit",month:"short",year:"numeric"}).format(new Date(dates[0])):"—";
     const now=df.format(new Date());
     const items=[[first,t("timeline1"),t("timeline1Text")],["★",t("timeline2"),t("timeline2Text",{name:c.name})],[now,t("timeline3"),t("timeline3Text")]];
-    $("#journey-timeline").innerHTML=items.map(x=>'<div class="timeline-item"><span>'+esc(x[0])+'</span><i></i><div><b>'+esc(x[1])+'</b><p>'+esc(x[2])+'</p></div></div>').join("");
+    $("#journey-timeline").innerHTML=items.map(x=>'<div class="timeline-item" style="--timeline-bg:url('+esc(splash(c.name))+')"><span>'+esc(x[0])+'</span><i></i><div><b>'+esc(x[1])+'</b><p>'+esc(x[2])+'</p></div></div>').join("");
   }
 
   async function downloadCard(){
