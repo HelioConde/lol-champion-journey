@@ -29,3 +29,7 @@ button:disabled{opacity:.55;cursor:wait}.is-loading #profile-view,.is-loading #l
 
 .history-head>div{display:flex;align-items:center;gap:10px}.history-head select{height:32px;background:#111827;color:#fff;border:1px solid var(--line);border-radius:8px;padding:0 9px;font-size:10px}.history-head small{white-space:nowrap}
 @media(max-width:560px){.history-head{align-items:flex-start;flex-direction:column}.history-head>div{width:100%;justify-content:space-between}}
+
+.footer-copy .legal summary,.privacy-link{min-height:28px;display:inline-flex;align-items:center}
+.footer-copy .legal summary{cursor:pointer;padding:4px 0}
+.privacy-link{padding:4px 0}
