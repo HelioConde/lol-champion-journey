@@ -468,4 +468,6 @@ test("hero identifica recorte de Arena", async ({page}) => {
   await page.getByRole("button",{name:/Ver minha jornada/i}).click();
   await expect(page.locator("#hero-context")).toHaveText("Recorte: ARENA");
   await expect(page.locator("#champion-facts")).toContainText("Melhor colocação");
+  await expect(page.locator("#champion-facts")).toContainText("Colocação média");
+  await expect(page.locator("#champion-facts")).not.toContainText("L3");
 });
