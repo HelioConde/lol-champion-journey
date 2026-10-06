@@ -301,10 +301,10 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
 }
 
 .timeline-item{position:relative;overflow:hidden;isolation:isolate}
-.timeline-item::before{content:"";position:absolute;inset:0;z-index:-2;background:var(--timeline-bg) center 28%/cover no-repeat;opacity:.16;transform:scale(1.03)}
-.timeline-item::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(10,15,25,.93),rgba(10,15,25,.76))}
+.timeline-item::before{content:"";position:absolute;inset:0;z-index:-2;background:var(--timeline-bg) center 28%/cover no-repeat;opacity:.28;transform:scale(1.03)}
+.timeline-item::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(10,15,25,.92),rgba(10,15,25,.64))}
 @media(max-width:900px){
-  .timeline-item::before{opacity:.10}
+  .timeline-item::before{opacity:.22}
 }
 
 /* Mobile comparison density pass from visual snapshot review */
