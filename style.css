@@ -343,3 +343,6 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .profile-icon{width:34px;height:34px;border-radius:10px}
   .profile-level{font-size:8px}
 }
+
+.profile-rank{display:block;margin-top:2px;color:#d7b979;font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+@media(max-width:560px){.profile-rank{font-size:7px}}
