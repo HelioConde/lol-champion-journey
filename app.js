@@ -31,7 +31,26 @@
   const fmt = n => Number(n||0).toLocaleString(state.lang==="pt-BR"?"pt-BR":"en-US");
   const esc = v => String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const slug = name => name.replace(/[^A-Za-z0-9]/g,"");
-  const splash = name => "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+slug(name)+"_0.jpg";
+  let ddragonCatalog=null;
+  async function loadDDragonCatalog(){
+    if(ddragonCatalog)return ddragonCatalog;
+    try{
+      const realm=await fetch("https://ddragon.leagueoflegends.com/realms/br.json",{cache:"force-cache"}).then(r=>r.ok?r.json():Promise.reject());
+      const version=realm?.n?.champion||realm?.v;
+      const data=await fetch("https://ddragon.leagueoflegends.com/cdn/"+version+"/data/pt_BR/champion.json",{cache:"force-cache"}).then(r=>r.ok?r.json():Promise.reject());
+      const byName={},byId={};
+      Object.values(data?.data||{}).forEach(ch=>{
+        byName[String(ch.name||"").toLowerCase()]={key:Number(ch.key),id:ch.id,name:ch.name};
+        byId[Number(ch.key)]={key:Number(ch.key),id:ch.id,name:ch.name};
+      });
+      ddragonCatalog={byName,byId};
+    }catch{
+      ddragonCatalog={byName:{},byId:{}};
+    }
+    return ddragonCatalog;
+  }
+  const championAssetId = name => ddragonCatalog?.byName?.[String(name||"").toLowerCase()]?.id || slug(name);
+  const splash = name => "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+championAssetId(name)+"_0.jpg";
 
   function saveRecent(gameName,tagLine,server){
     const key="cj:recent"; let list=[]; try{list=JSON.parse(localStorage.getItem(key)||"[]")}catch{}
@@ -64,6 +83,7 @@
       $("#search-status").textContent=t("fallback");
     }
     state.selected=0;
+    await loadDDragonCatalog();
     prepareChampions();
     saveSnapshot();
     saveRecent(gameName,tagLine,server);
@@ -161,8 +181,12 @@
     const p=state.profile||demo;
     const mastery=p.mastery||[];
     state.champions=(p.championSummaries||[]).map(c=>{
-      const m=mastery.find(x=>(x.championName||"").toLowerCase()===String(c.name).toLowerCase());
-      return {...c,masteryPoints:m?.points||0,masteryLevel:m?.level||0};
+      const meta=ddragonCatalog?.byName?.[String(c.name||"").toLowerCase()];
+      const m=mastery.find(x=>{
+        if(x.championName&&String(x.championName).toLowerCase()===String(c.name).toLowerCase())return true;
+        return meta?.key&&Number(x.championId)===Number(meta.key);
+      });
+      return {...c,championId:meta?.key||null,assetId:meta?.id||slug(c.name),masteryPoints:m?.points||0,masteryLevel:m?.level||0};
     }).sort((a,b)=>(b.games||0)-(a.games||0));
   }
   function connectionScore(c){
