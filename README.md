@@ -15,6 +15,7 @@ O produto evita a aparência de tracker genérico. A hierarquia é cinematográf
 
 ## Estado atual
 
+- repositório standalone ativo em `HelioConde/lol-champion-journey`;
 - frontend standalone;
 - PT-BR principal + EN;
 - busca por Riot ID e servidor;
@@ -48,7 +49,7 @@ Nenhuma chave Riot fica no frontend.
 2. ajustar correspondência de maestria por nome/ID no contrato do backend;
 3. criar snapshots históricos próprios para permitir evolução real entre semanas/meses;
 4. gerar card compartilhável PNG específico do campeão;
-5. materializar em `HelioConde/lol-champion-journey` e publicar via GitHub Pages.
+5. ativar GitHub Pages com GitHub Actions e validar o deploy público.
 
 ## Monetização
 
