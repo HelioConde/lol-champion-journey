@@ -613,6 +613,14 @@
   $("#complete-sample").onclick=refreshCurrentProfile;
   $("#snapshot-refresh").onclick=refreshCurrentProfile;
   $("#clear-recent").onclick=()=>{localStorage.removeItem("cj:recent");renderRecent()};
+  $("#back-to-profile-top").onclick=()=>$("#champion-hero")?.scrollIntoView({behavior:"smooth",block:"start"});
+  addEventListener("scroll",()=>{
+    const btn=$("#back-to-profile-top");
+    if(!btn)return;
+    const profileVisible=!$("#profile-view").hidden;
+    const threshold=($("#champion-hero")?.offsetTop||0)+700;
+    btn.hidden=!profileVisible||scrollY<threshold;
+  },{passive:true});
   initProfileNav();
   qsa("[data-language]").forEach(b=>b.onclick=()=>{
     setLang(b.dataset.language);
