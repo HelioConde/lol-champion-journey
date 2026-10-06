@@ -228,3 +228,13 @@ test("página de privacidade está publicada e bilíngue", async ({page}) => {
   await expect(page.locator("body")).toContainText("PT-BR");
   await expect(page.locator("body")).toContainText("English");
 });
+
+test("não gera erro de runtime ao iniciar e trocar idioma", async ({page}) => {
+  const errors=[];
+  page.on("pageerror", err => errors.push(String(err.message||err)));
+  await page.goto("/");
+  await expect(page.getByRole("button",{name:"EN"})).toBeVisible();
+  await page.locator('[data-language="en"]').click();
+  await expect(page.locator("html")).toHaveAttribute("lang","en");
+  expect(errors).toEqual([]);
+});
