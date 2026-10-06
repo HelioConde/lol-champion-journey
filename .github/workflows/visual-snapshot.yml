@@ -91,6 +91,28 @@ jobs:
         run: |
           node scripts/capture-full-page.js "$PROFILE_URL" visual-output/mobile-comparison-viewport.png
 
+      - name: Capture deterministic reference desktop
+        env:
+          SCREENSHOT_WIDTH: 1440
+          SCREENSHOT_HEIGHT: 1100
+          WAIT_SELECTOR: "#profile-view"
+          SCREENSHOT_DELAY: 900
+          MOCK_PROFILE_FILE: "tests/fixtures/visual-profile.json"
+          PROFILE_URL: "https://helioconde.github.io/lol-champion-journey/?riotId=VisualReference%23BR1&server=br1&lang=pt-BR"
+        run: |
+          node scripts/capture-full-page.js "$PROFILE_URL" visual-output/reference-desktop-profile.png
+
+      - name: Capture deterministic reference mobile
+        env:
+          SCREENSHOT_WIDTH: 390
+          SCREENSHOT_HEIGHT: 844
+          WAIT_SELECTOR: "#profile-view"
+          SCREENSHOT_DELAY: 900
+          MOCK_PROFILE_FILE: "tests/fixtures/visual-profile.json"
+          PROFILE_URL: "https://helioconde.github.io/lol-champion-journey/?riotId=VisualReference%23BR1&server=br1&lang=pt-BR"
+        run: |
+          node scripts/capture-full-page.js "$PROFILE_URL" visual-output/reference-mobile-profile.png
+
       - name: Upload visual artifact
         uses: actions/upload-artifact@v4
         with:
@@ -124,6 +146,8 @@ jobs:
           PREV_MOBILE_HEIGHT="$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('latest/mobile-full.json','utf8')).height||0)}catch(e){console.log(0)}")"
           PREV_PROFILE_DESKTOP_HEIGHT="$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('latest/desktop-profile.json','utf8')).height||0)}catch(e){console.log(0)}")"
           PREV_PROFILE_MOBILE_HEIGHT="$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('latest/mobile-profile.json','utf8')).height||0)}catch(e){console.log(0)}")"
+          PREV_REFERENCE_DESKTOP_HEIGHT="$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('latest/reference-desktop-profile.json','utf8')).height||0)}catch(e){console.log(0)}")"
+          PREV_REFERENCE_MOBILE_HEIGHT="$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('latest/reference-mobile-profile.json','utf8')).height||0)}catch(e){console.log(0)}")"
 
           cp /tmp/visual-output/desktop-full.png latest/desktop-full.png
           cp /tmp/visual-output/desktop-full.json latest/desktop-full.json
@@ -135,6 +159,10 @@ jobs:
           cp /tmp/visual-output/mobile-profile.json latest/mobile-profile.json
           cp /tmp/visual-output/mobile-comparison-viewport.png latest/mobile-comparison-viewport.png
           cp /tmp/visual-output/mobile-comparison-viewport.json latest/mobile-comparison-viewport.json
+          cp /tmp/visual-output/reference-desktop-profile.png latest/reference-desktop-profile.png
+          cp /tmp/visual-output/reference-desktop-profile.json latest/reference-desktop-profile.json
+          cp /tmp/visual-output/reference-mobile-profile.png latest/reference-mobile-profile.png
+          cp /tmp/visual-output/reference-mobile-profile.json latest/reference-mobile-profile.json
 
           STAMP="$(date -u +'%Y-%m-%dT%H-%M-%SZ')"
           mkdir -p "history/$STAMP"
@@ -144,6 +172,8 @@ jobs:
           CUR_MOBILE_HEIGHT="$(node -e "console.log(JSON.parse(require('fs').readFileSync('latest/mobile-full.json','utf8')).height||0)")"
           CUR_PROFILE_DESKTOP_HEIGHT="$(node -e "console.log(JSON.parse(require('fs').readFileSync('latest/desktop-profile.json','utf8')).height||0)")"
           CUR_PROFILE_MOBILE_HEIGHT="$(node -e "console.log(JSON.parse(require('fs').readFileSync('latest/mobile-profile.json','utf8')).height||0)")"
+          CUR_REFERENCE_DESKTOP_HEIGHT="$(node -e "console.log(JSON.parse(require('fs').readFileSync('latest/reference-desktop-profile.json','utf8')).height||0)")"
+          CUR_REFERENCE_MOBILE_HEIGHT="$(node -e "console.log(JSON.parse(require('fs').readFileSync('latest/reference-mobile-profile.json','utf8')).height||0)")"
 
           delta() { echo $(( $1 - $2 )); }
 
@@ -156,6 +186,8 @@ jobs:
           | Landing mobile | ${CUR_MOBILE_HEIGHT}px | ${PREV_MOBILE_HEIGHT}px | $(delta "$CUR_MOBILE_HEIGHT" "$PREV_MOBILE_HEIGHT")px |
           | Profile desktop | ${CUR_PROFILE_DESKTOP_HEIGHT}px | ${PREV_PROFILE_DESKTOP_HEIGHT}px | $(delta "$CUR_PROFILE_DESKTOP_HEIGHT" "$PREV_PROFILE_DESKTOP_HEIGHT")px |
           | Profile mobile | ${CUR_PROFILE_MOBILE_HEIGHT}px | ${PREV_PROFILE_MOBILE_HEIGHT}px | $(delta "$CUR_PROFILE_MOBILE_HEIGHT" "$PREV_PROFILE_MOBILE_HEIGHT")px |
+          | Reference desktop | ${CUR_REFERENCE_DESKTOP_HEIGHT}px | ${PREV_REFERENCE_DESKTOP_HEIGHT}px | $(delta "$CUR_REFERENCE_DESKTOP_HEIGHT" "$PREV_REFERENCE_DESKTOP_HEIGHT")px |
+          | Reference mobile | ${CUR_REFERENCE_MOBILE_HEIGHT}px | ${PREV_REFERENCE_MOBILE_HEIGHT}px | $(delta "$CUR_REFERENCE_MOBILE_HEIGHT" "$PREV_REFERENCE_MOBILE_HEIGHT")px |
           EOF
 
           cat > latest/source.json <<EOF
