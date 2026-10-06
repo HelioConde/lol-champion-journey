@@ -1,0 +1,32 @@
+{
+  "player":{"gameName":"VisualReference","tagLine":"BR1","level":321,"platform":"BR1"},
+  "summary":{"matches":12,"wins":0,"losses":0,"winRate":null,"primaryPosition":null,"confidence":"BOA"},
+  "mastery":[
+    {"championId":235,"level":7,"points":412320},
+    {"championId":131,"level":7,"points":303305},
+    {"championId":81,"level":6,"points":198442},
+    {"championId":79,"level":5,"points":122120},
+    {"championId":11,"level":6,"points":88770}
+  ],
+  "championSummaries":[
+    {"name":"Senna","games":4,"avgKda":2.8,"avgDamagePerMin":1081,"contexts":["ARENA"]},
+    {"name":"Diana","games":3,"avgKda":2.2,"avgDamagePerMin":955,"contexts":["ARENA"]},
+    {"name":"Ezreal","games":2,"avgKda":3.6,"avgDamagePerMin":1180,"contexts":["ARENA"]},
+    {"name":"Gragas","games":2,"avgKda":1.8,"avgDamagePerMin":840,"contexts":["ARENA"]},
+    {"name":"Master Yi","games":1,"avgKda":4.3,"avgDamagePerMin":1240,"contexts":["ARENA"]}
+  ],
+  "matches":[
+    {"playedAt":1790630400000,"champion":"Senna","context":"ARENA","placement":2,"kda":4.0,"damagePerMin":1081},
+    {"playedAt":1790544000000,"champion":"Senna","context":"ARENA","placement":4,"kda":2.8,"damagePerMin":1012},
+    {"playedAt":1790457600000,"champion":"Senna","context":"ARENA","placement":5,"kda":2.1,"damagePerMin":998},
+    {"playedAt":1790371200000,"champion":"Senna","context":"ARENA","placement":6,"kda":2.3,"damagePerMin":960},
+    {"playedAt":1790284800000,"champion":"Diana","context":"ARENA","placement":3,"kda":3.2,"damagePerMin":955},
+    {"playedAt":1790198400000,"champion":"Diana","context":"ARENA","placement":5,"kda":1.8,"damagePerMin":930},
+    {"playedAt":1790112000000,"champion":"Diana","context":"ARENA","placement":7,"kda":1.6,"damagePerMin":902},
+    {"playedAt":1790025600000,"champion":"Ezreal","context":"ARENA","placement":1,"kda":4.2,"damagePerMin":1180},
+    {"playedAt":1789939200000,"champion":"Ezreal","context":"ARENA","placement":3,"kda":3.0,"damagePerMin":1120},
+    {"playedAt":1789852800000,"champion":"Gragas","context":"ARENA","placement":4,"kda":2.0,"damagePerMin":840},
+    {"playedAt":1789766400000,"champion":"Gragas","context":"ARENA","placement":6,"kda":1.6,"damagePerMin":790},
+    {"playedAt":1789680000000,"champion":"Master Yi","context":"ARENA","placement":1,"kda":4.3,"damagePerMin":1240}
+  ]
+}
