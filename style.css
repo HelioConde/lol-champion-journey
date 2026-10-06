@@ -79,3 +79,9 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .compare-row strong:last-child{grid-column:2;grid-row:2;text-align:center}
   .compare-row strong{font-size:15px}
 }
+
+.source-row.demo-source{width:min(680px,100%);padding:10px 12px;border:1px solid rgba(217,170,85,.28);border-radius:12px;background:rgba(217,170,85,.08);align-items:flex-start}
+.source-row.demo-source #sample-note{color:#d7c08b;line-height:1.45}
+@media(max-width:560px){
+  .source-row.demo-source{display:grid;gap:7px;padding:10px}
+}
