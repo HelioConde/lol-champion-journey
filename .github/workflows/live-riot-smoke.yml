@@ -2,6 +2,27 @@ name: Live Riot Smoke
 
 on:
   workflow_dispatch:
+    inputs:
+      game_name:
+        description: Riot game name
+        required: true
+        default: AlchemyFlames
+      tag_line:
+        description: Riot tag line
+        required: true
+        default: BR1
+      platform:
+        description: Platform routing value
+        required: true
+        default: br1
+      region:
+        description: Match routing region
+        required: true
+        default: americas
+      limit:
+        description: Match sample size (1-100)
+        required: true
+        default: "12"
   push:
     paths:
       - ".github/workflows/live-riot-smoke.yml"
@@ -13,17 +34,33 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      GAME_NAME: ${{ inputs.game_name || 'AlchemyFlames' }}
+      TAG_LINE: ${{ inputs.tag_line || 'BR1' }}
+      PLATFORM: ${{ inputs.platform || 'br1' }}
+      REGION: ${{ inputs.region || 'americas' }}
+      LIMIT: ${{ inputs.limit || '12' }}
     steps:
-      - name: Query AlchemyFlames BR1
+      - name: Query Riot profile
         shell: bash
         run: |
           node <<'NODE'
           const endpoint="https://bieihhaobdztjyoweewa.supabase.co/functions/v1/public-lol-profile";
-          const body={gameName:"AlchemyFlames",tagLine:"BR1",platform:"br1",region:"americas",limit:12,matchLimit:12,historyDepth:12};
+          const limit=Math.min(100,Math.max(1,Number(process.env.LIMIT||12)));
+          const body={
+            gameName:process.env.GAME_NAME,
+            tagLine:process.env.TAG_LINE,
+            platform:process.env.PLATFORM,
+            region:process.env.REGION,
+            limit,
+            matchLimit:limit,
+            historyDepth:limit
+          };
           const res=await fetch(endpoint,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
           const data=await res.json().catch(()=>({}));
           console.log("status",res.status);
           console.log("player",data?.player?.gameName+"#"+data?.player?.tagLine);
+          console.log("platform",data?.player?.platform);
           console.log("matches",data?.summary?.matches);
           console.log("champions",Array.isArray(data?.championSummaries)?data.championSummaries.map(x=>x.name+":"+x.games).join(", "):"none");
           console.log("masteryEntries",Array.isArray(data?.mastery)?data.mastery.length:0);
@@ -31,4 +68,5 @@ jobs:
           if(!data?.player?.gameName) throw new Error("missing player");
           if(!Array.isArray(data?.championSummaries)) throw new Error("missing champion summaries");
           if(!Array.isArray(data?.mastery)) throw new Error("missing mastery");
+          if(Number(data?.summary?.matches||0)>limit) throw new Error("sample exceeds requested limit");
           NODE
