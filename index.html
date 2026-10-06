@@ -179,9 +179,12 @@
             <b data-i18n="partialSnapshotTitle">Amostra parcial — snapshot não salvo</b>
             <p data-i18n="partialSnapshotText">Aguarde a Riot concluir a amostra e atualize os dados para registrar uma evolução confiável.</p>
           </div>
-          <div id="snapshot-empty" class="snapshot-empty" hidden>
-            <b data-i18n="firstSnapshot">Primeiro snapshot salvo</b>
-            <p data-i18n="firstSnapshotText">Volte depois de novas partidas e atualize os dados para desbloquear uma comparação real.</p>
+          <div id="snapshot-empty" class="snapshot-empty snapshot-first" hidden>
+            <div>
+              <b data-i18n="firstSnapshot">Primeiro snapshot salvo</b>
+              <p data-i18n="firstSnapshotText">Volte depois de novas partidas e atualize os dados para desbloquear uma comparação real.</p>
+            </div>
+            <button id="snapshot-refresh" class="source-retry" type="button" data-i18n="refreshCompare">Atualizar e comparar</button>
           </div>
           <div id="snapshot-comparison" class="snapshot-comparison" hidden>
             <article><span data-i18n="signatureChange">Campeão assinatura</span><strong id="delta-signature">—</strong><small id="delta-signature-note"></small></article>
