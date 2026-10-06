@@ -91,8 +91,19 @@
         </div>
       </div>
 
+      <nav class="profile-nav" aria-label="Navegação do perfil">
+        <div class="shell profile-nav-inner">
+          <a href="#roster" data-i18n="navRoster">Elenco</a>
+          <a href="#analysis" data-i18n="navAnalysis">Análise</a>
+          <a href="#comparison" data-i18n="navCompare">Comparação</a>
+          <a href="#evolution" data-i18n="navEvolution">Evolução</a>
+          <a href="#timeline" data-i18n="navTimeline">Jornada</a>
+          <a href="#share-card" data-i18n="navCard">Card</a>
+        </div>
+      </nav>
+
       <div class="shell profile-body">
-        <section class="section">
+        <section id="roster" class="section profile-anchor">
           <div class="section-head"><div><span class="eyebrow" data-i18n="yourCast">SEU ELENCO</span><h2 data-i18n="chooseChampion">Escolha um campeão da sua jornada</h2></div><button id="refresh-data" class="secondary" data-i18n="refresh">Atualizar dados</button></div>
           <div id="champion-list" class="champion-list"></div>
         </section>
@@ -119,7 +130,7 @@
           </article>
         </section>
 
-        <section class="section insight-section">
+        <section id="analysis" class="section insight-section profile-anchor">
           <div class="section-head">
             <div>
               <span class="eyebrow" data-i18n="deepAnalysis">ANÁLISE DO CAMPEÃO</span>
@@ -140,7 +151,7 @@
           </details>
         </section>
 
-        <section class="section compare-section">
+        <section id="comparison" class="section compare-section profile-anchor">
           <div class="section-head">
             <div>
               <span class="eyebrow" data-i18n="compareChampions">COMPARAÇÃO</span>
@@ -154,7 +165,7 @@
           <div id="champion-comparison" class="comparison-table"></div>
         </section>
 
-        <section class="section evolution-section">
+        <section id="evolution" class="section evolution-section profile-anchor">
           <div class="section-head">
             <div>
               <span class="eyebrow" data-i18n="evolution">EVOLUÇÃO</span>
@@ -182,7 +193,7 @@
 
         <div class="ad-slot compact-ad" data-ad-slot="journey-evolution-mid" aria-label="Espaço reservado para anúncio"><span>AD</span><small data-i18n="adReserved">espaço reservado</small></div>
 
-        <section class="section timeline-section">
+        <section id="timeline" class="section timeline-section profile-anchor">
           <span class="eyebrow" data-i18n="journey">JORNADA VISUAL</span>
           <h2 data-i18n="recentEvolution">Sua evolução dentro da janela disponível</h2>
           <p class="section-copy" data-i18n="recentDisclaimer">A API pública não entrega toda a história da conta. Por isso, mostramos apenas o que os dados recentes realmente permitem afirmar.</p>
