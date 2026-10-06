@@ -238,3 +238,25 @@ test("não gera erro de runtime ao iniciar e trocar idioma", async ({page}) => {
   await expect(page.locator("html")).toHaveAttribute("lang","en");
   expect(errors).toEqual([]);
 });
+
+test("reduz a amostra antes de usar demonstração", async ({page}) => {
+  await page.unroute("**/public-lol-profile");
+  const limits=[];
+  await page.route("**/public-lol-profile", async route => {
+    const body=JSON.parse(route.request().postData()||"{}");
+    limits.push(body.limit);
+    if(body.limit===30){
+      await route.fulfill({status:502,contentType:"application/json",body:JSON.stringify({error:"temporary",message:"temporary"})});
+      return;
+    }
+    await route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(riotPayload)});
+  });
+
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+
+  await expect(page.locator("#data-badge")).toHaveText("DADOS RIOT · LOL");
+  await expect(page.locator("#profile-riot-id")).toHaveText("RealPlayer#BR1");
+  expect(limits.slice(0,2)).toEqual([30,20]);
+});
