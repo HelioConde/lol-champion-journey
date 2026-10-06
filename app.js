@@ -269,11 +269,21 @@
     const matches=(state.profile?.matches||[]).filter(m=>String(m.champion||"").toLowerCase()===String(c.name||"").toLowerCase());
     const sr=matches.filter(m=>["RANKED","NORMAL"].includes(String(m.context||"").toUpperCase()));
     const avg=(arr,key)=>arr.length?arr.reduce((s,x)=>s+Number(x[key]||0),0)/arr.length:null;
+    const bestKda=matches.length?Math.max(...matches.map(m=>Number(m.kda)).filter(Number.isFinite)):null;
+    let streak="—";
+    if(matches.length){
+      const first=!!matches[0].win;
+      let count=0;
+      for(const m of matches){if(!!m.win!==first)break;count++}
+      streak=(first?"W":"L")+count;
+    }
     return {
       winRate:Number.isFinite(Number(c.winRate))?Number(c.winRate):null,
       damage:Number.isFinite(Number(c.avgDamagePerMin))?Number(c.avgDamagePerMin):avg(matches,"damagePerMin"),
       cs:avg(sr,"csPerMin"),
-      contexts:Array.isArray(c.contexts)?c.contexts:[...new Set(matches.map(m=>m.context).filter(Boolean))]
+      contexts:Array.isArray(c.contexts)?c.contexts:[...new Set(matches.map(m=>m.context).filter(Boolean))],
+      bestKda:Number.isFinite(bestKda)?bestKda:null,
+      streak
     };
   }
   function renderChampionFacts(c){
@@ -282,6 +292,8 @@
       [t("metricWinRate"),f.winRate==null?"—":Math.round(f.winRate)+"%"],
       [t("metricDamage"),f.damage==null?"—":fmt(Math.round(f.damage))],
       [t("metricCs"),f.cs==null?"—":f.cs.toFixed(1)],
+      [t("metricBestKda"),f.bestKda==null?"—":f.bestKda.toFixed(1)],
+      [t("metricStreak"),f.streak],
       [t("metricContexts"),f.contexts?.length?f.contexts.join(" · "):"—"]
     ];
     $("#champion-facts").innerHTML=items.map(([label,value])=>'<article><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong></article>').join("");
