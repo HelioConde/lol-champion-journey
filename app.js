@@ -138,16 +138,6 @@
       }))
     };
   }
-  async function syncSnapshot(snap){
-    const endpoint=window.CHAMPION_JOURNEY_BACKEND?.snapshotSync;
-    if(!endpoint||!snap||state.demo)return;
-    const p=state.profile?.player||{};
-    try{
-      await fetch(endpoint,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({
-        action:"upsert",gameName:p.gameName,tagLine:p.tagLine,platform:String(p.platform||"").toLowerCase(),snapshot:snap
-      })});
-    }catch{}
-  }
   function saveSnapshot(){
     const snap=buildSnapshot();
     if(!snap)return;
@@ -162,7 +152,6 @@
       const next=[...list,snap].slice(-24);
       localStorage.setItem(key,JSON.stringify(next));
       state.snapshots=next;
-      syncSnapshot(snap);
     }else{
       state.snapshots=list;
     }
