@@ -469,5 +469,7 @@ test("hero identifica recorte de Arena", async ({page}) => {
   await expect(page.locator("#hero-context")).toHaveText("Recorte: ARENA");
   await expect(page.locator("#champion-facts")).toContainText("Melhor colocação");
   await expect(page.locator("#champion-facts")).toContainText("Colocação média");
+  await expect(page.locator("#champion-facts")).toContainText("Taxa de Top 4");
+  await expect(page.locator("#champion-facts")).not.toContainText("CS/min");
   await expect(page.locator("#champion-facts")).not.toContainText("L3");
 });
