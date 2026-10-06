@@ -219,3 +219,11 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
 @media(max-width:560px){
   .back-to-profile-top{right:12px;bottom:12px;padding:8px 10px}
 }
+
+.roster-explainer{margin-top:8px;max-width:760px;font-size:12px}
+.champion-chip .signature-tag{position:absolute;top:9px;left:9px;z-index:2;margin:0;padding:4px 7px;border:1px solid rgba(217,170,85,.38);border-radius:999px;background:rgba(8,12,20,.76);backdrop-filter:blur(8px);color:#f1cf89;font-size:7px;font-style:normal;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.signature-chip{box-shadow:inset 0 0 0 1px rgba(217,170,85,.08)}
+@media(max-width:560px){
+  .roster-explainer{font-size:10px;line-height:1.45}
+  .champion-chip .signature-tag{top:7px;left:7px}
+}
