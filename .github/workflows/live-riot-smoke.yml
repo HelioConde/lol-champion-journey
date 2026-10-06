@@ -1,0 +1,34 @@
+name: Live Riot Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/live-riot-smoke.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Query AlchemyFlames BR1
+        shell: bash
+        run: |
+          node <<'NODE'
+          const endpoint="https://bieihhaobdztjyoweewa.supabase.co/functions/v1/public-lol-profile";
+          const body={gameName:"AlchemyFlames",tagLine:"BR1",platform:"br1",region:"americas",limit:12,matchLimit:12,historyDepth:12};
+          const res=await fetch(endpoint,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
+          const data=await res.json().catch(()=>({}));
+          console.log("status",res.status);
+          console.log("player",data?.player?.gameName+"#"+data?.player?.tagLine);
+          console.log("matches",data?.summary?.matches);
+          console.log("champions",Array.isArray(data?.championSummaries)?data.championSummaries.map(x=>x.name+":"+x.games).join(", "):"none");
+          console.log("masteryEntries",Array.isArray(data?.mastery)?data.mastery.length:0);
+          if(!res.ok) throw new Error(data?.message||data?.error||("HTTP "+res.status));
+          if(!data?.player?.gameName) throw new Error("missing player");
+          if(!Array.isArray(data?.championSummaries)) throw new Error("missing champion summaries");
+          if(!Array.isArray(data?.mastery)) throw new Error("missing mastery");
+          NODE
