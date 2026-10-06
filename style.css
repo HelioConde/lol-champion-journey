@@ -254,3 +254,12 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
 @media(max-width:560px){
   .profile-nav::after{content:"›";position:absolute;right:0;top:0;bottom:0;width:24px;display:grid;place-items:center;background:linear-gradient(90deg,rgba(7,10,17,0),rgba(7,10,17,.96) 60%);color:#d9aa55;font-size:18px;font-weight:900;pointer-events:none}
 }
+
+.identity-scroll-wrap{position:relative}
+.identity-swipe-cue{display:none}
+@media(max-width:560px){
+  .identity-scroll-wrap{margin-top:16px}
+  .identity-cards{margin-top:0}
+  .identity-swipe-cue{display:grid;position:absolute;right:3px;top:50%;transform:translateY(-50%);width:25px;height:44px;place-items:center;border-radius:999px;background:linear-gradient(90deg,rgba(12,17,28,.08),rgba(12,17,28,.95));color:#f0cf89;font-size:23px;font-weight:800;pointer-events:none;box-shadow:-10px 0 22px rgba(5,8,14,.42)}
+  .identity-swipe-cue[hidden]{display:none!important}
+}
