@@ -26,3 +26,6 @@ button:disabled{opacity:.55;cursor:wait}.is-loading #profile-view,.is-loading #l
 @media(max-width:900px){.journey-signals{grid-template-columns:1fr}}
 .privacy-link{color:#8f98aa;text-decoration:none}.privacy-link:hover{color:var(--gold2)}
 .policy-page{padding:72px 0 110px;max-width:900px}.policy-page>h1{font:500 clamp(42px,6vw,72px) Georgia;margin:12px 0 32px}.policy-card{background:#0d1320;border:1px solid var(--line);border-radius:18px;padding:24px;margin:16px 0}.policy-card h2{margin-top:0;color:var(--gold2)}.policy-card p{color:var(--muted);line-height:1.7}.policy-back a{color:var(--gold2);text-decoration:none}
+
+.history-head>div{display:flex;align-items:center;gap:10px}.history-head select{height:32px;background:#111827;color:#fff;border:1px solid var(--line);border-radius:8px;padding:0 9px;font-size:10px}.history-head small{white-space:nowrap}
+@media(max-width:560px){.history-head{align-items:flex-start;flex-direction:column}.history-head>div{width:100%;justify-content:space-between}}
