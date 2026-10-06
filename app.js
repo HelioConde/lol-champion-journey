@@ -527,9 +527,13 @@
     $("#metric-mastery").textContent=c.masteryPoints?fmt(c.masteryPoints):"—";
     $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+(i===0?" signature-chip":"")+'" data-i="'+i+'" aria-pressed="'+(i===state.selected?'true':'false')+'"><img class="chip-bg" src="'+esc(splash(x.name))+'" alt="" loading="lazy" decoding="async">'+(i===0?'<em class="signature-tag">'+esc(t("signatureShort"))+'</em>':'')+'<span><b>'+esc(x.name)+'</b><small>'+esc(gameText(x.games,true))+'</small></span><strong><span>'+connectionScore(x)+'</span><small>'+esc(t("metricConnection"))+'</small></strong></button>').join("");
     setTimeout(()=>{
-      const list=$("#champion-list"),cue=$("#roster-swipe-cue");
+      const list=$("#champion-list"),cue=$("#roster-swipe-cue"),rosterHint=$("#roster-swipe-hint");
       if(list&&cue){
-        const update=()=>cue.hidden=!(list.scrollWidth>list.clientWidth+8&&list.scrollLeft+list.clientWidth<list.scrollWidth-8);
+        const update=()=>{
+          const hasMore=list.scrollWidth>list.clientWidth+8&&list.scrollLeft+list.clientWidth<list.scrollWidth-8;
+          cue.hidden=!hasMore;
+          if(rosterHint)rosterHint.hidden=!hasMore;
+        };
         list.onscroll=update; update();
       }
       const identities=$("#identity-cards"),identityCue=$("#identity-swipe-cue"),identityHint=$("#identity-swipe-hint");
