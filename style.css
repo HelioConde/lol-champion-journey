@@ -112,3 +112,12 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .champion-list::-webkit-scrollbar{display:none}
   .champion-chip{flex:0 0 min(78vw,260px);scroll-snap-align:start;min-height:108px}
 }
+
+.data-badge.partial{background:rgba(76,215,232,.1);border-color:rgba(76,215,232,.45);color:#b9f7ff}
+.source-row.partial-source{width:min(720px,100%);padding:10px 12px;border:1px solid rgba(76,215,232,.22);border-radius:12px;background:rgba(76,215,232,.06);align-items:flex-start}
+.source-row.partial-source #sample-note{color:#b8cbd3;line-height:1.45}
+.snapshot-partial{border-color:rgba(76,215,232,.28);background:rgba(76,215,232,.05)}
+.snapshot-partial b{color:#b9f7ff}
+@media(max-width:560px){
+  .source-row.partial-source{display:grid;gap:7px}
+}
