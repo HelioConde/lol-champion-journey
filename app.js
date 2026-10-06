@@ -65,29 +65,50 @@
   }
 
   async function fetchProfile(gameName,tagLine,server){
-    const endpoint=window.RIOT_LEGACY_BACKEND?.lolProfile;
-    if(!endpoint) throw new Error("backend");
-    const res=await fetch(endpoint,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({gameName,tagLine,platform:server,routing:regions[server]||"americas"})});
-    if(!res.ok) throw new Error("http_"+res.status);
-    return res.json();
+    const endpoint=window.CHAMPION_JOURNEY_BACKEND?.lolProfile;
+    if(!endpoint) throw Object.assign(new Error("backend"),{status:0});
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),16000);
+    try{
+      const res=await fetch(endpoint,{method:"POST",headers:{"content-type":"application/json"},signal:controller.signal,body:JSON.stringify({
+        gameName,tagLine,platform:server,region:regions[server]||"americas",limit:100,matchLimit:100,historyDepth:100
+      })});
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok) throw Object.assign(new Error(data?.message||("http_"+res.status)),{status:res.status,data});
+      return data;
+    }finally{clearTimeout(timer)}
+  }
+
+  function setLoading(active,refresh=false){
+    document.body.classList.toggle("is-loading",active);
+    const submit=$("#search-form button[type='submit']");
+    const refreshButton=$("#refresh-data");
+    if(submit)submit.disabled=active;
+    if(refreshButton)refreshButton.disabled=active;
+    if(active)$("#search-status").textContent=t(refresh?"loadingMore":"loading");
   }
 
   async function loadProfile(gameName,tagLine,server,refresh=false){
-    $("#search-status").textContent=t("loading");
+    setLoading(true,refresh);
     try{
       const data=await fetchProfile(gameName,tagLine,server);
-      if(!data?.championSummaries?.length) throw new Error("empty");
+      if(!data?.championSummaries?.length) throw Object.assign(new Error("empty"),{status:204});
       state.profile=data; state.demo=false;
+      $("#search-status").textContent="";
     }catch(e){
       state.profile={...demo,player:{...demo.player,gameName,tagLine,platform:server.toUpperCase()}}; state.demo=true;
-      $("#search-status").textContent=t("fallback");
-    }
+      $("#search-status").textContent=e?.status===429?t("rateLimit"):e?.status===404?t("notFound"):e?.status>=500||e?.status===0?t("backendError"):t("fallback");
+    }finally{setLoading(false,refresh)}
     state.selected=0;
     await loadDDragonCatalog();
     prepareChampions();
     saveSnapshot();
     saveRecent(gameName,tagLine,server);
-    history.replaceState(null,"","?riotId="+encodeURIComponent(gameName+"#"+tagLine)+"&server="+encodeURIComponent(server));
+    const url=new URL(location.href);
+    url.searchParams.set("riotId",gameName+"#"+tagLine);
+    url.searchParams.set("server",server);
+    url.searchParams.set("lang",state.lang);
+    history.replaceState(null,"",url.pathname+"?"+url.searchParams.toString());
     $("#landing-view").hidden=true; $("#profile-view").hidden=false; window.scrollTo({top:0,behavior:refresh?"smooth":"auto"});
     renderProfile();
   }
@@ -117,6 +138,16 @@
       }))
     };
   }
+  async function syncSnapshot(snap){
+    const endpoint=window.CHAMPION_JOURNEY_BACKEND?.snapshotSync;
+    if(!endpoint||!snap||state.demo)return;
+    const p=state.profile?.player||{};
+    try{
+      await fetch(endpoint,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({
+        action:"upsert",gameName:p.gameName,tagLine:p.tagLine,platform:String(p.platform||"").toLowerCase(),snapshot:snap
+      })});
+    }catch{}
+  }
   function saveSnapshot(){
     const snap=buildSnapshot();
     if(!snap)return;
@@ -131,6 +162,7 @@
       const next=[...list,snap].slice(-24);
       localStorage.setItem(key,JSON.stringify(next));
       state.snapshots=next;
+      syncSnapshot(snap);
     }else{
       state.snapshots=list;
     }
@@ -189,13 +221,68 @@
       return {...c,championId:meta?.key||null,assetId:meta?.id||slug(c.name),masteryPoints:m?.points||0,masteryLevel:m?.level||0};
     }).sort((a,b)=>(b.games||0)-(a.games||0));
   }
-  function connectionScore(c){
+  function scoreComponents(c){
     const maxGames=Math.max(...state.champions.map(x=>x.games||0),1);
     const maxMastery=Math.max(...state.champions.map(x=>x.masteryPoints||0),1);
-    const presence=(c.games||0)/maxGames;
-    const perf=Math.min((c.avgKda||0)/5,1);
-    const mast=(c.masteryPoints||0)/maxMastery;
-    return Math.round((presence*.5+perf*.3+mast*.2)*100);
+    return {
+      presence:Math.round(((c.games||0)/maxGames)*100),
+      performance:Math.round(Math.min((c.avgKda||0)/5,1)*100),
+      mastery:Math.round(((c.masteryPoints||0)/maxMastery)*100)
+    };
+  }
+  function connectionScore(c){
+    const x=scoreComponents(c);
+    return Math.round(x.presence*.5+x.performance*.3+x.mastery*.2);
+  }
+  function championMatchFacts(c){
+    const matches=(state.profile?.matches||[]).filter(m=>String(m.champion||"").toLowerCase()===String(c.name||"").toLowerCase());
+    const sr=matches.filter(m=>["RANKED","NORMAL"].includes(String(m.context||"").toUpperCase()));
+    const avg=(arr,key)=>arr.length?arr.reduce((s,x)=>s+Number(x[key]||0),0)/arr.length:null;
+    return {
+      winRate:Number.isFinite(Number(c.winRate))?Number(c.winRate):null,
+      damage:Number.isFinite(Number(c.avgDamagePerMin))?Number(c.avgDamagePerMin):avg(matches,"damagePerMin"),
+      cs:avg(sr,"csPerMin"),
+      contexts:Array.isArray(c.contexts)?c.contexts:[...new Set(matches.map(m=>m.context).filter(Boolean))]
+    };
+  }
+  function renderChampionFacts(c){
+    const f=championMatchFacts(c);
+    const items=[
+      [t("metricWinRate"),f.winRate==null?"—":Math.round(f.winRate)+"%"],
+      [t("metricDamage"),f.damage==null?"—":fmt(Math.round(f.damage))],
+      [t("metricCs"),f.cs==null?"—":f.cs.toFixed(1)],
+      [t("metricContexts"),f.contexts?.length?f.contexts.join(" · "):"—"]
+    ];
+    $("#champion-facts").innerHTML=items.map(([label,value])=>'<article><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong></article>').join("");
+  }
+  function renderComparison(c){
+    const select=$("#compare-select"), others=state.champions.filter(x=>x.name!==c.name);
+    if(!others.length){select.innerHTML="";$("#champion-comparison").innerHTML="";return}
+    const prior=select.value;
+    select.innerHTML=others.map(x=>'<option value="'+esc(x.name)+'">'+esc(x.name)+'</option>').join("");
+    if(others.some(x=>x.name===prior))select.value=prior;
+    const other=others.find(x=>x.name===select.value)||others[0];
+    const rows=[
+      [t("games"),fmt(c.games),fmt(other.games)],
+      ["KDA",Number(c.avgKda||0).toFixed(1),Number(other.avgKda||0).toFixed(1)],
+      [t("mastery"),c.masteryPoints?fmt(c.masteryPoints):"—",other.masteryPoints?fmt(other.masteryPoints):"—"],
+      [t("metricConnection"),connectionScore(c),connectionScore(other)]
+    ];
+    $("#champion-comparison").innerHTML='<div class="compare-head"><b>'+esc(c.name)+'</b><span>VS</span><b>'+esc(other.name)+'</b></div>'+rows.map(r=>'<div class="compare-row"><strong>'+esc(r[1])+'</strong><span>'+esc(r[0])+'</span><strong>'+esc(r[2])+'</strong></div>').join("");
+    select.onchange=()=>renderComparison(c);
+  }
+  function updateMeta(c){
+    const player=state.profile?.player?.gameName||"Player";
+    const title=c.name+" · "+player+" · LoL Champion Journey";
+    const desc=t("scoreSummary",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
+    document.title=title;
+    const set=(sel,attr,value)=>{const el=$(sel);if(el)el.setAttribute(attr,value)};
+    set('meta[name="description"]',"content",desc);
+    set('meta[property="og:title"]',"content",title);
+    set('meta[property="og:description"]',"content",desc);
+    set('meta[property="og:url"]',"content",location.href);
+    set('meta[name="twitter:title"]',"content",title);
+    set('meta[name="twitter:description"]',"content",desc);
   }
   function renderProfile(){
     const p=state.profile; if(!p||!state.champions.length)return;
@@ -224,12 +311,16 @@
     $("#identity-cards").innerHTML=[
       [t("frequent"),t("frequentText")],[t("performanceTag"),t("performanceText",{kda:Number(c.avgKda||0).toFixed(1)})],[t("masteryTag"),t("masteryText",{points:c.masteryPoints?fmt(c.masteryPoints):"—"})]
     ].map(([a,b])=>'<div><b>'+esc(a)+'</b><p>'+esc(b)+'</p></div>').join("");
+    renderChampionFacts(c);
+    renderComparison(c);
+    const components=scoreComponents(c);
+    $("#formula-explanation").textContent=t("formulaText",{name:c.name,presence:components.presence,performance:components.performance,mastery:components.mastery,score});
     renderSnapshotComparison(c);
     renderTimeline(c);
     $("#share-title").textContent=c.name+" · "+(p.player?.gameName||"Player");
     $("#share-summary").textContent=t("scoreSummary",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
     $("#share-score").textContent=score;
-    document.title=c.name+" · LoL Champion Journey";
+    updateMeta(c);
   }
   function renderTimeline(c){
     const matches=state.profile?.matches||[];
@@ -262,14 +353,36 @@
   async function copyLink(){
     try{await navigator.clipboard.writeText(location.href);const b=$("#copy-link"),old=b.textContent;b.textContent=t("copied");setTimeout(()=>b.textContent=old,1400)}catch{}
   }
+  async function shareNative(){
+    const c=state.champions[state.selected]||state.champions[0];
+    const data={title:document.title,text:c?t("scoreSummary",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)}):"LoL Champion Journey",url:location.href};
+    try{
+      if(navigator.share)await navigator.share(data);
+      else await copyLink();
+    }catch{}
+  }
   $("#download-card").onclick=downloadCard;
   $("#copy-link").onclick=copyLink;
+  $("#share-native").onclick=shareNative;
 
   $("#search-form").addEventListener("submit",e=>{e.preventDefault();const g=$("#game-name").value.trim(),tag=$("#tag-line").value.trim().replace(/^#/,""),server=$("#region").value;if(g&&tag)loadProfile(g,tag,server)});
   $("#new-profile").onclick=()=>{state.profile=null;$("#profile-view").hidden=true;$("#landing-view").hidden=false;history.replaceState(null,"","./");document.title="LoL Champion Journey — sua história com cada campeão";renderRecent();};
   $("#refresh-data").onclick=()=>{const [g,tag]=($("#profile-riot-id").textContent||"Player#BR1").split("#");const server=new URLSearchParams(location.search).get("server")||"br1";loadProfile(g,tag,server,true)};
   $("#clear-recent").onclick=()=>{localStorage.removeItem("cj:recent");renderRecent()};
-  $$("[data-language]").forEach(b=>b.onclick=()=>setLang(b.dataset.language));
+  $("[data-language]").forEach(b=>b.onclick=()=>{
+    setLang(b.dataset.language);
+    const u=new URL(location.href);u.searchParams.set("lang",state.lang);history.replaceState(null,"",u.pathname+"?"+u.searchParams.toString());
+  });
+
+  let installPrompt=null;
+  addEventListener("beforeinstallprompt",e=>{e.preventDefault();installPrompt=e;$("#install-app").hidden=false});
+  $("#install-app").onclick=async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$("#install-app").hidden=true};
+  addEventListener("appinstalled",()=>{$("#install-app").hidden=true;installPrompt=null});
+  if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
+
+  const q=new URLSearchParams(location.search);
+  const requestedLang=q.get("lang");
+  if(requestedLang&&window.CJ_I18N[requestedLang])state.lang=requestedLang;
   setLang(state.lang); renderRecent();
-  const q=new URLSearchParams(location.search), id=q.get("riotId"); if(id&&id.includes("#")){const [g,tag]=id.split("#");loadProfile(g,tag,q.get("server")||"br1")}
+  const id=q.get("riotId"); if(id&&id.includes("#")){const [g,tag]=id.split("#");loadProfile(g,tag,q.get("server")||"br1")}
 })();
