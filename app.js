@@ -221,16 +221,26 @@
     host.innerHTML=cards.map(([a,b])=>'<article><b>'+esc(a)+'</b><p>'+esc(b)+'</p></article>').join("");
   }
   function renderSnapshotHistory(c){
-    const host=$("#snapshot-history"),bars=$("#history-bars");
+    const host=$("#snapshot-history"),bars=$("#history-bars"),select=$("#history-metric");
     if(state.snapshots.length<2){host.hidden=true;bars.innerHTML="";return}
     const usable=state.snapshots.slice(-12);
     const df=new Intl.DateTimeFormat(state.lang,{day:"2-digit",month:"short"});
+    const metric=select?.value||"connection";
+    const rows=usable.map(s=>{
+      const row=(s.champions||[]).find(x=>x.name===c.name)||{};
+      const value=metric==="kda"?Number(row.avgKda||0):metric==="mastery"?Number(row.masteryPoints||0):metric==="games"?Number(row.games||0):snapshotScore(s,c);
+      return {snapshot:s,value};
+    });
+    const max=Math.max(...rows.map(x=>x.value),metric==="connection"?100:1);
     host.hidden=false;
     $("#history-range").textContent=df.format(new Date(usable[0].capturedAt))+" → "+df.format(new Date(usable[usable.length-1].capturedAt));
-    bars.innerHTML=usable.map((s,i)=>{
-      const score=snapshotScore(s,c),date=df.format(new Date(s.capturedAt));
-      return '<div class="history-bar" title="'+esc(date+" · "+score)+'"><i style="--h:'+Math.max(4,score)+'%"></i><span>'+score+'</span><small>'+esc(date)+'</small></div>';
+    bars.innerHTML=rows.map(({snapshot:s,value})=>{
+      const date=df.format(new Date(s.capturedAt));
+      const h=metric==="connection"?Math.max(4,value):Math.max(4,Math.round(value/max*100));
+      const label=metric==="mastery"?fmt(value):metric==="kda"?value.toFixed(1):String(Math.round(value));
+      return '<div class="history-bar" title="'+esc(date+" · "+label)+'"><i style="--h:'+h+'%"></i><span>'+esc(label)+'</span><small>'+esc(date)+'</small></div>';
     }).join("");
+    if(select)select.onchange=()=>renderSnapshotHistory(c);
   }
   function renderSnapshotComparison(c){
     state.snapshots=readSnapshots();
