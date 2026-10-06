@@ -16,6 +16,10 @@ on:
       - "privacy.html"
       - "live-update.js"
 permissions: { contents: write }
+
+concurrency:
+  group: live-version
+  cancel-in-progress: true
 jobs:
   version:
     runs-on: ubuntu-latest
