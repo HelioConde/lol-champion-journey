@@ -64,19 +64,39 @@
     qsa(".recent-search").forEach((b,i)=>b.onclick=()=>loadProfile(list[i].gameName,list[i].tagLine,list[i].server));
   }
 
-  async function fetchProfile(gameName,tagLine,server){
+  async function requestProfile(gameName,tagLine,server,sampleLimit){
     const endpoint=window.CHAMPION_JOURNEY_BACKEND?.lolProfile;
     if(!endpoint) throw Object.assign(new Error("backend"),{status:0});
     const controller=new AbortController();
-    const timer=setTimeout(()=>controller.abort(),16000);
+    const timer=setTimeout(()=>controller.abort(),18000);
     try{
       const res=await fetch(endpoint,{method:"POST",headers:{"content-type":"application/json"},signal:controller.signal,body:JSON.stringify({
-        gameName,tagLine,platform:server,region:regions[server]||"americas",limit:100,matchLimit:100,historyDepth:100
+        gameName,tagLine,platform:server,region:regions[server]||"americas",limit:sampleLimit,matchLimit:sampleLimit,historyDepth:sampleLimit
       })});
       const data=await res.json().catch(()=>({}));
-      if(!res.ok) throw Object.assign(new Error(data?.message||("http_"+res.status)),{status:res.status,data});
+      if(!res.ok) throw Object.assign(new Error(data?.message||("http_"+res.status)),{status:res.status,data,sampleLimit});
+      data.__requestedLimit=sampleLimit;
       return data;
     }finally{clearTimeout(timer)}
+  }
+
+  async function fetchProfile(gameName,tagLine,server){
+    const attempts=[30,20,12];
+    let lastError=null;
+    for(const sampleLimit of attempts){
+      try{
+        const data=await requestProfile(gameName,tagLine,server,sampleLimit);
+        if(sampleLimit<attempts[0])window.CJ_OBS?.event("riot_lookup_degraded",{server,sampleLimit});
+        return data;
+      }catch(e){
+        lastError=e;
+        if(e?.status===404)throw e;
+        if(e?.status&&e.status<500&&e.status!==429)throw e;
+        window.CJ_OBS?.event("riot_lookup_retry",{server,status:Number(e?.status||0),sampleLimit});
+        await new Promise(r=>setTimeout(r,e?.status===429?900:350));
+      }
+    }
+    throw lastError||Object.assign(new Error("backend"),{status:0});
   }
 
   function setLoading(active,refresh=false){
