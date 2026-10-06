@@ -182,3 +182,10 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .timeline-item b{display:block;font-size:17px}
   .timeline-item p{margin-top:8px}
 }
+
+@media(max-width:560px){
+  .source-row{display:grid!important;grid-template-columns:auto auto 1fr;align-items:center;column-gap:7px;row-gap:7px}
+  .source-row #sample-note{grid-column:1/-1;grid-row:2;max-width:none}
+  .source-row .source-retry{grid-column:1/-1;grid-row:3}
+  .source-row #data-badge,.source-row #confidence-badge{justify-self:start}
+}
