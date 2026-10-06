@@ -1,6 +1,6 @@
 (() => {
   const $ = s => document.querySelector(s);
-  const $$ = s => [...document.querySelectorAll(s)];
+  const qsa = s => [...document.querySelectorAll(s)];
   const state = { lang: localStorage.getItem("cj:lang") || "pt-BR", profile:null, champions:[], selected:0, demo:false, snapshots:[] };
   const regions = {br1:"americas",na1:"americas",la1:"americas",la2:"americas",oc1:"sea",euw1:"europe",eun1:"europe",tr1:"europe",ru:"europe",kr:"asia",jp1:"asia",sg2:"sea",ph2:"sea",tw2:"sea",th2:"sea",vn2:"sea"};
   const demo = {
@@ -24,8 +24,8 @@
   }
   function setLang(lang){
     state.lang=lang; localStorage.setItem("cj:lang",lang);
-    document.documentElement.lang=lang; $$$("[data-language]").forEach(b=>b.classList.toggle("is-active",b.dataset.language===lang));
-    $$("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));
+    document.documentElement.lang=lang; $qsa("[data-language]").forEach(b=>b.classList.toggle("is-active",b.dataset.language===lang));
+    qsa("[data-i18n]").forEach(el=>el.textContent=t(el.dataset.i18n));
     if(state.profile) renderProfile();
   }
   const fmt = n => Number(n||0).toLocaleString(state.lang==="pt-BR"?"pt-BR":"en-US");
@@ -61,7 +61,7 @@
     let list=[]; try{list=JSON.parse(localStorage.getItem("cj:recent")||"[]")}catch{}
     $("#recent-searches").hidden=!list.length;
     $("#recent-searches-list").innerHTML=list.map((x,i)=>'<button class="recent-search" data-i="'+i+'"><b>'+esc(x.gameName)+"#"+esc(x.tagLine)+'</b><span>'+esc(x.server.toUpperCase())+'</span></button>').join("");
-    $$(".recent-search").forEach((b,i)=>b.onclick=()=>loadProfile(list[i].gameName,list[i].tagLine,list[i].server));
+    qsa(".recent-search").forEach((b,i)=>b.onclick=()=>loadProfile(list[i].gameName,list[i].tagLine,list[i].server));
   }
 
   async function fetchProfile(gameName,tagLine,server){
@@ -402,7 +402,7 @@
     $("#metric-kda").textContent=Number(c.avgKda||0).toFixed(1);
     $("#metric-mastery").textContent=c.masteryPoints?fmt(c.masteryPoints):"—";
     $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+'" data-i="'+i+'"><img class="chip-bg" src="'+esc(splash(x.name))+'" alt="" loading="lazy" decoding="async"><span><b>'+esc(x.name)+'</b><small>'+fmt(x.games)+' '+t("games")+'</small></span><strong>'+connectionScore(x)+'</strong></button>').join("");
-    $$(".champion-chip").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.i);window.CJ_OBS?.event("champion_selected",{champion:state.champions[state.selected]?.name||null});renderProfile();document.querySelector(".journey-grid").scrollIntoView({behavior:"smooth",block:"start"})});
+    qsa(".champion-chip").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.i);window.CJ_OBS?.event("champion_selected",{champion:state.champions[state.selected]?.name||null});renderProfile();document.querySelector(".journey-grid").scrollIntoView({behavior:"smooth",block:"start"})});
     $("#chapter-title").textContent=state.selected===0?t("chapterMain"):t("chapterOther");
     $("#chapter-text").textContent=t("chapterText",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
     [["presence",presence],["performance",components.performance],["mastery",mastery],["consistency",components.consistency]].forEach(([id,v])=>{$("#"+id+"-label").textContent=v+"%";$("#"+id+"-bar").style.width=v+"%"});
@@ -489,7 +489,7 @@
   $("#new-profile").onclick=()=>{state.profile=null;$("#profile-view").hidden=true;$("#landing-view").hidden=false;history.replaceState(null,"","./");document.title="LoL Champion Journey — sua história com cada campeão";renderRecent();};
   $("#refresh-data").onclick=()=>{const [g,tag]=($("#profile-riot-id").textContent||"Player#BR1").split("#");const server=new URLSearchParams(location.search).get("server")||"br1";loadProfile(g,tag,server,true)};
   $("#clear-recent").onclick=()=>{localStorage.removeItem("cj:recent");renderRecent()};
-  $("[data-language]").forEach(b=>b.onclick=()=>{
+  qsa("[data-language]").forEach(b=>b.onclick=()=>{
     setLang(b.dataset.language);
     const u=new URL(location.href);u.searchParams.set("lang",state.lang);history.replaceState(null,"",u.pathname+"?"+u.searchParams.toString());
   });
