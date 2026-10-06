@@ -435,22 +435,32 @@
     if(others.some(x=>x.name===prior))select.value=prior;
     const other=others.find(x=>x.name===select.value)||others[0];
     const cf=championMatchFacts(c),of=championMatchFacts(other);
+    const arenaCompare=cf.arenaOnly&&of.arenaOnly;
     const rows=[
-      [t("games"),fmt(c.games),fmt(other.games),Number(c.games||0),Number(other.games||0),true],
-      ["KDA",Number(c.avgKda||0).toFixed(1),Number(other.avgKda||0).toFixed(1),Number(c.avgKda||0),Number(other.avgKda||0),true],
-      [t("metricWinRate"),cf.winRate==null?"—":Math.round(cf.winRate)+"%",of.winRate==null?"—":Math.round(of.winRate)+"%",cf.winRate,of.winRate,cf.winRate!=null&&of.winRate!=null],
-      [t("metricDamage"),cf.damage==null?"—":fmt(Math.round(cf.damage)),of.damage==null?"—":fmt(Math.round(of.damage)),cf.damage,of.damage,cf.damage!=null&&of.damage!=null],
-      [t("mastery"),c.masteryPoints?fmt(c.masteryPoints):"—",other.masteryPoints?fmt(other.masteryPoints):"—",Number(c.masteryPoints||0),Number(other.masteryPoints||0),Boolean(c.masteryPoints&&other.masteryPoints)],
-      [t("metricConnection"),connectionScore(c),connectionScore(other),connectionScore(c),connectionScore(other),true]
+      [t("games"),fmt(c.games),fmt(other.games),Number(c.games||0),Number(other.games||0),true,"higher"],
+      ["KDA",Number(c.avgKda||0).toFixed(1),Number(other.avgKda||0).toFixed(1),Number(c.avgKda||0),Number(other.avgKda||0),true,"higher"],
+      [
+        arenaCompare?t("metricBestPlacement"):t("metricWinRate"),
+        arenaCompare?(cf.bestPlacement==null?"—":"#"+cf.bestPlacement):(cf.winRate==null?"—":Math.round(cf.winRate)+"%"),
+        arenaCompare?(of.bestPlacement==null?"—":"#"+of.bestPlacement):(of.winRate==null?"—":Math.round(of.winRate)+"%"),
+        arenaCompare?cf.bestPlacement:cf.winRate,
+        arenaCompare?of.bestPlacement:of.winRate,
+        arenaCompare?(cf.bestPlacement!=null&&of.bestPlacement!=null):(cf.winRate!=null&&of.winRate!=null),
+        arenaCompare?"lower":"higher"
+      ],
+      [t("metricDamage"),cf.damage==null?"—":fmt(Math.round(cf.damage)),of.damage==null?"—":fmt(Math.round(of.damage)),cf.damage,of.damage,cf.damage!=null&&of.damage!=null,"higher"],
+      [t("mastery"),c.masteryPoints?fmt(c.masteryPoints):"—",other.masteryPoints?fmt(other.masteryPoints):"—",Number(c.masteryPoints||0),Number(other.masteryPoints||0),Boolean(c.masteryPoints&&other.masteryPoints),"higher"],
+      [t("metricConnection"),connectionScore(c),connectionScore(other),connectionScore(c),connectionScore(other),true,"higher"]
     ];
-    const sideClass=(a,b,enabled)=>{
+    const wins=(a,b,direction)=>direction==="lower"?Number(a)<Number(b):Number(a)>Number(b);
+    const sideClass=(a,b,enabled,direction="higher")=>{
       if(!enabled||!Number.isFinite(Number(a))||!Number.isFinite(Number(b)))return "";
       if(Number(a)===Number(b))return " is-tie";
-      return Number(a)>Number(b)?" is-winner":" is-loser";
+      return wins(a,b,direction)?" is-winner":" is-loser";
     };
-    $("#champion-comparison").innerHTML='<div class="compare-head"><div class="compare-champion"><img src="'+esc(splash(c.name))+'" alt="" loading="lazy" decoding="async"><b>'+esc(c.name)+'</b></div><span>VS</span><div class="compare-champion is-right"><img src="'+esc(splash(other.name))+'" alt="" loading="lazy" decoding="async"><b>'+esc(other.name)+'</b></div></div>'+rows.map(r=>'<div class="compare-row"><strong class="'+sideClass(r[3],r[4],r[5]).trim()+'">'+esc(r[1])+'</strong><span>'+esc(r[0])+'</span><strong class="'+sideClass(r[4],r[3],r[5]).trim()+'">'+esc(r[2])+'</strong></div>').join("");
-    const cWins=rows.filter(r=>r[5]&&Number(r[3])>Number(r[4])).map(r=>r[0]);
-    const oWins=rows.filter(r=>r[5]&&Number(r[4])>Number(r[3])).map(r=>r[0]);
+    $("#champion-comparison").innerHTML='<div class="compare-head"><div class="compare-champion"><img src="'+esc(splash(c.name))+'" alt="" loading="lazy" decoding="async"><b>'+esc(c.name)+'</b></div><span>VS</span><div class="compare-champion is-right"><img src="'+esc(splash(other.name))+'" alt="" loading="lazy" decoding="async"><b>'+esc(other.name)+'</b></div></div>'+rows.map(r=>'<div class="compare-row"><strong class="'+sideClass(r[3],r[4],r[5],r[6]).trim()+'">'+esc(r[1])+'</strong><span>'+esc(r[0])+'</span><strong class="'+sideClass(r[4],r[3],r[5],r[6]).trim()+'">'+esc(r[2])+'</strong></div>').join("");
+    const cWins=rows.filter(r=>r[5]&&wins(r[3],r[4],r[6])).map(r=>r[0]);
+    const oWins=rows.filter(r=>r[5]&&wins(r[4],r[3],r[6])).map(r=>r[0]);
     const list=items=>new Intl.ListFormat(state.lang,{style:"long",type:"conjunction"}).format(items);
     $("#comparison-summary").textContent=cWins.length&&oWins.length
       ? t("compareSummaryBoth",{a:c.name,aWins:list(cWins),b:other.name,bWins:list(oWins)})

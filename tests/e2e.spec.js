@@ -404,3 +404,32 @@ test("Arena usa melhor colocação em vez de taxa de vitória", async ({page}) =
   await expect(page.locator("#champion-facts")).toContainText("Melhor colocação");
   await expect(page.locator("#champion-facts")).toContainText("#2");
 });
+
+test("comparação de Arena usa colocação e menor valor vence", async ({page}) => {
+  await page.unroute("**/public-lol-profile");
+  await page.route("**/public-lol-profile", route => route.fulfill({
+    status:200,
+    contentType:"application/json",
+    body:JSON.stringify({
+      ...riotPayload,
+      summary:{...riotPayload.summary,matches:4},
+      championSummaries:[
+        {name:"Lux",games:2,avgKda:3.0,contexts:["ARENA"]},
+        {name:"Ahri",games:2,avgKda:2.5,contexts:["ARENA"]}
+      ],
+      matches:[
+        {playedAt:Date.UTC(2026,8,1),champion:"Lux",context:"ARENA",placement:2,kda:3.3,damagePerMin:720},
+        {playedAt:Date.UTC(2026,8,2),champion:"Lux",context:"ARENA",placement:4,kda:2.7,damagePerMin:700},
+        {playedAt:Date.UTC(2026,8,3),champion:"Ahri",context:"ARENA",placement:5,kda:2.8,damagePerMin:650},
+        {playedAt:Date.UTC(2026,8,4),champion:"Ahri",context:"ARENA",placement:7,kda:2.2,damagePerMin:630}
+      ]
+    })
+  }));
+  await page.locator("#game-name").fill("ArenaCompare");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  const placementRow=page.locator("#champion-comparison .compare-row").filter({hasText:"Melhor colocação"});
+  await expect(placementRow).toContainText("#2");
+  await expect(placementRow).toContainText("#5");
+  await expect(placementRow.locator("strong").first()).toHaveClass(/is-winner/);
+});
