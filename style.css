@@ -284,3 +284,8 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .identity-swipe-hint[hidden]{display:none!important}
   .snapshot-first .source-retry{width:100%;min-height:42px;margin-top:4px}
 }
+
+.hero-context{display:inline-flex;align-items:center;margin-top:10px;padding:6px 9px;border:1px solid rgba(76,215,232,.24);border-radius:999px;background:rgba(76,215,232,.07);color:#b9f7ff;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+@media(max-width:560px){
+  .hero-context{margin-top:7px;padding:5px 8px;font-size:8px}
+}
