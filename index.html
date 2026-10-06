@@ -78,7 +78,13 @@
           <div>
             <button id="new-profile" class="back-btn" data-i18n="newProfile">← Novo perfil</button>
             <div class="source-row"><span id="data-badge" class="data-badge">DADOS RIOT</span><span id="confidence-badge" class="confidence-badge" hidden></span><span id="sample-note"></span><button id="retry-demo" class="source-retry" type="button" hidden data-i18n="retryNow">Tentar novamente</button><button id="complete-sample" class="source-retry" type="button" hidden data-i18n="completeSample">Completar amostra</button></div>
-            <p id="profile-riot-id" class="riot-id"></p>
+            <div class="profile-identity">
+              <img id="profile-icon" class="profile-icon" alt="" hidden>
+              <div>
+                <p id="profile-riot-id" class="riot-id"></p>
+                <span id="profile-level" class="profile-level"></span>
+              </div>
+            </div>
             <span class="eyebrow" data-i18n="signature">CAMPEÃO ASSINATURA</span>
             <h1 id="champion-name">—</h1>
             <p id="champion-story" class="champion-story"></p>
