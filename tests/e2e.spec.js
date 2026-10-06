@@ -433,3 +433,36 @@ test("comparação de Arena usa colocação e menor valor vence", async ({page})
   await expect(placementRow).toContainText("#5");
   await expect(placementRow.locator("strong").first()).toHaveClass(/is-winner/);
 });
+
+test("hero mostra o contexto dominante da amostra", async ({page}) => {
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator("#hero-context")).toContainText("RANQUEADA");
+  await expect(page.locator("#hero-context")).toContainText("NORMAL");
+});
+
+test("hero identifica recorte de Arena", async ({page}) => {
+  await page.unroute("**/public-lol-profile");
+  const arenaPayload={
+    ...riotPayload,
+    summary:{...riotPayload.summary,primaryPosition:null},
+    championSummaries:[{name:"Senna",games:3,avgKda:2.0,contexts:["ARENA"]}],
+    mastery:[],
+    matches:[
+      {playedAt:Date.UTC(2026,8,20),champion:"Senna",context:"ARENA",placement:2,kda:4.0,damagePerMin:1081},
+      {playedAt:Date.UTC(2026,8,21),champion:"Senna",context:"ARENA",placement:5,kda:1.2,damagePerMin:955},
+      {playedAt:Date.UTC(2026,8,24),champion:"Senna",context:"ARENA",placement:6,kda:0.9,damagePerMin:820}
+    ]
+  };
+  await page.route("**/public-lol-profile", route => route.fulfill({
+    status:200,
+    contentType:"application/json",
+    body:JSON.stringify(arenaPayload)
+  }));
+  await page.locator("#game-name").fill("ArenaPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator("#hero-context")).toHaveText("Recorte: ARENA");
+  await expect(page.locator("#champion-facts")).toContainText("Melhor colocação");
+});
