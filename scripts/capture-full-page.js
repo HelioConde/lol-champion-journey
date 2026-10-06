@@ -1,0 +1,59 @@
+const { chromium } = require("@playwright/test");
+const fs = require("fs");
+const path = require("path");
+
+(async () => {
+  const url = process.argv[2] || "https://helioconde.github.io/lol-champion-journey/";
+  const out = process.argv[3] || "screenshots/full-page.png";
+  const width = Number(process.env.SCREENSHOT_WIDTH || 1440);
+  const height = Number(process.env.SCREENSHOT_HEIGHT || 1100);
+
+  fs.mkdirSync(path.dirname(out), { recursive: true });
+
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage({
+    viewport: { width, height },
+    deviceScaleFactor: 1
+  });
+
+  page.on("console", msg => {
+    if (msg.type() === "error") console.error("[browser]", msg.text());
+  });
+
+  await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });
+  await page.evaluate(async () => {
+    const images = [...document.images];
+    await Promise.all(images.map(img => img.complete ? null : new Promise(resolve => {
+      img.addEventListener("load", resolve, { once: true });
+      img.addEventListener("error", resolve, { once: true });
+    })));
+    if (document.fonts?.ready) await document.fonts.ready;
+  });
+
+  await page.waitForTimeout(1500);
+
+  await page.screenshot({
+    path: out,
+    fullPage: true,
+    animations: "disabled"
+  });
+
+  const metrics = await page.evaluate(() => ({
+    title: document.title,
+    url: location.href,
+    width: document.documentElement.scrollWidth,
+    height: document.documentElement.scrollHeight,
+    capturedAt: new Date().toISOString()
+  }));
+
+  fs.writeFileSync(
+    out.replace(/\.png$/i, ".json"),
+    JSON.stringify(metrics, null, 2)
+  );
+
+  console.log(JSON.stringify(metrics, null, 2));
+  await browser.close();
+})().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
