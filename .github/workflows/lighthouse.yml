@@ -1,0 +1,74 @@
+name: Lighthouse
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "style.css"
+      - "app.js"
+      - "i18n.js"
+      - "service-worker.js"
+      - "manifest.webmanifest"
+      - ".github/workflows/lighthouse.yml"
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+
+      - name: Start local site
+        run: |
+          npm run dev > /tmp/champion-journey-http.log 2>&1 &
+          echo $! > /tmp/champion-journey-http.pid
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/champion-journey-http.log
+          exit 1
+
+      - name: Run Lighthouse
+        run: |
+          npx --yes lighthouse http://127.0.0.1:4173/             --quiet             --chrome-flags="--headless --no-sandbox"             --output=json             --output-path=./lighthouse.json
+
+      - name: Enforce quality budgets
+        run: |
+          node <<'NODE'
+          const fs=require("fs");
+          const x=JSON.parse(fs.readFileSync("lighthouse.json","utf8"));
+          const scores={
+            performance:x.categories.performance.score,
+            accessibility:x.categories.accessibility.score,
+            bestPractices:x.categories["best-practices"].score,
+            seo:x.categories.seo.score
+          };
+          console.log(scores);
+          const minimum={performance:.72,accessibility:.90,bestPractices:.90,seo:.90};
+          for(const [key,min] of Object.entries(minimum)){
+            if(Number(scores[key]||0)<min) throw new Error(key+" score below budget: "+scores[key]+" < "+min);
+          }
+          const lcp=x.audits["largest-contentful-paint"]?.numericValue;
+          const cls=x.audits["cumulative-layout-shift"]?.numericValue;
+          console.log({lcpMs:lcp,cls});
+          if(Number.isFinite(lcp)&&lcp>4500) throw new Error("LCP above 4.5s budget");
+          if(Number.isFinite(cls)&&cls>.18) throw new Error("CLS above 0.18 budget");
+          NODE
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse-report
+          path: lighthouse.json
+          retention-days: 14
