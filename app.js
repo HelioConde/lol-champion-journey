@@ -1,7 +1,7 @@
 (() => {
   const $ = s => document.querySelector(s);
   const $$ = s => [...document.querySelectorAll(s)];
-  const state = { lang: localStorage.getItem("cj:lang") || "pt-BR", profile:null, champions:[], selected:0, demo:false };
+  const state = { lang: localStorage.getItem("cj:lang") || "pt-BR", profile:null, champions:[], selected:0, demo:false, snapshots:[] };
   const regions = {br1:"americas",na1:"americas",la1:"americas",la2:"americas",oc1:"sea",euw1:"europe",eun1:"europe",tr1:"europe",ru:"europe",kr:"asia",jp1:"asia",sg2:"sea",ph2:"sea",tw2:"sea",th2:"sea",vn2:"sea"};
   const demo = {
     player:{gameName:"JourneyPlayer",tagLine:"BR1",level:214,platform:"BR1"},
@@ -65,10 +65,96 @@
     }
     state.selected=0;
     prepareChampions();
+    saveSnapshot();
     saveRecent(gameName,tagLine,server);
     history.replaceState(null,"","?riotId="+encodeURIComponent(gameName+"#"+tagLine)+"&server="+encodeURIComponent(server));
     $("#landing-view").hidden=true; $("#profile-view").hidden=false; window.scrollTo({top:0,behavior:refresh?"smooth":"auto"});
     renderProfile();
+  }
+
+  function snapshotKey(profile=state.profile){
+    const player=profile?.player||{};
+    return "cj:snapshots:"+[String(player.gameName||"").toLowerCase(),String(player.tagLine||"").toLowerCase(),String(player.platform||"").toLowerCase()].join(":");
+  }
+  function readSnapshots(profile=state.profile){
+    try{
+      const raw=JSON.parse(localStorage.getItem(snapshotKey(profile))||"[]");
+      return Array.isArray(raw)?raw:[];
+    }catch{return []}
+  }
+  function buildSnapshot(){
+    if(!state.profile||state.demo||!state.champions.length)return null;
+    return {
+      capturedAt:Date.now(),
+      sampleMatches:Number(state.profile.summary?.matches||0),
+      signature:state.champions[0]?.name||null,
+      champions:state.champions.slice(0,12).map(c=>({
+        name:c.name,
+        games:Number(c.games||0),
+        avgKda:Number(c.avgKda||0),
+        masteryPoints:Number(c.masteryPoints||0),
+        masteryLevel:Number(c.masteryLevel||0)
+      }))
+    };
+  }
+  function saveSnapshot(){
+    const snap=buildSnapshot();
+    if(!snap)return;
+    const key=snapshotKey();
+    const list=readSnapshots();
+    const previous=list[list.length-1];
+    const sameSample=previous &&
+      previous.sampleMatches===snap.sampleMatches &&
+      previous.signature===snap.signature &&
+      JSON.stringify(previous.champions)===JSON.stringify(snap.champions);
+    if(!sameSample){
+      const next=[...list,snap].slice(-24);
+      localStorage.setItem(key,JSON.stringify(next));
+      state.snapshots=next;
+    }else{
+      state.snapshots=list;
+    }
+  }
+  function signed(value,digits=0){
+    const n=Number(value||0);
+    if(Math.abs(n)<Math.pow(10,-digits)/2)return "0";
+    return (n>0?"+":"")+n.toFixed(digits);
+  }
+  function deltaClass(n){
+    n=Number(n||0);
+    return n>0?"delta-positive":n<0?"delta-negative":"delta-neutral";
+  }
+  function renderSnapshotComparison(c){
+    state.snapshots=readSnapshots();
+    $("#snapshot-count").textContent=state.snapshots.length+" snapshot"+(state.snapshots.length===1?"":"s");
+    const empty=$("#snapshot-empty"), grid=$("#snapshot-comparison");
+    if(state.snapshots.length<2){
+      empty.hidden=false; grid.hidden=true; return;
+    }
+    empty.hidden=true; grid.hidden=false;
+    const curr=state.snapshots[state.snapshots.length-1], prev=state.snapshots[state.snapshots.length-2];
+    const currChampion=curr.champions.find(x=>x.name===c.name)||{games:0,avgKda:0,masteryPoints:0};
+    const prevChampion=prev.champions.find(x=>x.name===c.name)||{games:0,avgKda:0,masteryPoints:0};
+
+    const signatureChanged=curr.signature!==prev.signature;
+    $("#delta-signature").textContent=curr.signature||"—";
+    $("#delta-signature").className=signatureChanged?"delta-positive":"delta-neutral";
+    $("#delta-signature-note").textContent=signatureChanged?t("newChampion",{old:prev.signature||"—"}):t("sameChampion");
+
+    const gamesDelta=currChampion.games-prevChampion.games;
+    $("#delta-games").textContent=signed(gamesDelta);
+    $("#delta-games").className=deltaClass(gamesDelta);
+    $("#delta-games-note").textContent=t("sinceLast");
+
+    const kdaDelta=currChampion.avgKda-prevChampion.avgKda;
+    $("#delta-kda").textContent=signed(kdaDelta,1);
+    $("#delta-kda").className=deltaClass(kdaDelta);
+    $("#delta-kda-note").textContent=t("sinceLast");
+
+    const masteryDelta=currChampion.masteryPoints-prevChampion.masteryPoints;
+    $("#delta-mastery").textContent=(masteryDelta>0?"+":"")+fmt(masteryDelta);
+    $("#delta-mastery").className=deltaClass(masteryDelta);
+    $("#delta-mastery-note").textContent=t("sinceLast");
   }
 
   function prepareChampions(){
@@ -114,6 +200,7 @@
     $("#identity-cards").innerHTML=[
       [t("frequent"),t("frequentText")],[t("performanceTag"),t("performanceText",{kda:Number(c.avgKda||0).toFixed(1)})],[t("masteryTag"),t("masteryText",{points:c.masteryPoints?fmt(c.masteryPoints):"—"})]
     ].map(([a,b])=>'<div><b>'+esc(a)+'</b><p>'+esc(b)+'</p></div>').join("");
+    renderSnapshotComparison(c);
     renderTimeline(c);
     $("#share-title").textContent=c.name+" · "+(p.player?.gameName||"Player");
     $("#share-summary").textContent=t("scoreSummary",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
