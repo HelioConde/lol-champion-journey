@@ -318,3 +318,11 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .comparison-table .compare-row strong{font-size:14px;text-align:center}
   .comparison-summary{margin-top:9px}
 }
+
+/* Mobile visual-journey carousel from snapshot review */
+@media(max-width:560px){
+  .timeline{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:2px 2px 8px;margin-left:-2px;margin-right:-2px}
+  .timeline::-webkit-scrollbar{display:none}
+  .timeline-item{flex:0 0 82%;scroll-snap-align:start;min-height:168px;padding:16px}
+  .timeline-item p{max-width:30ch}
+}
