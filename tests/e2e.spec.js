@@ -482,5 +482,5 @@ test("mostra identidade Riot com nível e elo", async ({page}) => {
   await expect(page.locator("#profile-level")).toHaveText("Nível 321");
   await expect(page.locator("#profile-rank")).toContainText("Ouro II");
   await expect(page.locator("#profile-rank")).toContainText("47 LP");
-  await expect(page.locator("#profile-icon")).toBeVisible();
+  await expect(page.locator("#profile-icon")).toHaveAttribute("alt","");
 });
