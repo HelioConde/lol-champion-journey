@@ -53,6 +53,11 @@
       : (count===1?"gameSingular":"gamePlural");
     return fmt(count)+" "+t(key);
   };
+  const contextText=value=>{
+    const raw=String(value||"").toUpperCase();
+    const key={ARENA:"contextArena",RANKED:"contextRanked",NORMAL:"contextNormal",ARAM:"contextAram"}[raw];
+    return key?t(key):raw;
+  };
   const esc = v => String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   const slug = name => name.replace(/[^A-Za-z0-9]/g,"");
   let ddragonCatalog=null;
@@ -433,7 +438,7 @@
       [f.arenaOnly?t("metricTop4Rate"):t("metricCs"),f.arenaOnly?(f.top4Rate==null?"—":Math.round(f.top4Rate)+"%"):(f.cs==null?"—":f.cs.toFixed(1))],
       [t("metricBestKda"),f.bestKda==null?"—":f.bestKda.toFixed(1)],
       [f.arenaOnly?t("metricAvgPlacement"):t("metricStreak"),f.arenaOnly?(f.avgPlacement==null?"—":f.avgPlacement.toFixed(1)):f.streak],
-      [t("metricContexts"),f.contexts?.length?f.contexts.join(" · "):"—"]
+      [t("metricContexts"),f.contexts?.length?f.contexts.map(contextText).join(" · "):"—"]
     ];
     $("#champion-facts").innerHTML=items.map(([label,value])=>'<article><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong></article>').join("");
   }
@@ -526,8 +531,7 @@
     $("#champion-name").textContent=c.name;
     $("#champion-story").textContent=t("chapterText",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)});
     const heroFacts=championMatchFacts(c);
-    const contextNames={ARENA:t("contextArena"),RANKED:t("contextRanked"),NORMAL:t("contextNormal")};
-    const heroContexts=(heroFacts.contexts||[]).map(x=>contextNames[String(x).toUpperCase()]||String(x).toUpperCase()).filter(Boolean);
+    const heroContexts=(heroFacts.contexts||[]).map(contextText).filter(Boolean);
     $("#hero-context").hidden=!heroContexts.length;
     $("#hero-context").textContent=heroContexts.length?t("contextLabel")+": "+heroContexts.join(" · "):"";
     $("#metric-games").textContent=fmt(c.games);
