@@ -317,3 +317,13 @@ test("amostra parcial mostra confiança e ação de completar", async ({page}) =
   await expect(page.locator("#confidence-badge")).toHaveText("Confiança inicial");
   await expect(page.locator("#complete-sample")).toBeVisible();
 });
+
+test("comparação destaca vencedores por métrica", async ({page}) => {
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  const rows=page.locator("#champion-comparison .compare-row");
+  await expect(rows).toHaveCount(6);
+  await expect(rows.filter({hasText:"partidas"}).locator("strong").first()).toHaveClass(/is-winner/);
+  await expect(rows.filter({hasText:"KDA"}).locator("strong").first()).toHaveClass(/is-winner/);
+});
