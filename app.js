@@ -262,7 +262,7 @@
     const cards=[
       [mainChanged?t("signalMainChanging"):t("signalMainStable"),mainChanged?t("signalMainChangingText",{old:prev.signature||"—",name:curr.signature||"—"}):t("signalMainStableText",{name:curr.signature||"—"})]
     ];
-    if(rising)cards.push([t("signalRising"),t("signalRisingText",{name:rising.name,delta:rising.delta})]);
+    if(rising)cards.push([t("signalRising"),t("signalRisingText",{name:rising.name,gamesText:gameText(rising.delta,false)})]);
     if(left)cards.push([t("signalLeftSample"),t("signalLeftSampleText",{name:left.name})]);
     host.hidden=false;
     host.innerHTML=cards.map(([a,b])=>'<article><b>'+esc(a)+'</b><p>'+esc(b)+'</p></article>').join("");
