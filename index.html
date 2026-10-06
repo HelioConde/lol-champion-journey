@@ -5,7 +5,22 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#090b14">
   <title>LoL Champion Journey — sua história com cada campeão</title>
-  <meta name="description" content="Veja sua jornada pessoal com os campeões de League of Legends: frequência, desempenho, maestria e evolução recente.">
+  <meta name="description" content="Veja sua jornada pessoal com os campeões de League of Legends: frequência, desempenho, maestria, comparação e evolução recente.">
+  <meta name="application-name" content="LoL Champion Journey">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LoL Champion Journey">
+  <meta property="og:title" content="LoL Champion Journey — sua história com cada campeão">
+  <meta property="og:description" content="Transforme suas partidas recentes em uma jornada visual por campeão.">
+  <meta property="og:url" content="https://helioconde.github.io/lol-champion-journey/">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="LoL Champion Journey">
+  <meta name="twitter:description" content="Sua jornada visual por campeão no League of Legends.">
+  <link rel="canonical" href="https://helioconde.github.io/lol-champion-journey/">
+  <link rel="alternate" hreflang="pt-BR" href="https://helioconde.github.io/lol-champion-journey/?lang=pt-BR">
+  <link rel="alternate" hreflang="en" href="https://helioconde.github.io/lol-champion-journey/?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://helioconde.github.io/lol-champion-journey/">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="stylesheet" href="./style.css">
 </head>
@@ -16,6 +31,7 @@
       <span class="brand-mark">CJ</span><span><b>Champion Journey</b><small>League of Legends</small></span>
     </a>
     <div class="top-actions">
+      <button id="install-app" class="install-btn" type="button" hidden data-i18n="install">Instalar app</button>
       <button class="lang is-active" data-language="pt-BR">PT</button>
       <button class="lang" data-language="en">EN</button>
     </div>
@@ -98,6 +114,40 @@
           </article>
         </section>
 
+        <section class="section insight-section">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow" data-i18n="deepAnalysis">ANÁLISE DO CAMPEÃO</span>
+              <h2 data-i18n="deepAnalysisTitle">Entenda o que está por trás da sua conexão</h2>
+              <p class="section-copy" data-i18n="deepAnalysisText">O índice combina presença, desempenho e maestria relativa. As métricas abaixo usam apenas a amostra recente realmente disponível.</p>
+            </div>
+          </div>
+          <div id="champion-facts" class="fact-grid"></div>
+          <details class="formula-card">
+            <summary data-i18n="howScoreWorks">Como o índice de conexão é calculado?</summary>
+            <div class="formula-grid">
+              <span><b>50%</b><small data-i18n="formulaPresence">presença relativa</small></span>
+              <span><b>30%</b><small data-i18n="formulaPerformance">desempenho por KDA</small></span>
+              <span><b>20%</b><small data-i18n="formulaMastery">maestria relativa</small></span>
+            </div>
+            <p id="formula-explanation"></p>
+          </details>
+        </section>
+
+        <section class="section compare-section">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow" data-i18n="compareChampions">COMPARAÇÃO</span>
+              <h2 data-i18n="compareChampionsTitle">Seu campeão atual contra o restante do elenco</h2>
+            </div>
+          </div>
+          <div class="compare-controls">
+            <label for="compare-select" data-i18n="compareWith">Comparar com</label>
+            <select id="compare-select"></select>
+          </div>
+          <div id="champion-comparison" class="comparison-table"></div>
+        </section>
+
         <section class="section evolution-section">
           <div class="section-head">
             <div>
@@ -131,6 +181,7 @@
           <div class="share-actions">
             <div class="share-score"><strong id="share-score">0</strong><span data-i18n="connection">índice de conexão</span></div>
             <button id="download-card" class="primary compact" type="button" data-i18n="downloadCard">Baixar card PNG</button>
+            <button id="share-native" class="secondary compact" type="button" data-i18n="share">Compartilhar</button>
             <button id="copy-link" class="secondary compact" type="button" data-i18n="copyLink">Copiar link</button>
           </div>
         </section>
@@ -138,7 +189,7 @@
     </section>
   </main>
 
-  <footer><span>LoL Champion Journey</span><span data-i18n="footer">Dados derivados da Riot API quando disponíveis. League of Legends é marca da Riot Games.</span></footer>
+  <footer><span>LoL Champion Journey</span><span data-i18n="footer">LoL Champion Journey não é endossado pela Riot Games. League of Legends e propriedades associadas pertencem à Riot Games, Inc.</span></footer>
   <script src="./backend-config.js"></script>
   <script src="./i18n.js"></script>
   <script src="./app.js"></script>
