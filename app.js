@@ -402,7 +402,7 @@
     $("#metric-kda").textContent=Number(c.avgKda||0).toFixed(1);
     $("#metric-mastery").textContent=c.masteryPoints?fmt(c.masteryPoints):"—";
     $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+'" data-i="'+i+'"><img class="chip-bg" src="'+esc(splash(x.name))+'" alt="" loading="lazy" decoding="async"><span><b>'+esc(x.name)+'</b><small>'+fmt(x.games)+' '+t("games")+'</small></span><strong>'+connectionScore(x)+'</strong></button>').join("");
-    $(".champion-chip").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.i);window.CJ_OBS?.event("champion_selected",{champion:state.champions[state.selected]?.name||null});renderProfile();document.querySelector(".journey-grid").scrollIntoView({behavior:"smooth",block:"start"})});
+    $$(".champion-chip").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.i);window.CJ_OBS?.event("champion_selected",{champion:state.champions[state.selected]?.name||null});renderProfile();document.querySelector(".journey-grid").scrollIntoView({behavior:"smooth",block:"start"})});
     $("#chapter-title").textContent=state.selected===0?t("chapterMain"):t("chapterOther");
     $("#chapter-text").textContent=t("chapterText",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
     [["presence",presence],["performance",components.performance],["mastery",mastery],["consistency",components.consistency]].forEach(([id,v])=>{$("#"+id+"-label").textContent=v+"%";$("#"+id+"-bar").style.width=v+"%"});
