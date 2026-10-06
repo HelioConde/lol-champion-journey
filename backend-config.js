@@ -7,6 +7,7 @@
     functionsBase,
     lolProfile: existing.lolProfile || functionsBase + "/public-lol-profile",
     snapshotHistory: existing.snapshotHistory || null,
+    telemetryEndpoint: existing.telemetryEndpoint || null,
     source: "zerotwo-gamer-supabase"
   });
 })();
