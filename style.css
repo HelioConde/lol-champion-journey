@@ -68,3 +68,14 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
 }
 
 .data-badge.demo~#sample-note{color:#d7b979;max-width:640px;line-height:1.45}
+
+@media(max-width:560px){
+  .comparison-table{border-radius:14px}
+  .compare-head{grid-template-columns:1fr 44px 1fr;padding:14px 10px}
+  .compare-head b{font-size:17px}
+  .compare-row{grid-template-columns:1fr 1fr;gap:7px 12px;padding:12px 14px}
+  .compare-row span{grid-column:1/-1;grid-row:1;text-align:center;font-size:9px}
+  .compare-row strong:first-child{grid-column:1;grid-row:2;text-align:center}
+  .compare-row strong:last-child{grid-column:2;grid-row:2;text-align:center}
+  .compare-row strong{font-size:15px}
+}
