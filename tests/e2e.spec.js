@@ -327,3 +327,13 @@ test("comparação destaca vencedores por métrica", async ({page}) => {
   await expect(rows.filter({hasText:"partidas"}).locator("strong").first()).toHaveClass(/is-winner/);
   await expect(rows.filter({hasText:"KDA"}).locator("strong").first()).toHaveClass(/is-winner/);
 });
+
+test("comparação gera resumo em linguagem natural", async ({page}) => {
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator("#comparison-summary")).toContainText(/Lux|Ahri/);
+  await expect(page.locator(".champion-chip").first()).toHaveAttribute("aria-pressed","true");
+  await page.locator(".champion-chip").nth(1).click();
+  await expect(page.locator(".champion-chip").nth(1)).toHaveAttribute("aria-pressed","true");
+});
