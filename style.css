@@ -275,3 +275,12 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .compare-row strong{font-size:14px;min-height:22px;display:grid;place-items:center}
   .comparison-summary{padding:0 2px}
 }
+
+.identity-swipe-hint{display:none}
+.snapshot-first .source-retry{background:linear-gradient(135deg,var(--gold2),#b97a2b);color:#111827;border-color:transparent;box-shadow:0 8px 22px rgba(217,170,85,.14);font-weight:900}
+.snapshot-first .source-retry:hover,.snapshot-first .source-retry:focus-visible{background:linear-gradient(135deg,#ebc36e,#c68a32)}
+@media(max-width:560px){
+  .identity-swipe-hint{display:block;margin:6px 30px 0 2px;color:#7f8ba0;font-size:9px;letter-spacing:.04em}
+  .identity-swipe-hint[hidden]{display:none!important}
+  .snapshot-first .source-retry{width:100%;min-height:42px;margin-top:4px}
+}
