@@ -27,6 +27,8 @@ O produto evita a aparência de tracker genérico. A hierarquia é cinematográf
 - seletor visual de campeões;
 - índice de conexão derivado de frequência + KDA + maestria;
 - timeline limitada à janela realmente disponível;
+- snapshots históricos locais por Riot ID, com retenção dos 24 estados mais recentes;
+- comparação real entre consultas: campeão assinatura, partidas, KDA e maestria;
 - slot estrutural para anúncios sem bloquear o fluxo;
 - atualização automática via `version.json` / `live-update.js`;
 - layout desktop e mobile.
@@ -47,8 +49,8 @@ Nenhuma chave Riot fica no frontend.
 
 1. validar com Riot IDs reais;
 2. ajustar correspondência de maestria por nome/ID no contrato do backend;
-3. criar snapshots históricos próprios para permitir evolução real entre semanas/meses;
-4. gerar card compartilhável PNG específico do campeão;
+3. sincronizar os snapshots locais com o Supabase para preservar a evolução entre dispositivos;
+4. validar e enriquecer o card compartilhável PNG específico do campeão;
 5. ativar GitHub Pages com GitHub Actions e validar o deploy público.
 
 ## Monetização
