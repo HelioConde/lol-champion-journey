@@ -40,6 +40,8 @@ test("abre em PT-BR e mostra a proposta central", async ({page}) => {
 });
 
 test("carrega dados Riot e identifica campeão assinatura", async ({page}) => {
+  const pageErrors=[];
+  page.on("pageerror",err=>pageErrors.push(String(err.message||err)));
   await page.locator("#game-name").fill("RealPlayer");
   await page.locator("#tag-line").fill("BR1");
   await page.getByRole("button",{name:/Ver minha jornada/i}).click();
@@ -52,6 +54,7 @@ test("carrega dados Riot e identifica campeão assinatura", async ({page}) => {
   await expect(page.locator("#metric-mastery")).toContainText("999");
   await expect(page.locator("#champion-list")).toContainText("Ahri");
   await expect(page).toHaveURL(/riotId=RealPlayer%23BR1/);
+  expect(pageErrors).toEqual([]);
 });
 
 test("permite navegar entre capítulos de campeões", async ({page}) => {
@@ -110,6 +113,7 @@ test("salva snapshot real e mostra comparação na segunda consulta", async ({pa
   await page.getByRole("button",{name:/Ver minha jornada/i}).click();
   await expect(page.locator("#snapshot-count")).toContainText("1 snapshot");
   await expect(page.locator("#snapshot-empty")).toBeVisible();
+  await expect(page.locator("#snapshot-refresh")).toBeVisible();
 
   const secondPayload={...riotPayload,
     championSummaries:[
