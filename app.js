@@ -113,6 +113,7 @@
     history.replaceState(null,"",url.pathname+"?"+url.searchParams.toString());
     $("#landing-view").hidden=true; $("#profile-view").hidden=false; window.scrollTo({top:0,behavior:refresh?"smooth":"auto"});
     renderProfile();
+    loadRemoteSnapshots().then(changed=>{if(changed&&state.profile)renderProfile()});
   }
 
   function snapshotKey(profile=state.profile){
@@ -124,6 +125,30 @@
       const raw=JSON.parse(localStorage.getItem(snapshotKey(profile))||"[]");
       return Array.isArray(raw)?raw:[];
     }catch{return []}
+  }
+  async function loadRemoteSnapshots(){
+    const endpoint=window.CHAMPION_JOURNEY_BACKEND?.snapshotHistory;
+    if(!endpoint||state.demo||!state.profile)return false;
+    const p=state.profile.player||{};
+    try{
+      const res=await fetch(endpoint,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({
+        gameName:p.gameName,tagLine:p.tagLine,platform:String(p.platform||"").toLowerCase(),limit:24
+      })});
+      if(!res.ok)return false;
+      const data=await res.json();
+      const remote=Array.isArray(data?.snapshots)?data.snapshots:[];
+      if(!remote.length)return false;
+      const local=readSnapshots();
+      const merged=[...local,...remote]
+        .filter(x=>x&&Number(x.capturedAt)>0)
+        .sort((a,b)=>Number(a.capturedAt)-Number(b.capturedAt))
+        .filter((x,i,arr)=>i===0||Number(x.capturedAt)!==Number(arr[i-1].capturedAt))
+        .slice(-24);
+      localStorage.setItem(snapshotKey(),JSON.stringify(merged));
+      state.snapshots=merged;
+      window.CJ_OBS?.event("snapshot_history_loaded",{count:remote.length});
+      return true;
+    }catch{return false}
   }
   function buildSnapshot(){
     if(!state.profile||state.demo||!state.champions.length)return null;
