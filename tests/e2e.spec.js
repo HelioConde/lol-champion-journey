@@ -381,3 +381,26 @@ test("normaliza nomes internos pelo Data Dragon", async ({page}) => {
   await expect(page.locator("#champion-list")).not.toContainText("MasterYi");
   await expect(page.locator("#champion-list")).not.toContainText("MonkeyKing");
 });
+
+test("Arena usa melhor colocação em vez de taxa de vitória", async ({page}) => {
+  await page.unroute("**/public-lol-profile");
+  await page.route("**/public-lol-profile", route => route.fulfill({
+    status:200,
+    contentType:"application/json",
+    body:JSON.stringify({
+      ...riotPayload,
+      summary:{...riotPayload.summary,matches:3},
+      championSummaries:[{name:"Lux",games:3,avgKda:2.8,contexts:["ARENA"]}],
+      matches:[
+        {playedAt:Date.UTC(2026,8,1),champion:"Lux",context:"ARENA",placement:4,kda:2.2,damagePerMin:700},
+        {playedAt:Date.UTC(2026,8,2),champion:"Lux",context:"ARENA",placement:2,kda:3.1,damagePerMin:730},
+        {playedAt:Date.UTC(2026,8,3),champion:"Lux",context:"ARENA",placement:6,kda:2.9,damagePerMin:710}
+      ]
+    })
+  }));
+  await page.locator("#game-name").fill("ArenaPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator("#champion-facts")).toContainText("Melhor colocação");
+  await expect(page.locator("#champion-facts")).toContainText("#2");
+});

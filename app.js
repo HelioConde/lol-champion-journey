@@ -402,11 +402,15 @@
       for(const m of matches){if(!!m.win!==first)break;count++}
       streak=(first?"W":"L")+count;
     }
+    const contexts=Array.isArray(c.contexts)?c.contexts:[...new Set(matches.map(m=>m.context).filter(Boolean))];
+    const placements=matches.map(m=>Number(m.placement)).filter(x=>Number.isFinite(x)&&x>0);
     return {
       winRate:Number.isFinite(Number(c.winRate))?Number(c.winRate):null,
       damage:Number.isFinite(Number(c.avgDamagePerMin))?Number(c.avgDamagePerMin):avg(matches,"damagePerMin"),
       cs:avg(sr,"csPerMin"),
-      contexts:Array.isArray(c.contexts)?c.contexts:[...new Set(matches.map(m=>m.context).filter(Boolean))],
+      contexts,
+      arenaOnly:contexts.length>0&&contexts.every(x=>String(x).toUpperCase()==="ARENA"),
+      bestPlacement:placements.length?Math.min(...placements):null,
       bestKda:Number.isFinite(bestKda)?bestKda:null,
       streak
     };
@@ -414,7 +418,7 @@
   function renderChampionFacts(c){
     const f=championMatchFacts(c);
     const items=[
-      [t("metricWinRate"),f.winRate==null?"—":Math.round(f.winRate)+"%"],
+      [f.arenaOnly?t("metricBestPlacement"):t("metricWinRate"),f.arenaOnly?(f.bestPlacement==null?"—":"#"+f.bestPlacement):(f.winRate==null?"—":Math.round(f.winRate)+"%")],
       [t("metricDamage"),f.damage==null?"—":fmt(Math.round(f.damage))],
       [t("metricCs"),f.cs==null?"—":f.cs.toFixed(1)],
       [t("metricBestKda"),f.bestKda==null?"—":f.bestKda.toFixed(1)],
