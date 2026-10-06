@@ -28,6 +28,9 @@ jobs:
           node-version: 22
       - run: npm install
 
+      - name: Install Chromium for Lighthouse
+        run: npx playwright install --with-deps chromium
+
       - name: Start local site
         run: |
           npm run dev > /tmp/champion-journey-http.log 2>&1 &
