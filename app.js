@@ -158,12 +158,18 @@
     state.selected=0;
     await loadDDragonCatalog();
     prepareChampions();
+    const requestedChampion=new URLSearchParams(location.search).get("champion");
+    if(requestedChampion){
+      const requestedIndex=state.champions.findIndex(x=>String(x.name||"").toLowerCase()===requestedChampion.toLowerCase());
+      if(requestedIndex>=0)state.selected=requestedIndex;
+    }
     saveSnapshot();
     saveRecent(gameName,tagLine,server);
     const url=new URL(location.href);
     url.searchParams.set("riotId",gameName+"#"+tagLine);
     url.searchParams.set("server",server);
     url.searchParams.set("lang",state.lang);
+    url.searchParams.set("champion",state.champions[state.selected]?.name||state.champions[0]?.name||"");
     history.replaceState(null,"",url.pathname+"?"+url.searchParams.toString());
     $("#landing-view").hidden=true; $("#profile-view").hidden=false; window.scrollTo({top:0,behavior:refresh?"smooth":"auto"});
     renderProfile();
@@ -456,7 +462,7 @@
     set('meta[name="description"]',"content",desc);
     set('meta[property="og:title"]',"content",title);
     set('meta[property="og:description"]',"content",desc);
-    set('meta[property="og:url"]',"content",location.href);
+    set('meta[property="og:url"]',"content",selectedShareUrl());
     set('meta[name="twitter:title"]',"content",title);
     set('meta[name="twitter:description"]',"content",desc);
   }
@@ -496,7 +502,7 @@
     $("#metric-kda").textContent=Number(c.avgKda||0).toFixed(1);
     $("#metric-mastery").textContent=c.masteryPoints?fmt(c.masteryPoints):"—";
     $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+(i===0?" signature-chip":"")+'" data-i="'+i+'" aria-pressed="'+(i===state.selected?'true':'false')+'"><img class="chip-bg" src="'+esc(splash(x.name))+'" alt="" loading="lazy" decoding="async">'+(i===0?'<em class="signature-tag">'+esc(t("signatureShort"))+'</em>':'')+'<span><b>'+esc(x.name)+'</b><small>'+esc(gameText(x.games,true))+'</small></span><strong><span>'+connectionScore(x)+'</span><small>'+esc(t("metricConnection"))+'</small></strong></button>').join("");
-    qsa(".champion-chip").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.i);window.CJ_OBS?.event("champion_selected",{champion:state.champions[state.selected]?.name||null});renderProfile();document.querySelector(".journey-grid").scrollIntoView({behavior:"smooth",block:"start"})});
+    qsa(".champion-chip").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.i);const u=new URL(location.href);u.searchParams.set("champion",state.champions[state.selected]?.name||"");history.replaceState(null,"",u.pathname+"?"+u.searchParams.toString());window.CJ_OBS?.event("champion_selected",{champion:state.champions[state.selected]?.name||null});renderProfile();document.querySelector(".journey-grid").scrollIntoView({behavior:"smooth",block:"start"})});
     $("#chapter-title").textContent=state.selected===0?t("chapterMain"):t("chapterOther");
     $("#chapter-text").textContent=t("chapterText",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)});
     [["presence",presence],["performance",components.performance],["mastery",mastery],["consistency",components.consistency]].forEach(([id,v])=>{$("#"+id+"-label").textContent=v+"%";$("#"+id+"-bar").style.width=v+"%"});
@@ -565,12 +571,18 @@
     const a=document.createElement("a"); a.download="champion-journey-"+slug(c.name).toLowerCase()+".png"; a.href=canvas.toDataURL("image/png"); a.click();
     window.CJ_OBS?.event("share_card_downloaded",{champion:c.name,score});
   }
+  function selectedShareUrl(){
+    const u=new URL(location.href);
+    const c=state.champions[state.selected]||state.champions[0];
+    if(c?.name)u.searchParams.set("champion",c.name);
+    return u.toString();
+  }
   async function copyLink(){
-    try{await navigator.clipboard.writeText(location.href);const b=$("#copy-link"),old=b.textContent;b.textContent=t("copied");setTimeout(()=>b.textContent=old,1400)}catch{}
+    try{await navigator.clipboard.writeText(selectedShareUrl());const b=$("#copy-link"),old=b.textContent;b.textContent=t("copied");setTimeout(()=>b.textContent=old,1400)}catch{}
   }
   async function shareNative(){
     const c=state.champions[state.selected]||state.champions[0];
-    const data={title:document.title,text:c?t("scoreSummary",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)}):"LoL Champion Journey",url:location.href};
+    const data={title:document.title,text:c?t("scoreSummary",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)}):"LoL Champion Journey",url:selectedShareUrl()};
     try{
       if(navigator.share){await navigator.share(data);window.CJ_OBS?.event("native_share",{champion:c?.name||null})}
       else await copyLink();

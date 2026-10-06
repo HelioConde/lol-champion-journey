@@ -341,3 +341,14 @@ test("comparação gera resumo em linguagem natural", async ({page}) => {
   await page.locator(".champion-chip").nth(1).click();
   await expect(page.locator(".champion-chip").nth(1)).toHaveAttribute("aria-pressed","true");
 });
+
+test("deep link preserva o campeão selecionado", async ({page}) => {
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await page.locator(".champion-chip").filter({hasText:"Ahri"}).click();
+  await expect(page).toHaveURL(/champion=Ahri/);
+  await page.reload();
+  await expect(page.locator("#champion-name")).toHaveText("Ahri");
+  await expect(page.locator('.champion-chip[aria-pressed="true"]')).toContainText("Ahri");
+});
