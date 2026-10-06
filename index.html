@@ -93,6 +93,7 @@
 
       <nav class="profile-nav" aria-label="Navegação do perfil">
         <div class="shell profile-nav-inner">
+          <a href="#summary" data-i18n="navSummary">Resumo</a>
           <a href="#roster" data-i18n="navRoster">Elenco</a>
           <a href="#analysis" data-i18n="navAnalysis">Análise</a>
           <a href="#comparison" data-i18n="navCompare">Comparação</a>
@@ -129,7 +130,10 @@
           <article class="panel">
             <span class="eyebrow" data-i18n="identity">IDENTIDADE</span>
             <h2 data-i18n="whatSays">O que este campeão diz sobre seu momento?</h2>
-            <div id="identity-cards" class="identity-cards"></div>
+            <div class="identity-scroll-wrap">
+              <div id="identity-cards" class="identity-cards"></div>
+              <span id="identity-swipe-cue" class="identity-swipe-cue" aria-hidden="true">›</span>
+            </div>
           </article>
         </section>
 
