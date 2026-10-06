@@ -326,3 +326,10 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .timeline-item{flex:0 0 82%;scroll-snap-align:start;min-height:168px;padding:16px}
   .timeline-item p{max-width:30ch}
 }
+
+@media(max-width:560px){
+  .comparison-table .compare-head{position:relative;top:auto;z-index:1}
+  .comparison-table .compare-row{min-height:72px;align-content:center}
+  .comparison-table .compare-row span{font-size:9px;line-height:1.25}
+  .comparison-table .compare-row strong{font-size:15px}
+}
