@@ -94,3 +94,40 @@ test("gera card PNG do campeão selecionado", async ({page}) => {
   const download=await downloadPromise;
   expect(download.suggestedFilename()).toBe("champion-journey-lux.png");
 });
+
+test("salva snapshot real e mostra comparação na segunda consulta", async ({page}) => {
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator("#snapshot-count")).toContainText("1 snapshot");
+  await expect(page.locator("#snapshot-empty")).toBeVisible();
+
+  const secondPayload={...riotPayload,
+    championSummaries:[
+      {name:"Ahri",games:7,avgKda:4.8},
+      {name:"Lux",games:6,avgKda:4.3},
+      {name:"Syndra",games:2,avgKda:2.7}
+    ],
+    mastery:[
+      {championName:"Lux",championId:99,level:7,points:1001200},
+      {championName:"Ahri",championId:103,level:7,points:430500}
+    ]
+  };
+  await page.unroute("**/public-lol-profile");
+  await page.route("**/public-lol-profile", route => route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(secondPayload)}));
+  await page.getByRole("button",{name:"Atualizar dados"}).click();
+
+  await expect(page.locator("#snapshot-count")).toContainText("2 snapshots");
+  await expect(page.locator("#snapshot-comparison")).toBeVisible();
+  await expect(page.locator("#delta-signature")).toHaveText("Ahri");
+  await expect(page.locator("#delta-signature-note")).toContainText("Lux");
+  await expect(page.locator("#delta-games")).toHaveText("+3");
+});
+
+test("não duplica snapshot quando os dados não mudam", async ({page}) => {
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await page.getByRole("button",{name:"Atualizar dados"}).click();
+  await expect(page.locator("#snapshot-count")).toContainText("1 snapshot");
+});
