@@ -165,12 +165,34 @@
     n=Number(n||0);
     return n>0?"delta-positive":n<0?"delta-negative":"delta-neutral";
   }
+  function snapshotScore(snapshot,c){
+    const rows=snapshot?.champions||[], row=rows.find(x=>x.name===c.name);
+    if(!row)return 0;
+    const maxGames=Math.max(...rows.map(x=>Number(x.games||0)),1);
+    const maxMastery=Math.max(...rows.map(x=>Number(x.masteryPoints||0)),1);
+    const presence=Number(row.games||0)/maxGames;
+    const performance=Math.min(Number(row.avgKda||0)/5,1);
+    const mastery=Number(row.masteryPoints||0)/maxMastery;
+    return Math.round((presence*.5+performance*.3+mastery*.2)*100);
+  }
+  function renderSnapshotHistory(c){
+    const host=$("#snapshot-history"),bars=$("#history-bars");
+    if(state.snapshots.length<2){host.hidden=true;bars.innerHTML="";return}
+    const usable=state.snapshots.slice(-12);
+    const df=new Intl.DateTimeFormat(state.lang,{day:"2-digit",month:"short"});
+    host.hidden=false;
+    $("#history-range").textContent=df.format(new Date(usable[0].capturedAt))+" → "+df.format(new Date(usable[usable.length-1].capturedAt));
+    bars.innerHTML=usable.map((s,i)=>{
+      const score=snapshotScore(s,c),date=df.format(new Date(s.capturedAt));
+      return '<div class="history-bar" title="'+esc(date+" · "+score)+'"><i style="--h:'+Math.max(4,score)+'%"></i><span>'+score+'</span><small>'+esc(date)+'</small></div>';
+    }).join("");
+  }
   function renderSnapshotComparison(c){
     state.snapshots=readSnapshots();
     $("#snapshot-count").textContent=state.snapshots.length+" snapshot"+(state.snapshots.length===1?"":"s");
     const empty=$("#snapshot-empty"), grid=$("#snapshot-comparison");
     if(state.snapshots.length<2){
-      empty.hidden=false; grid.hidden=true; return;
+      empty.hidden=false; grid.hidden=true; renderSnapshotHistory(c); return;
     }
     empty.hidden=true; grid.hidden=false;
     const curr=state.snapshots[state.snapshots.length-1], prev=state.snapshots[state.snapshots.length-2];
@@ -196,6 +218,7 @@
     $("#delta-mastery").textContent=(masteryDelta>0?"+":"")+fmt(masteryDelta);
     $("#delta-mastery").className=deltaClass(masteryDelta);
     $("#delta-mastery-note").textContent=t("sinceLast");
+    renderSnapshotHistory(c);
   }
 
   function prepareChampions(){
