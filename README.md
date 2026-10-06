@@ -22,7 +22,7 @@ A interface é LoL-first e cinematográfica, evitando aparência de tracker gen�
 - PT-BR principal + EN;
 - busca por Riot ID + servidor;
 - `public-lol-profile` do backend gamer ZeroTwo;
-- consulta de até 100 partidas;
+- consulta adaptativa de 30 → 20 → 12 partidas para priorizar dados Riot reais e estabilidade;
 - Data Dragon para nomes/IDs/assets;
 - maestria real casada por `championId`;
 - fallback demo claramente identificado;
@@ -109,7 +109,7 @@ O site contém aviso legal Riot completo e política de privacidade.
 1. aplicar o schema de snapshots no Supabase gamer;
 2. integrar a persistência server-side ao `public-lol-profile`;
 3. ativar `champion-journey-history` e configurar `snapshotHistory`;
-4. testar mais Riot IDs reais/regiões além de `AlchemyFlames#BR1`;
+4. testar mais Riot IDs reais/regiões além de `AlchemyFlames#BR1` e calibrar a amostra adaptativa;
 5. adicionar ícones PNG 192/512 se uma plataforma específica exigir;
 6. conectar observabilidade remota quando houver endpoint definido;
 7. configurar anúncios reais somente após aprovação/políticas.
