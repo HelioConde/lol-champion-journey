@@ -295,3 +295,25 @@ test("amostra parcial não vira snapshot histórico", async ({page}) => {
   await expect(page.locator("#snapshot-partial")).toBeVisible();
   await expect(page.locator("#snapshot-count")).toContainText("0 snapshot");
 });
+
+test("amostra parcial mostra confiança e ação de completar", async ({page}) => {
+  await page.unroute("**/public-lol-profile");
+  const partialPayload={
+    ...riotPayload,
+    summary:{...riotPayload.summary,matches:3,confidence:"INICIAL"},
+    championSummaries:[{name:"Senna",games:3,avgKda:2.0}],
+    cache:{requested:30,availableIds:30,matchesLoaded:3,cached:3,fetched:0,pending:27,rateLimited:true}
+  };
+  await page.route("**/public-lol-profile", route => route.fulfill({
+    status:200,
+    contentType:"application/json",
+    body:JSON.stringify(partialPayload)
+  }));
+
+  await page.locator("#game-name").fill("PartialPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+
+  await expect(page.locator("#confidence-badge")).toHaveText("Confiança inicial");
+  await expect(page.locator("#complete-sample")).toBeVisible();
+});
