@@ -98,6 +98,27 @@
           </article>
         </section>
 
+        <section class="section evolution-section">
+          <div class="section-head">
+            <div>
+              <span class="eyebrow" data-i18n="evolution">EVOLUÇÃO</span>
+              <h2 data-i18n="compareSnapshots">Compare sua jornada entre consultas</h2>
+              <p class="section-copy" data-i18n="snapshotHelp">Cada consulta com dados Riot reais salva um snapshot local deste perfil. Assim, o site consegue mostrar mudanças reais ao longo do tempo sem inventar histórico.</p>
+            </div>
+            <span id="snapshot-count" class="snapshot-pill">0 snapshots</span>
+          </div>
+          <div id="snapshot-empty" class="snapshot-empty" hidden>
+            <b data-i18n="firstSnapshot">Primeiro snapshot salvo</b>
+            <p data-i18n="firstSnapshotText">Volte depois de novas partidas e atualize os dados para desbloquear uma comparação real.</p>
+          </div>
+          <div id="snapshot-comparison" class="snapshot-comparison" hidden>
+            <article><span data-i18n="signatureChange">Campeão assinatura</span><strong id="delta-signature">—</strong><small id="delta-signature-note"></small></article>
+            <article><span data-i18n="gamesChange">Partidas na amostra</span><strong id="delta-games">—</strong><small id="delta-games-note"></small></article>
+            <article><span data-i18n="kdaChange">KDA do campeão</span><strong id="delta-kda">—</strong><small id="delta-kda-note"></small></article>
+            <article><span data-i18n="masteryChange">Maestria do campeão</span><strong id="delta-mastery">—</strong><small id="delta-mastery-note"></small></article>
+          </div>
+        </section>
+
         <section class="section timeline-section">
           <span class="eyebrow" data-i18n="journey">JORNADA VISUAL</span>
           <h2 data-i18n="recentEvolution">Sua evolução dentro da janela disponível</h2>
