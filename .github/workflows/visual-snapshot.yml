@@ -1,11 +1,6 @@
 name: Visual Snapshot
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/visual-snapshot.yml"
-      - "scripts/capture-full-page.js"
   workflow_dispatch:
     inputs:
       url:
@@ -25,7 +20,7 @@ concurrency:
 
 jobs:
   capture:
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
