@@ -25,7 +25,9 @@ test.beforeEach(async ({page}) => {
   await page.route("**/cdn/16.20.1/data/pt_BR/champion.json", route => route.fulfill({status:200,contentType:"application/json",body:JSON.stringify({data:{
     Lux:{id:"Lux",key:"99",name:"Lux"},
     Ahri:{id:"Ahri",key:"103",name:"Ahri"},
-    Syndra:{id:"Syndra",key:"134",name:"Syndra"}
+    Syndra:{id:"Syndra",key:"134",name:"Syndra"},
+    MasterYi:{id:"MasterYi",key:"11",name:"Master Yi"},
+    MonkeyKing:{id:"MonkeyKing",key:"62",name:"Wukong"}
   }})}));
   await page.route("**/public-lol-profile", route => route.fulfill({status:200,contentType:"application/json",body:JSON.stringify(riotPayload)}));
   await page.goto("/");
@@ -351,4 +353,31 @@ test("deep link preserva o campeão selecionado", async ({page}) => {
   await page.reload();
   await expect(page.locator("#champion-name")).toHaveText("Ahri");
   await expect(page.locator('.champion-chip[aria-pressed="true"]')).toContainText("Ahri");
+});
+
+test("normaliza nomes internos pelo Data Dragon", async ({page}) => {
+  await page.unroute("**/public-lol-profile");
+  await page.route("**/public-lol-profile", route => route.fulfill({
+    status:200,
+    contentType:"application/json",
+    body:JSON.stringify({
+      ...riotPayload,
+      championSummaries:[
+        {name:"MasterYi",games:3,avgKda:3.1},
+        {name:"MonkeyKing",games:2,avgKda:2.8}
+      ],
+      mastery:[
+        {championId:11,level:7,points:500000},
+        {championId:62,level:6,points:180000}
+      ],
+      matches:[]
+    })
+  }));
+  await page.locator("#game-name").fill("CanonicalNames");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator("#champion-name")).toHaveText("Master Yi");
+  await expect(page.locator("#champion-list")).toContainText("Wukong");
+  await expect(page.locator("#champion-list")).not.toContainText("MasterYi");
+  await expect(page.locator("#champion-list")).not.toContainText("MonkeyKing");
 });

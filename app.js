@@ -61,18 +61,22 @@
       const realm=await fetch("https://ddragon.leagueoflegends.com/realms/br.json",{cache:"force-cache"}).then(r=>r.ok?r.json():Promise.reject());
       const version=realm?.n?.champion||realm?.v;
       const data=await fetch("https://ddragon.leagueoflegends.com/cdn/"+version+"/data/pt_BR/champion.json",{cache:"force-cache"}).then(r=>r.ok?r.json():Promise.reject());
-      const byName={},byId={};
+      const byName={},byId={},bySlug={};
       Object.values(data?.data||{}).forEach(ch=>{
-        byName[String(ch.name||"").toLowerCase()]={key:Number(ch.key),id:ch.id,name:ch.name};
-        byId[Number(ch.key)]={key:Number(ch.key),id:ch.id,name:ch.name};
+        const meta={key:Number(ch.key),id:ch.id,name:ch.name};
+        byName[String(ch.name||"").toLowerCase()]=meta;
+        byId[Number(ch.key)]=meta;
+        bySlug[slug(String(ch.name||"")).toLowerCase()]=meta;
+        bySlug[String(ch.id||"").toLowerCase()]=meta;
       });
-      ddragonCatalog={byName,byId};
+      ddragonCatalog={byName,byId,bySlug};
     }catch{
-      ddragonCatalog={byName:{},byId:{}};
+      ddragonCatalog={byName:{},byId:{},bySlug:{}};
     }
     return ddragonCatalog;
   }
-  const championAssetId = name => ddragonCatalog?.byName?.[String(name||"").toLowerCase()]?.id || slug(name);
+  const championMeta = name => ddragonCatalog?.byName?.[String(name||"").toLowerCase()] || ddragonCatalog?.bySlug?.[slug(String(name||"")).toLowerCase()] || null;
+  const championAssetId = name => championMeta(name)?.id || slug(name);
   const splash = name => "https://ddragon.leagueoflegends.com/cdn/img/champion/splash/"+championAssetId(name)+"_0.jpg";
 
   function saveRecent(gameName,tagLine,server){
@@ -348,12 +352,12 @@
     const p=state.profile||demo;
     const mastery=p.mastery||[];
     state.champions=(p.championSummaries||[]).map(c=>{
-      const meta=ddragonCatalog?.byName?.[String(c.name||"").toLowerCase()];
+      const meta=championMeta(c.name);
       const m=mastery.find(x=>{
         if(x.championName&&String(x.championName).toLowerCase()===String(c.name).toLowerCase())return true;
         return meta?.key&&Number(x.championId)===Number(meta.key);
       });
-      return {...c,championId:meta?.key||null,assetId:meta?.id||slug(c.name),masteryPoints:m?.points||0,masteryLevel:m?.level||0};
+      return {...c,name:meta?.name||c.name,championId:meta?.key||null,assetId:meta?.id||slug(c.name),masteryPoints:m?.points||0,masteryLevel:m?.level||0};
     }).sort((a,b)=>(b.games||0)-(a.games||0));
   }
   function championConsistency(c){
