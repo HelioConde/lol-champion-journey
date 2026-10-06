@@ -487,7 +487,7 @@
     $("#metric-games").textContent=fmt(c.games);
     $("#metric-kda").textContent=Number(c.avgKda||0).toFixed(1);
     $("#metric-mastery").textContent=c.masteryPoints?fmt(c.masteryPoints):"—";
-    $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+'" data-i="'+i+'" aria-pressed="'+(i===state.selected?'true':'false')+'"><img class="chip-bg" src="'+esc(splash(x.name))+'" alt="" loading="lazy" decoding="async"><span><b>'+esc(x.name)+'</b><small>'+fmt(x.games)+' '+t("games")+'</small></span><strong>'+connectionScore(x)+'</strong></button>').join("");
+    $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+'" data-i="'+i+'" aria-pressed="'+(i===state.selected?'true':'false')+'"><img class="chip-bg" src="'+esc(splash(x.name))+'" alt="" loading="lazy" decoding="async"><span><b>'+esc(x.name)+'</b><small>'+esc(gameText(x.games,true))+'</small></span><strong><span>'+connectionScore(x)+'</span><small>'+esc(t("metricConnection"))+'</small></strong></button>').join("");
     qsa(".champion-chip").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.i);window.CJ_OBS?.event("champion_selected",{champion:state.champions[state.selected]?.name||null});renderProfile();document.querySelector(".journey-grid").scrollIntoView({behavior:"smooth",block:"start"})});
     $("#chapter-title").textContent=state.selected===0?t("chapterMain"):t("chapterOther");
     $("#chapter-text").textContent=t("chapterText",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)});
