@@ -59,6 +59,26 @@ jobs:
         run: |
           node scripts/capture-full-page.js "$TARGET_URL" visual-output/mobile-full.png
 
+      - name: Capture real profile desktop
+        env:
+          SCREENSHOT_WIDTH: 1440
+          SCREENSHOT_HEIGHT: 1100
+          WAIT_SELECTOR: "#profile-view"
+          SCREENSHOT_DELAY: 2500
+          PROFILE_URL: "https://helioconde.github.io/lol-champion-journey/?riotId=AlchemyFlames%23BR1&server=br1&lang=pt-BR"
+        run: |
+          node scripts/capture-full-page.js "$PROFILE_URL" visual-output/desktop-profile.png
+
+      - name: Capture real profile mobile
+        env:
+          SCREENSHOT_WIDTH: 390
+          SCREENSHOT_HEIGHT: 844
+          WAIT_SELECTOR: "#profile-view"
+          SCREENSHOT_DELAY: 2500
+          PROFILE_URL: "https://helioconde.github.io/lol-champion-journey/?riotId=AlchemyFlames%23BR1&server=br1&lang=pt-BR"
+        run: |
+          node scripts/capture-full-page.js "$PROFILE_URL" visual-output/mobile-profile.png
+
       - name: Upload visual artifact
         uses: actions/upload-artifact@v4
         with:
@@ -91,6 +111,10 @@ jobs:
           cp /tmp/visual-output/desktop-full.json latest/desktop-full.json
           cp /tmp/visual-output/mobile-full.png latest/mobile-full.png
           cp /tmp/visual-output/mobile-full.json latest/mobile-full.json
+          cp /tmp/visual-output/desktop-profile.png latest/desktop-profile.png
+          cp /tmp/visual-output/desktop-profile.json latest/desktop-profile.json
+          cp /tmp/visual-output/mobile-profile.png latest/mobile-profile.png
+          cp /tmp/visual-output/mobile-profile.json latest/mobile-profile.json
 
           STAMP="$(date -u +'%Y-%m-%dT%H-%M-%SZ')"
           mkdir -p "history/$STAMP"
