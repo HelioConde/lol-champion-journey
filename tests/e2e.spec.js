@@ -78,7 +78,8 @@ test("fallback fica claramente identificado", async ({page}) => {
   await page.locator("#tag-line").fill("BR1");
   await page.getByRole("button",{name:/Ver minha jornada/i}).click();
   await expect(page.locator("#data-badge")).toHaveText("DEMONSTRAÇÃO");
-  await expect(page.locator("#sample-note")).toContainText("Dados demonstrativos");
+  await expect(page.locator("#sample-note")).toContainText(/Limite temporário|demonstração/i);
+  await expect(page.locator("#retry-demo")).toBeVisible();
 });
 
 test("mobile não cria overflow horizontal crítico", async ({page}) => {
@@ -260,4 +261,11 @@ test("reduz a amostra antes de usar demonstração", async ({page}) => {
   await expect(page.locator("#data-badge")).toHaveText("DADOS RIOT · LOL");
   await expect(page.locator("#profile-riot-id")).toHaveText("RealPlayer#BR1");
   expect(limits.slice(0,2)).toEqual([30,20]);
+});
+
+test("navegação do perfil destaca a primeira seção", async ({page}) => {
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator('.profile-nav a[href="#roster"]')).toHaveClass(/is-active/);
 });
