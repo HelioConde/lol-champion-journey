@@ -428,6 +428,16 @@
       return Number(a)>Number(b)?" is-winner":" is-loser";
     };
     $("#champion-comparison").innerHTML='<div class="compare-head"><b>'+esc(c.name)+'</b><span>VS</span><b>'+esc(other.name)+'</b></div>'+rows.map(r=>'<div class="compare-row"><strong class="'+sideClass(r[3],r[4],r[5]).trim()+'">'+esc(r[1])+'</strong><span>'+esc(r[0])+'</span><strong class="'+sideClass(r[4],r[3],r[5]).trim()+'">'+esc(r[2])+'</strong></div>').join("");
+    const cWins=rows.filter(r=>r[5]&&Number(r[3])>Number(r[4])).map(r=>r[0]);
+    const oWins=rows.filter(r=>r[5]&&Number(r[4])>Number(r[3])).map(r=>r[0]);
+    const list=items=>new Intl.ListFormat(state.lang,{style:"long",type:"conjunction"}).format(items);
+    $("#comparison-summary").textContent=cWins.length&&oWins.length
+      ? t("compareSummaryBoth",{a:c.name,aWins:list(cWins),b:other.name,bWins:list(oWins)})
+      : cWins.length
+        ? t("compareSummaryOne",{name:c.name,wins:list(cWins)})
+        : oWins.length
+          ? t("compareSummaryOne",{name:other.name,wins:list(oWins)})
+          : t("compareSummaryTie");
     select.onchange=()=>renderComparison(c);
   }
   function updateMeta(c){
@@ -477,7 +487,7 @@
     $("#metric-games").textContent=fmt(c.games);
     $("#metric-kda").textContent=Number(c.avgKda||0).toFixed(1);
     $("#metric-mastery").textContent=c.masteryPoints?fmt(c.masteryPoints):"—";
-    $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+'" data-i="'+i+'"><img class="chip-bg" src="'+esc(splash(x.name))+'" alt="" loading="lazy" decoding="async"><span><b>'+esc(x.name)+'</b><small>'+fmt(x.games)+' '+t("games")+'</small></span><strong>'+connectionScore(x)+'</strong></button>').join("");
+    $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+'" data-i="'+i+'" aria-pressed="'+(i===state.selected?'true':'false')+'"><img class="chip-bg" src="'+esc(splash(x.name))+'" alt="" loading="lazy" decoding="async"><span><b>'+esc(x.name)+'</b><small>'+fmt(x.games)+' '+t("games")+'</small></span><strong>'+connectionScore(x)+'</strong></button>').join("");
     qsa(".champion-chip").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.i);window.CJ_OBS?.event("champion_selected",{champion:state.champions[state.selected]?.name||null});renderProfile();document.querySelector(".journey-grid").scrollIntoView({behavior:"smooth",block:"start"})});
     $("#chapter-title").textContent=state.selected===0?t("chapterMain"):t("chapterOther");
     $("#chapter-text").textContent=t("chapterText",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
