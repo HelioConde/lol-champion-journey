@@ -269,3 +269,29 @@ test("navegação do perfil destaca a primeira seção", async ({page}) => {
   await page.getByRole("button",{name:/Ver minha jornada/i}).click();
   await expect(page.locator('.profile-nav a[href="#roster"]')).toHaveClass(/is-active/);
 });
+
+test("amostra parcial não vira snapshot histórico", async ({page}) => {
+  await page.unroute("**/public-lol-profile");
+  const partialPayload={
+    ...riotPayload,
+    summary:{...riotPayload.summary,matches:3},
+    championSummaries:[
+      {name:"Senna",games:3,avgKda:2.0}
+    ],
+    cache:{requested:30,availableIds:30,matchesLoaded:3,cached:3,fetched:0,pending:27,rateLimited:true}
+  };
+  await page.route("**/public-lol-profile", route => route.fulfill({
+    status:200,
+    contentType:"application/json",
+    body:JSON.stringify(partialPayload)
+  }));
+
+  await page.locator("#game-name").fill("PartialPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+
+  await expect(page.locator("#data-badge")).toContainText("AMOSTRA PARCIAL");
+  await expect(page.locator("#sample-note")).toContainText("3 de 30");
+  await expect(page.locator("#snapshot-partial")).toBeVisible();
+  await expect(page.locator("#snapshot-count")).toContainText("0 snapshot");
+});
