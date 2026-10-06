@@ -213,3 +213,9 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .snapshot-first{display:grid;gap:12px}
   .snapshot-first .source-retry{margin-left:0;width:100%;min-height:38px}
 }
+
+.back-to-profile-top{position:fixed;right:18px;bottom:18px;z-index:30;border:1px solid rgba(217,170,85,.35);background:rgba(10,14,24,.88);backdrop-filter:blur(12px);color:#f0cf89;border-radius:999px;padding:9px 12px;font-size:10px;font-weight:800;letter-spacing:.04em;box-shadow:0 10px 30px rgba(0,0,0,.26);cursor:pointer}
+.back-to-profile-top:hover,.back-to-profile-top:focus-visible{background:rgba(217,170,85,.16);outline:none}
+@media(max-width:560px){
+  .back-to-profile-top{right:12px;bottom:12px;padding:8px 10px}
+}
