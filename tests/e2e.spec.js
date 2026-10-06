@@ -190,3 +190,41 @@ test("cards de campeão usam imagens lazy", async ({page}) => {
   await page.getByRole("button",{name:/Ver minha jornada/i}).click();
   await expect(page.locator(".champion-chip img").first()).toHaveAttribute("loading","lazy");
 });
+
+
+test("localStorage corrompido não quebra a aplicação", async ({page}) => {
+  await page.evaluate(() => {
+    localStorage.setItem("cj:recent", "{broken");
+    localStorage.setItem("cj:snapshots:realplayer:br1:br1", "{broken");
+  });
+  await page.reload();
+  await expect(page.getByRole("heading",{name:/Descubra como sua relação/i})).toBeVisible();
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator("#profile-view")).toBeVisible();
+});
+
+test("falha do Data Dragon não impede carregar dados Riot", async ({page}) => {
+  await page.unroute("**/realms/br.json");
+  await page.unroute("**/cdn/16.20.1/data/pt_BR/champion.json");
+  await page.route("**/realms/br.json", route => route.fulfill({status:503,body:"unavailable"}));
+  await page.locator("#game-name").fill("RealPlayer");
+  await page.locator("#tag-line").fill("BR1");
+  await page.getByRole("button",{name:/Ver minha jornada/i}).click();
+  await expect(page.locator("#profile-view")).toBeVisible();
+  await expect(page.locator("#champion-name")).toHaveText("Lux");
+});
+
+test("idioma pode ser aberto por deep link", async ({page}) => {
+  await page.goto("/?lang=en");
+  await expect(page.locator("html")).toHaveAttribute("lang","en");
+  await expect(page.getByRole("heading",{name:/See how your relationship/i})).toBeVisible();
+});
+
+test("página de privacidade está publicada e bilíngue", async ({page}) => {
+  await page.goto("/privacy.html");
+  await expect(page.getByRole("heading",{name:"Como seus dados são usados"})).toBeVisible();
+  await expect(page.locator("body")).toContainText("PT-BR");
+  await expect(page.locator("body")).toContainText("English");
+});
