@@ -177,6 +177,24 @@
     const mastery=Number(row.masteryPoints||0)/maxMastery;
     return Math.round((presence*.5+performance*.3+mastery*.2)*100);
   }
+  function renderJourneySignals(){
+    const host=$("#journey-signals");
+    if(state.snapshots.length<2){host.hidden=true;host.innerHTML="";return}
+    const curr=state.snapshots[state.snapshots.length-1],prev=state.snapshots[state.snapshots.length-2];
+    const prevMap=new Map((prev.champions||[]).map(x=>[x.name,Number(x.games||0)]));
+    const currMap=new Map((curr.champions||[]).map(x=>[x.name,Number(x.games||0)]));
+    const rises=(curr.champions||[]).map(x=>({name:x.name,delta:Number(x.games||0)-(prevMap.get(x.name)||0)})).sort((a,b)=>b.delta-a.delta);
+    const rising=rises.find(x=>x.delta>0);
+    const left=(prev.champions||[]).find(x=>(x.games||0)>0&&!currMap.has(x.name));
+    const mainChanged=curr.signature!==prev.signature;
+    const cards=[
+      [mainChanged?t("signalMainChanging"):t("signalMainStable"),mainChanged?t("signalMainChangingText",{old:prev.signature||"—",name:curr.signature||"—"}):t("signalMainStableText",{name:curr.signature||"—"})]
+    ];
+    if(rising)cards.push([t("signalRising"),t("signalRisingText",{name:rising.name,delta:rising.delta})]);
+    if(left)cards.push([t("signalLeftSample"),t("signalLeftSampleText",{name:left.name})]);
+    host.hidden=false;
+    host.innerHTML=cards.map(([a,b])=>'<article><b>'+esc(a)+'</b><p>'+esc(b)+'</p></article>').join("");
+  }
   function renderSnapshotHistory(c){
     const host=$("#snapshot-history"),bars=$("#history-bars");
     if(state.snapshots.length<2){host.hidden=true;bars.innerHTML="";return}
@@ -194,10 +212,11 @@
     $("#snapshot-count").textContent=state.snapshots.length+" snapshot"+(state.snapshots.length===1?"":"s");
     const empty=$("#snapshot-empty"), grid=$("#snapshot-comparison");
     if(state.snapshots.length<2){
-      empty.hidden=false; grid.hidden=true; renderSnapshotHistory(c); return;
+      empty.hidden=false; grid.hidden=true; renderJourneySignals(); renderSnapshotHistory(c); return;
     }
     empty.hidden=true; grid.hidden=false;
     const curr=state.snapshots[state.snapshots.length-1], prev=state.snapshots[state.snapshots.length-2];
+    renderJourneySignals();
     const currChampion=curr.champions.find(x=>x.name===c.name)||{games:0,avgKda:0,masteryPoints:0};
     const prevChampion=prev.champions.find(x=>x.name===c.name)||{games:0,avgKda:0,masteryPoints:0};
 
