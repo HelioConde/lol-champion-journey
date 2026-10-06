@@ -64,7 +64,8 @@ jobs:
           grep -qi 'championId' app.js
           grep -qi 'saveSnapshot' app.js
           grep -Fq '$(".champion-chip").forEach' app.js
-          ! grep -Fq '$(".champion-chip").forEach' app.js
+          grep -Fq '$("[data-language]").forEach' app.js
+          ! grep -Fq '$("[data-language]").forEach' app.js
           grep -qi 'championConsistency' app.js
           grep -qi 'navigator.share' app.js
           grep -qi 'serviceWorker' app.js
