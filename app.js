@@ -611,6 +611,7 @@
   $("#refresh-data").onclick=refreshCurrentProfile;
   $("#retry-demo").onclick=refreshCurrentProfile;
   $("#complete-sample").onclick=refreshCurrentProfile;
+  $("#snapshot-refresh").onclick=refreshCurrentProfile;
   $("#clear-recent").onclick=()=>{localStorage.removeItem("cj:recent");renderRecent()};
   initProfileNav();
   qsa("[data-language]").forEach(b=>b.onclick=()=>{
