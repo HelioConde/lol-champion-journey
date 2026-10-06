@@ -405,6 +405,7 @@
     }
     const contexts=Array.isArray(c.contexts)?c.contexts:[...new Set(matches.map(m=>m.context).filter(Boolean))];
     const placements=matches.map(m=>Number(m.placement)).filter(x=>Number.isFinite(x)&&x>0);
+    const avgPlacement=placements.length?placements.reduce((sum,value)=>sum+value,0)/placements.length:null;
     return {
       winRate:Number.isFinite(Number(c.winRate))?Number(c.winRate):null,
       damage:Number.isFinite(Number(c.avgDamagePerMin))?Number(c.avgDamagePerMin):avg(matches,"damagePerMin"),
@@ -412,6 +413,7 @@
       contexts,
       arenaOnly:contexts.length>0&&contexts.every(x=>String(x).toUpperCase()==="ARENA"),
       bestPlacement:placements.length?Math.min(...placements):null,
+      avgPlacement:Number.isFinite(avgPlacement)?avgPlacement:null,
       bestKda:Number.isFinite(bestKda)?bestKda:null,
       streak
     };
@@ -423,7 +425,7 @@
       [t("metricDamage"),f.damage==null?"—":fmt(Math.round(f.damage))],
       [t("metricCs"),f.cs==null?"—":f.cs.toFixed(1)],
       [t("metricBestKda"),f.bestKda==null?"—":f.bestKda.toFixed(1)],
-      [t("metricStreak"),f.streak],
+      [f.arenaOnly?t("metricAvgPlacement"):t("metricStreak"),f.arenaOnly?(f.avgPlacement==null?"—":f.avgPlacement.toFixed(1)):f.streak],
       [t("metricContexts"),f.contexts?.length?f.contexts.join(" · "):"—"]
     ];
     $("#champion-facts").innerHTML=items.map(([label,value])=>'<article><span>'+esc(label)+'</span><strong>'+esc(value)+'</strong></article>').join("");
