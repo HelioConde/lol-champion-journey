@@ -235,18 +235,35 @@
       return {...c,championId:meta?.key||null,assetId:meta?.id||slug(c.name),masteryPoints:m?.points||0,masteryLevel:m?.level||0};
     }).sort((a,b)=>(b.games||0)-(a.games||0));
   }
+  function championConsistency(c){
+    const values=(state.profile?.matches||[])
+      .filter(m=>String(m.champion||"").toLowerCase()===String(c.name||"").toLowerCase())
+      .map(m=>Number(m.kda))
+      .filter(Number.isFinite);
+    if(values.length<2)return 50;
+    const mean=values.reduce((a,b)=>a+b,0)/values.length;
+    const variance=values.reduce((s,v)=>s+Math.pow(v-mean,2),0)/values.length;
+    const deviation=Math.sqrt(variance);
+    const cv=deviation/Math.max(.5,mean);
+    return Math.round(Math.max(0,1-Math.min(1,cv))*100);
+  }
   function scoreComponents(c){
     const maxGames=Math.max(...state.champions.map(x=>x.games||0),1);
     const maxMastery=Math.max(...state.champions.map(x=>x.masteryPoints||0),1);
+    const kda=Math.min(Number(c.avgKda||0)/5,1);
+    const wr=Number(c.winRate);
+    const winRate=Number.isFinite(wr)?Math.max(0,Math.min(1,wr/100)):null;
+    const performance=winRate==null?kda:(kda*.6+winRate*.4);
     return {
       presence:Math.round(((c.games||0)/maxGames)*100),
-      performance:Math.round(Math.min((c.avgKda||0)/5,1)*100),
-      mastery:Math.round(((c.masteryPoints||0)/maxMastery)*100)
+      performance:Math.round(performance*100),
+      mastery:Math.round(((c.masteryPoints||0)/maxMastery)*100),
+      consistency:championConsistency(c)
     };
   }
   function connectionScore(c){
     const x=scoreComponents(c);
-    return Math.round(x.presence*.5+x.performance*.3+x.mastery*.2);
+    return Math.round(x.presence*.4+x.performance*.25+x.mastery*.2+x.consistency*.15);
   }
   function championMatchFacts(c){
     const matches=(state.profile?.matches||[]).filter(m=>String(m.champion||"").toLowerCase()===String(c.name||"").toLowerCase());
@@ -307,6 +324,7 @@
     const performance=Math.min(100,Math.round((c.avgKda||0)/5*100));
     const mastery=Math.min(100,Math.round((c.masteryPoints||0)/maxMastery*100));
     const score=connectionScore(c);
+    const components=scoreComponents(c);
     $("#champion-hero").style.backgroundImage='url("'+splash(c.name)+'")';
     $("#profile-riot-id").textContent=(p.player?.gameName||"Player")+"#"+(p.player?.tagLine||"—");
     $("#data-badge").textContent=state.demo?t("demo"):t("live");
@@ -321,14 +339,13 @@
     $(".champion-chip").forEach(b=>b.onclick=()=>{state.selected=Number(b.dataset.i);window.CJ_OBS?.event("champion_selected",{champion:state.champions[state.selected]?.name||null});renderProfile();document.querySelector(".journey-grid").scrollIntoView({behavior:"smooth",block:"start"})});
     $("#chapter-title").textContent=state.selected===0?t("chapterMain"):t("chapterOther");
     $("#chapter-text").textContent=t("chapterText",{name:c.name,games:c.games||0,kda:Number(c.avgKda||0).toFixed(1)});
-    [["presence",presence],["performance",performance],["mastery",mastery]].forEach(([id,v])=>{$("#"+id+"-label").textContent=v+"%";$("#"+id+"-bar").style.width=v+"%"});
+    [["presence",presence],["performance",components.performance],["mastery",mastery],["consistency",components.consistency]].forEach(([id,v])=>{$("#"+id+"-label").textContent=v+"%";$("#"+id+"-bar").style.width=v+"%"});
     $("#identity-cards").innerHTML=[
       [t("frequent"),t("frequentText")],[t("performanceTag"),t("performanceText",{kda:Number(c.avgKda||0).toFixed(1)})],[t("masteryTag"),t("masteryText",{points:c.masteryPoints?fmt(c.masteryPoints):"—"})]
     ].map(([a,b])=>'<div><b>'+esc(a)+'</b><p>'+esc(b)+'</p></div>').join("");
     renderChampionFacts(c);
     renderComparison(c);
-    const components=scoreComponents(c);
-    $("#formula-explanation").textContent=t("formulaText",{name:c.name,presence:components.presence,performance:components.performance,mastery:components.mastery,score});
+    $("#formula-explanation").textContent=t("formulaText",{name:c.name,presence:components.presence,performance:components.performance,mastery:components.mastery,consistency:components.consistency,score});
     renderSnapshotComparison(c);
     renderTimeline(c);
     $("#share-title").textContent=c.name+" · "+(p.player?.gameName||"Player");
