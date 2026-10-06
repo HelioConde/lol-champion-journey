@@ -48,7 +48,9 @@ const path = require("path");
     url: location.href,
     width: document.documentElement.scrollWidth,
     height: document.documentElement.scrollHeight,
-    capturedAt: new Date().toISOString()
+    capturedAt: new Date().toISOString(),
+    dataMode: document.querySelector("#data-badge")?.textContent?.trim() || null,
+    riotId: document.querySelector("#profile-riot-id")?.textContent?.trim() || null
   }));
 
   fs.writeFileSync(
