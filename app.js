@@ -440,6 +440,7 @@
     $("#profile-riot-id").textContent=(p.player?.gameName||"Player")+"#"+(p.player?.tagLine||"—");
     $("#data-badge").textContent=state.demo?t("demo"):t("live");
     $("#data-badge").classList.toggle("demo",state.demo);
+    $("#data-badge").parentElement?.classList.toggle("demo-source",state.demo);
     $("#sample-note").textContent=state.demo
       ? t(state.demoReason==="rateLimit"?"sourceDemoRateLimit":"sourceDemoBackend")
       : t("sourceLive",{n:total});
