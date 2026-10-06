@@ -11,6 +11,7 @@ const path = require("path");
   const scrollSelector = process.env.SCROLL_SELECTOR || "";
   const fullPage = String(process.env.SCREENSHOT_FULL_PAGE || "true").toLowerCase() !== "false";
   const extraDelay = Number(process.env.SCREENSHOT_DELAY || 1500);
+  const mockProfileFile = process.env.MOCK_PROFILE_FILE || "";
 
   fs.mkdirSync(path.dirname(out), { recursive: true });
 
@@ -23,6 +24,15 @@ const path = require("path");
   page.on("console", msg => {
     if (msg.type() === "error") console.error("[browser]", msg.text());
   });
+
+  if(mockProfileFile){
+    const mockProfile=JSON.parse(fs.readFileSync(mockProfileFile,"utf8"));
+    await page.route("**/public-lol-profile", route => route.fulfill({
+      status:200,
+      contentType:"application/json",
+      body:JSON.stringify(mockProfile)
+    }));
+  }
 
   await page.goto(url, { waitUntil: "networkidle", timeout: 60000 });
   await page.evaluate(async () => {
