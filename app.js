@@ -485,6 +485,7 @@
     $("#champion-name").textContent=c.name;
     $("#champion-story").textContent=t("chapterText",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)});
     $("#metric-games").textContent=fmt(c.games);
+    $("#metric-games").nextElementSibling.textContent=t(Number(c.games||0)===1?"recentGameSingular":"recentGamePlural");
     $("#metric-kda").textContent=Number(c.avgKda||0).toFixed(1);
     $("#metric-mastery").textContent=c.masteryPoints?fmt(c.masteryPoints):"—";
     $("#champion-list").innerHTML=state.champions.map((x,i)=>'<button class="champion-chip '+(i===state.selected?"active":"")+'" data-i="'+i+'" aria-pressed="'+(i===state.selected?'true':'false')+'"><img class="chip-bg" src="'+esc(splash(x.name))+'" alt="" loading="lazy" decoding="async"><span><b>'+esc(x.name)+'</b><small>'+esc(gameText(x.games,true))+'</small></span><strong><span>'+connectionScore(x)+'</span><small>'+esc(t("metricConnection"))+'</small></strong></button>').join("");
@@ -545,7 +546,7 @@
     ctx.fillStyle="#f0cf89"; ctx.font="700 24px system-ui"; ctx.fillText("CHAMPION JOURNEY",70,125);
     ctx.fillStyle="#ffffff"; ctx.font="500 92px Georgia"; ctx.fillText(c.name,70,250);
     ctx.fillStyle="#aab4c7"; ctx.font="400 30px system-ui"; ctx.fillText((p.player?.gameName||"Player")+"#"+(p.player?.tagLine||"—"),70,305);
-    const stats=[[String(c.games||0),t("games")],[Number(c.avgKda||0).toFixed(1),"KDA"],[c.masteryPoints?fmt(c.masteryPoints):"—",t("mastery")]];
+    const stats=[[String(c.games||0),t(Number(c.games||0)===1?"gameSingular":"gamePlural")],[Number(c.avgKda||0).toFixed(1),"KDA"],[c.masteryPoints?fmt(c.masteryPoints):"—",t("mastery")]];
     stats.forEach((s,i)=>{const x=70+i*250;ctx.fillStyle="#ffffff";ctx.font="700 42px system-ui";ctx.fillText(s[0],x,430);ctx.fillStyle="#7f8ba1";ctx.font="500 16px system-ui";ctx.fillText(String(s[1]).toUpperCase(),x,462)});
     ctx.strokeStyle="rgba(217,170,85,.75)";ctx.lineWidth=3;ctx.beginPath();ctx.arc(1010,300,105,0,Math.PI*2);ctx.stroke();
     ctx.fillStyle="#f0cf89";ctx.font="700 72px system-ui";ctx.textAlign="center";ctx.fillText(String(score),1010,325);
