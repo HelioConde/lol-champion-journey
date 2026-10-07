@@ -366,3 +366,10 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .hero-metrics strong{font-size:21px}
   .hero-metrics span{font-size:7px;letter-spacing:.06em}
 }
+
+.timeline-swipe-hint{display:none}
+@media(max-width:560px){
+  .timeline-wrap,.timeline-section{position:relative}
+  .timeline-swipe-hint{display:block;margin:5px 28px 0 2px;color:#7f8ba0;font-size:9px;letter-spacing:.04em}
+  .timeline{padding-right:18%}
+}
