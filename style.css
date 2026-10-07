@@ -373,3 +373,27 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .timeline-swipe-hint{display:block;margin:5px 28px 0 2px;color:#7f8ba0;font-size:9px;letter-spacing:.04em}
   .timeline{padding-right:18%}
 }
+
+/* Navigation and section polish from automated capture review */
+.profile-nav-inner{scroll-snap-type:x proximity}
+.profile-nav a{scroll-snap-align:center;min-height:36px;display:inline-flex;align-items:center}
+.section>.eyebrow,.section-head .eyebrow{display:inline-flex;align-items:center;gap:8px}
+.section>.eyebrow::before,.section-head .eyebrow::before{content:"";width:18px;height:1px;background:linear-gradient(90deg,var(--gold2),transparent)}
+.compare-controls select{min-height:38px;border-radius:10px}
+@media(hover:hover){
+  .champion-chip,.fact-grid article,.snapshot-comparison article,.timeline-item{transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+  .champion-chip:hover,.fact-grid article:hover,.snapshot-comparison article:hover,.timeline-item:hover{transform:translateY(-2px);border-color:rgba(217,170,85,.28);box-shadow:0 10px 26px rgba(0,0,0,.14)}
+}
+@media(max-width:560px){
+  .profile-nav{overflow:hidden}
+  .profile-nav-inner{
+    padding-left:12px;
+    padding-right:12px;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%);
+    mask-image:linear-gradient(90deg,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%);
+  }
+  .profile-nav a{min-height:40px;padding:9px 12px}
+  .compare-controls{align-items:center}
+  .compare-controls select{min-height:42px;padding:0 34px 0 12px}
+  .section>.eyebrow::before,.section-head .eyebrow::before{width:14px}
+}
