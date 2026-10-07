@@ -550,7 +550,7 @@
     $("#retry-demo").hidden=!state.demo;
     $("#complete-sample").hidden=state.demo||!state.partial;
     $("#champion-name").textContent=c.name;
-    $("#champion-story").textContent=t("chapterText",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)});
+    $("#champion-story").textContent=t("heroStory",{name:c.name,gamesText:gameText(c.games,false),kda:Number(c.avgKda||0).toFixed(1)});
     const heroFacts=championMatchFacts(c);
     const heroContexts=(heroFacts.contexts||[]).map(contextText).filter(Boolean);
     $("#hero-context").hidden=!heroContexts.length;
