@@ -1,6 +1,6 @@
 # Production Status
 
-Última revisão: 06/10/2026
+Última revisão: 07/10/2026
 
 ## Implementado
 
@@ -40,7 +40,10 @@
 - [x] partidas passam a expor `championId` e maestria pode expor `championName` quando resolvível;
 - [x] Edge Function `champion-journey-history` adicionada ao repositório ZeroTwo;
 - [x] CI do ZeroTwo valida a Edge Function com Deno;
-- [x] frontend aponta automaticamente para `/champion-journey-history` e falha silenciosamente enquanto ainda não estiver publicada.
+- [x] frontend aponta automaticamente para `/champion-journey-history` e falha silenciosamente enquanto ainda não estiver publicada;
+- [x] `snapshotHistory` deixou de ficar `null` por padrão no frontend;
+- [x] `supabase/config.toml` do ZeroTwo define `verify_jwt = false` para `champion-journey-history`, permitindo o preflight CORS público;
+- [x] migration versionada em `zerotwo.gg/supabase/migrations/20261007_champion_journey_snapshots.sql`.
 
 ## Aguardando infraestrutura externa
 
