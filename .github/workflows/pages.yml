@@ -4,7 +4,21 @@ on:
   push:
     branches: [main]
     paths:
-      - "version.json"
+      - "index.html"
+      - "style.css"
+      - "app.js"
+      - "i18n.js"
+      - "backend-config.js"
+      - "observability.js"
+      - "live-update.js"
+      - "service-worker.js"
+      - "manifest.webmanifest"
+      - "privacy.html"
+      - "icon.svg"
+      - "icon-maskable.svg"
+      - "robots.txt"
+      - "sitemap.xml"
+      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
@@ -31,6 +45,7 @@ jobs:
         run: |
           mkdir -p _site
           rsync -a --exclude '.git' --exclude '_site' ./ _site/
+          printf '{"sha":"%s","publishedAt":"%s"}\n' "$DEPLOY_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > _site/version.json
           node <<'NODE'
           const fs=require("fs");
           const path="_site/index.html";
