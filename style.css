@@ -415,3 +415,15 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   .snapshot-steps{grid-template-columns:auto 1fr auto;margin-top:14px}
   .snapshot-steps>span small{font-size:7px}
 }
+
+/* Landing trust polish from automated captures */
+.hero-trust{gap:8px;margin-top:14px}
+.hero-trust span{padding:7px 10px;border:1px solid rgba(255,255,255,.08);border-radius:999px;background:rgba(10,15,25,.58);backdrop-filter:blur(8px)}
+.hero-trust i{width:7px;height:7px;background:linear-gradient(135deg,#f0cf89,#6ee7d8);box-shadow:0 0 14px rgba(217,170,85,.28)}
+.hero-trust b{font-size:10px;letter-spacing:.02em;color:#aeb8ca}
+@media(max-width:560px){
+  .hero-trust{display:flex;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;gap:7px;margin-top:12px;padding-bottom:2px}
+  .hero-trust::-webkit-scrollbar{display:none}
+  .hero-trust span{flex:0 0 auto;padding:7px 9px}
+  .hero-trust b{font-size:9px}
+}
