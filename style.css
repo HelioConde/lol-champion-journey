@@ -402,3 +402,16 @@ footer>span{color:#8f9bb0;font-weight:700;white-space:nowrap;padding-top:4px}
   *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
   .champion-chip:hover,.fact-grid article:hover,.snapshot-comparison article:hover,.timeline-item:hover{transform:none}
 }
+
+.snapshot-first-copy{min-width:0;flex:1}
+.snapshot-steps{display:grid;grid-template-columns:auto minmax(42px,120px) auto;align-items:center;gap:10px;margin-top:16px;width:min(420px,100%)}
+.snapshot-steps>span{display:grid;justify-items:center;gap:6px;color:#78849a}
+.snapshot-steps>span i{width:28px;height:28px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.12);border-radius:50%;background:#0b101a;font-size:10px;font-style:normal;font-weight:900}
+.snapshot-steps>span small{font-size:8px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;text-align:center}
+.snapshot-steps>b{height:1px;background:linear-gradient(90deg,rgba(217,170,85,.7),rgba(255,255,255,.08))}
+.snapshot-steps>span.is-done{color:#e7c67d}
+.snapshot-steps>span.is-done i{border-color:rgba(217,170,85,.48);background:rgba(217,170,85,.12);color:#f2d28e}
+@media(max-width:560px){
+  .snapshot-steps{grid-template-columns:auto 1fr auto;margin-top:14px}
+  .snapshot-steps>span small{font-size:7px}
+}
