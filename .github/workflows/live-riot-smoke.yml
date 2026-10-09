@@ -24,6 +24,7 @@ on:
         required: true
         default: "30"
   push:
+    branches: [main]
     paths:
       - ".github/workflows/live-riot-smoke.yml"
 
@@ -78,4 +79,18 @@ jobs:
           if(!data?.player?.gameName) throw new Error("missing player");
           if(!Array.isArray(data?.championSummaries)) throw new Error("missing champion summaries");
           if(!Array.isArray(data?.mastery)) throw new Error("missing mastery");
+          if((data?.summary?.matches||0)>0){
+            const historyEndpoint="https://bieihhaobdztjyoweewa.supabase.co/functions/v1/champion-journey-history";
+            const h=await fetch(historyEndpoint,{
+              method:"POST",
+              headers:{"content-type":"application/json"},
+              body:JSON.stringify({gameName:process.env.GAME_NAME,tagLine:process.env.TAG_LINE,platform:process.env.PLATFORM,limit:24})
+            });
+            const j=await h.json().catch(()=>({}));
+            console.log("remoteHistory",h.status,"snapshots",Array.isArray(j?.snapshots)?j.snapshots.length:"invalid");
+            if(!h.ok||!Array.isArray(j?.snapshots)||j.snapshots.length===0)throw new Error("trusted server snapshots not available after Riot query");
+            if(j.snapshots.some(x=>!x.sampleMatches||!Array.isArray(x.champions)))throw new Error("invalid server snapshot contract");
+          }else{
+            console.log("No eligible recent matches; history persistence skipped as designed.");
+          }
           NODE
