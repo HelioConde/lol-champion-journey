@@ -36,8 +36,9 @@
 - [x] [Static QA](https://github.com/HelioConde/lol-champion-journey/actions/runs/37948315307) aprovado.
 - [x] [Live Update QA](https://github.com/HelioConde/lol-champion-journey/actions/runs/37948315119) aprovado.
 - [x] [Live Riot Smoke + repetição/idempotência](https://github.com/HelioConde/lol-champion-journey/actions/runs/37948224519) aprovado.
-- [ ] Acompanhar a execução de [Browser E2E após correção do regex PWA](https://github.com/HelioConde/lol-champion-journey/actions/runs/37948315266); a execução anterior encontrou um regex com escape duplicado que foi corrigido.
-- [ ] Acompanhar último Lighthouse e novas capturas visuais depois do deploy; capturas anteriores aprovadas no CI.
+- [x] [Browser E2E após correção do regex PWA](https://github.com/HelioConde/lol-champion-journey/actions/runs/37948315266) — **69 passed, 3 skipped** (PWA dedicado ao Chromium).
+- [x] [Lighthouse da revisão](https://github.com/HelioConde/lol-champion-journey/actions/runs/37948315359) aprovado.
+- [x] [Capturas visuais de desktop e mobile](https://github.com/HelioConde/lol-champion-journey/actions/runs/37948358490) aprovadas após o deploy.
 
 ## Gates humanos e externos
 
