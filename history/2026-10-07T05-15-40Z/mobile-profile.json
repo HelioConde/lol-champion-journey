@@ -1,0 +1,18 @@
+{
+  "title": "Senna · AlchemyFlames · LoL Champion Journey",
+  "url": "https://helioconde.github.io/lol-champion-journey/?riotId=AlchemyFlames%23BR1&server=br1&lang=pt-BR&champion=Senna",
+  "width": 474,
+  "height": 4780,
+  "viewportHeight": 844,
+  "scrollY": 0,
+  "scrollSelector": null,
+  "fullPage": true,
+  "capturedAt": "2026-10-07T05:15:25.547Z",
+  "dataMode": "DADOS RIOT · LOL",
+  "riotId": "AlchemyFlames#br1",
+  "assets": {
+    "stylesheet": "https://helioconde.github.io/lol-champion-journey/style.css?v=b06a05bc9ff6b47e1051eae64497566adb86d79b",
+    "app": "https://helioconde.github.io/lol-champion-journey/app.js?v=b06a05bc9ff6b47e1051eae64497566adb86d79b",
+    "i18n": "https://helioconde.github.io/lol-champion-journey/i18n.js?v=b06a05bc9ff6b47e1051eae64497566adb86d79b"
+  }
+}

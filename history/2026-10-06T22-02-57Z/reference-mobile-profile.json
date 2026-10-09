@@ -1,0 +1,18 @@
+{
+  "title": "Senna · VisualReference · LoL Champion Journey",
+  "url": "https://helioconde.github.io/lol-champion-journey/?riotId=VisualReference%23BR1&server=br1&lang=pt-BR&champion=Senna",
+  "width": 475,
+  "height": 4674,
+  "viewportHeight": 844,
+  "scrollY": 0,
+  "scrollSelector": null,
+  "fullPage": true,
+  "capturedAt": "2026-10-06T22:02:53.581Z",
+  "dataMode": "DADOS RIOT · LOL",
+  "riotId": "VisualReference#BR1",
+  "assets": {
+    "stylesheet": "https://helioconde.github.io/lol-champion-journey/style.css?v=f8ec2de32d864f448b4704fdd23ac7730113b89e",
+    "app": "https://helioconde.github.io/lol-champion-journey/app.js?v=f8ec2de32d864f448b4704fdd23ac7730113b89e",
+    "i18n": "https://helioconde.github.io/lol-champion-journey/i18n.js?v=f8ec2de32d864f448b4704fdd23ac7730113b89e"
+  }
+}
