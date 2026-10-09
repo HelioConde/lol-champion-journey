@@ -27,3 +27,6 @@ alter table public.lol_champion_journey_snapshots enable row level security;
 -- Snapshots are server-authoritative. Browser roles must not write/read this table
 -- directly; access should go through trusted gamer Edge Functions.
 revoke all on table public.lol_champion_journey_snapshots from anon, authenticated;
+
+-- Trusted Riot Edge Functions may read and write official derived snapshots.
+grant select, insert on table public.lol_champion_journey_snapshots to service_role;
