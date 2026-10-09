@@ -38,6 +38,8 @@ jobs:
           node --check backend-config.js
           node --check observability.js
           node --check service-worker.js
+          node --check live-update.js
+          node --check tests/pwa-security.spec.js
 
       - name: Required Champion Journey markers
         run: |
@@ -58,6 +60,10 @@ jobs:
           test -f live-update.js
           test -f version.json
           test -f tests/e2e.spec.js
+          test -f tests/pwa-security.spec.js
+          grep -q 'cj-v4' service-worker.js
+          grep -q 'SHELL_PATHS.has(url.pathname)' service-worker.js
+          grep -q 'APP_SCOPE' live-update.js
 
           grep -qi 'lang="pt-BR"' index.html
           grep -qi 'data-language="en"' index.html
