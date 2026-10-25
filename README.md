@@ -1,132 +1,55 @@
-# LoL Champion Journey
+<div align="center">
+  <h1>🏆 LoL Champion Journey</h1>
+  <p><strong>A história dos seus campeões favoritos contada pelo seu histórico recente de League of Legends.</strong></p>
+  <p><img alt="Riot API via backend" src="https://img.shields.io/badge/Riot%20API-via%20backend-334155"> <img alt="Status" src="https://img.shields.io/badge/status-MVP%20em%20evolu%C3%A7%C3%A3o-64748b"></p>
+  <p><a href="https://helioconde.github.io/lol-champion-journey/"><strong>Abrir a experiência</strong></a> · <a href="RELEASE_V1.md"><strong>Relatório</strong></a> · <a href="SNAPSHOT_CONTRACT.md"><strong>Dados e snapshots</strong></a></p>
+</div>
 
-**Transforme seu histórico recente de League of Legends em uma jornada visual pelos campeões que definem seu momento de jogo.**
+## Sobre
 
-**Você encontra:** campeão assinatura, pool, comparações, evolução entre consultas e indicadores pessoais explicáveis. O produto diferencia dados Riot reais de conteúdo demonstrativo.
+O **Champion Journey** transforma o histórico recente de partidas em um retrato pessoal dos campeões que você mais utiliza. O foco não é montar uma tier list, mas responder: **quem define meu estilo de jogo neste momento? Como isso mudou?**
 
-[**Acessar documentação**](#produto) · [**Como os dados são interpretados**](#dados-e-interpretação)
+## A experiência
 
-> A jornada representa apenas a amostra de partidas consultada, não toda a história da conta. Projeto independente, sem vínculo oficial com Riot Games.
+1. Informe seu **Riot ID** e selecione o servidor.
+2. Confira o campeão assinatura e a distribuição do pool recente.
+3. Veja presença, KDA, resultados e maestria disponível.
+4. Compare consultas salvas (*snapshots*) para identificar mudanças.
+5. Explore detalhes e compartilhe os resultados disponíveis.
 
-![Status](https://img.shields.io/badge/status-em%20evolução-64748b)
+| Recurso | O que significa |
+| --- | --- |
+| **Campeão assinatura** | Destaque calculado a partir da amostra recente |
+| **Champion Pool** | Distribuição de campeões utilizados |
+| **Connection Index** | Indicador pessoal explicável, baseado em critérios documentados |
+| **Evolução** | Comparação entre consultas/snapshots |
+| **Dados reais** | Consultas ao `public-lol-profile` via backend |
+| **Fallback** | Demonstração identificada quando os dados reais não estão disponíveis |
 
----
+**Limitação essencial:** a consulta adaptativa tenta amostras de **30, 20 ou 12 partidas**, conforme a disponibilidade. O resultado não representa todas as partidas da conta e não prevê desempenho futuro.
 
-Experiência visual que transforma a amostra recente de League of Legends em uma jornada pessoal por campeão, com comparação, evolução entre consultas e compartilhamento.
+## Rodar localmente
 
-## Produto
+```bash
+git clone https://github.com/HelioConde/lol-champion-journey.git
+cd lol-champion-journey
+npm install
+npm run dev
+```
 
-O Champion Journey responde:
+O servidor estático usa normalmente `http://localhost:4173`. Para checagens:
 
-- qual campeão define o momento atual;
-- como o pool recente está distribuído;
-- como presença, desempenho, maestria e consistência formam o Connection Index;
-- quais campeões estão subindo ou saindo da amostra;
-- como a relação com um campeão muda entre snapshots;
-- quais dados são Riot reais e quais são demonstração.
+```bash
+npm run check
+npm run test:e2e
+```
 
-A interface é LoL-first e cinematográfica, evitando aparência de tracker genérico.
+A API Riot é acessada pelo backend configurado. **A chave Riot não deve ser incluída no código público.** A disponibilidade de dados reais depende das permissões e dos limites do serviço.
 
-## Estado atual
+## Documentação e próximos passos
 
-- repositório standalone ativo;
-- GitHub Pages ativo;
-- PT-BR principal + EN;
-- busca por Riot ID + servidor;
-- `public-lol-profile` do backend gamer ZeroTwo;
-- consulta adaptativa de 30 → 20 → 12 partidas para priorizar dados Riot reais e estabilidade;
-- Data Dragon para nomes/IDs/assets;
-- maestria real casada por `championId`;
-- fallback demo claramente identificado;
-- erros específicos para rate limit e Riot ID inexistente;
-- deep links e idioma via URL;
-- buscas recentes locais;
-- splash arts com lazy loading;
-- campeão assinatura e pool recente;
-- Connection Index explicável: presença + desempenho (KDA/win rate) + maestria + consistência;
-- comparação entre campeões;
-- métricas de win rate, dano/min, CS/min, melhor KDA, streak e contextos quando disponíveis;
-- timeline de partidas reais do campeão;
-- snapshots locais (24);
-- comparação entre snapshots;
-- sinais de main recente mudando, campeão em ascensão e saída da amostra;
-- gráfico histórico alternável entre conexão, KDA, maestria e partidas;
-- card PNG 1200×630 com splash, Riot ID, período e score;
-- compartilhamento nativo + copiar link;
-- PWA com service worker, manifest e ícones;
-- atualização automática por `version.json`;
-- SEO: canonical, hreflang, Open Graph, Twitter metadata, sitemap e robots;
-- política de privacidade bilíngue;
-- três slots estruturais de anúncio com espaço reservado;
-- observabilidade local e endpoint opcional;
-- QA estática;
-- Playwright em Chromium, Firefox, WebKit, Pixel e iPhone;
-- smoke test real com `AlchemyFlames#BR1`.
+[Estado de produção](PRODUCTION_STATUS.md) · [Contrato de snapshots](SNAPSHOT_CONTRACT.md) · [API Riot](RIOT_API.md) · [Relatório técnico](RELEASE_V1.md)
 
-## Dados e interpretação
+**Estado:** interface e consulta documentadas; lançamento amplo e monetização dependem dos requisitos e permissões Riot e de validação com usuários reais.
 
-A Riot API entrega uma janela consultável, não a história completa da conta. O produto usa termos como **amostra recente** quando esse é o limite da fonte.
-
-Evolução histórica só é apresentada como tal quando existem snapshots capturados em momentos diferentes.
-
-## Connection Index
-
-Pesos atuais:
-
-- 40% presença relativa;
-- 25% desempenho (KDA + win rate quando disponível);
-- 20% maestria relativa;
-- 15% consistência de KDA nas partidas do campeão.
-
-A fórmula é exibida na interface para evitar uma nota opaca.
-
-## Backend
-
-Perfil Riot:
-
-`https://bieihhaobdztjyoweewa.supabase.co/functions/v1/public-lol-profile`
-
-Nenhuma chave Riot ou service role fica no frontend.
-
-### Snapshots server-side
-
-O repositório já contém:
-
-- `supabase/schema/champion-journey-snapshots.sql`;
-- `supabase/functions/_shared/champion-journey-snapshots.ts`;
-- `supabase/functions/champion-journey-history/index.ts`.
-
-A escrita foi projetada para ser server-authoritative. O navegador não pode gravar snapshots oficiais.
-
-A ativação deve ocorrer exclusivamente no Supabase gamer do ZeroTwo. O Supabase atualmente conectado nesta sessão expõe apenas `pizzaria-db`, portanto o deploy no banco gamer não foi feito daqui.
-
-## Publicação
-
-GitHub Pages:
-
-`https://helioconde.github.io/lol-champion-journey/`
-
-Cada push na `main` publica automaticamente.
-
-## Monetização
-
-Preparado para anúncios sem bloquear busca, análise, atualização ou compartilhamento. Anúncios reais continuam desativados até configuração de publisher/consentimento.
-
-## Compliance
-
-O site contém aviso legal Riot completo e política de privacidade.
-
-## Próximas dependências reais
-
-1. aplicar o schema de snapshots no Supabase gamer;
-2. integrar a persistência server-side ao `public-lol-profile`;
-3. ativar `champion-journey-history` e configurar `snapshotHistory`;
-4. testar mais Riot IDs reais/regiões além de `AlchemyFlames#BR1` e calibrar a amostra adaptativa;
-5. adicionar ícones PNG 192/512 se uma plataforma específica exigir;
-6. conectar observabilidade remota quando houver endpoint definido;
-7. configurar anúncios reais somente após aprovação/políticas.
-
-## Idiomas
-
-- PT-BR: principal/padrão;
-- English: secundário.
+Projeto independente, não oficial, sem afiliação à Riot Games. Desenvolvido por [Hélio Conde](https://github.com/HelioConde).
