@@ -1,5 +1,17 @@
 # LoL Champion Journey
 
+**Transforme seu histórico recente de League of Legends em uma jornada visual pelos campeões que definem seu momento de jogo.**
+
+**Você encontra:** campeão assinatura, pool, comparações, evolução entre consultas e indicadores pessoais explicáveis. O produto diferencia dados Riot reais de conteúdo demonstrativo.
+
+[**Acessar documentação**](#produto) · [**Como os dados são interpretados**](#dados-e-interpretação)
+
+> A jornada representa apenas a amostra de partidas consultada, não toda a história da conta. Projeto independente, sem vínculo oficial com Riot Games.
+
+![Status](https://img.shields.io/badge/status-em%20evolução-64748b)
+
+---
+
 Experiência visual que transforma a amostra recente de League of Legends em uma jornada pessoal por campeão, com comparação, evolução entre consultas e compartilhamento.
 
 ## Produto
